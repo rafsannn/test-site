@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart | Zenocart</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <div id="nav-placeholder"></div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <h1>🛒 Your Cart</h1>
+      <p>Review your items and place your order</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="cart-page">
+      <div class="container">
+        <div class="cart-layout">
+
+          <!-- Cart Items -->
+          <div>
+            <div class="cart-items-section">
+              <div class="cart-items-header">
+                <h3 id="cart-header-text">Cart Items</h3>
+                <button onclick="clearCart()" id="clear-cart-btn" class="btn btn-sm" style="color:var(--danger);background:none;border:1px solid var(--danger);font-size:0.8rem;padding:6px 12px">
+                  🗑️ Clear All
+                </button>
+              </div>
+              <div id="cart-items"></div>
+            </div>
+
+            <!-- Continue Shopping -->
+            <div style="margin-top:16px">
+              <a href="shop.html" class="btn btn-outline" style="gap:8px">
+                ← Continue Shopping
+              </a>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div>
+            <div class="cart-summary">
+              <h3>Order Summary</h3>
+              <div id="cart-summary-body"></div>
+
+              <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+                <div style="display:flex;align-items:center;gap:8px;background:var(--primary-ultra-light);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px">
+                  <span>🎉</span>
+                  <div>
+                    <p style="font-size:0.78rem;font-weight:600;color:var(--primary)">EID SPECIAL OFFER</p>
+                    <p style="font-size:0.72rem;color:var(--dark-mid)">5% (Air) · 7% (Sea) discount applied automatically</p>
+                  </div>
+                </div>
+
+                <button class="cart-fb-btn" onclick="orderOnFacebook()">
+                  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Order via Facebook Page
+                </button>
+
+                <button class="btn btn-primary btn-full" id="checkout-btn" onclick="proceedCheckout()" style="margin-top:10px">
+                  Proceed to Checkout →
+                </button>
+
+                <div style="text-align:center;margin-top:16px">
+                  <p style="font-size:0.75rem;color:var(--gray)">🔒 Secure checkout · 📦 Nationwide delivery</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:3000;align-items:center;justify-content:center;padding:16px">
+      <div style="background:var(--white);border-radius:var(--radius-lg);width:100%;max-width:480px;max-height:90vh;overflow-y:auto">
+        <div style="padding:24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <h3 style="font-size:1.1rem;font-weight:700">📦 Checkout Details</h3>
+          <button onclick="closeCheckout()" style="background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer">✕</button>
+        </div>
+        <div style="padding:24px">
+          <div id="checkout-items-summary" style="background:var(--bg);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px"></div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px">Full Name *</label>
+              <input type="text" id="co-name" placeholder="Your full name" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+            </div>
+            <div>
+              <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px">Phone Number *</label>
+              <input type="tel" id="co-phone" placeholder="01XXXXXXXXX" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+            </div>
+            <div>
+              <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px">Delivery Address *</label>
+              <textarea id="co-address" placeholder="House, Road, Area, City" rows="3" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;resize:vertical"></textarea>
+            </div>
+            <div>
+              <label style="font-size:0.82rem;font-weight:600;color:var(--dark);display:block;margin-bottom:6px">Special Notes (optional)</label>
+              <input type="text" id="co-notes" placeholder="Any special instructions..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none">
+            </div>
+          </div>
+
+          <div style="margin-top:20px;padding:14px;background:var(--primary-ultra-light);border-radius:var(--radius-sm)">
+            <p style="font-size:0.82rem;color:var(--primary);font-weight:600">📘 How it works:</p>
+            <p style="font-size:0.8rem;color:var(--dark-mid);margin-top:4px">After submitting, we'll send your order details to our Facebook page. Our team will confirm your order and arrange delivery.</p>
+          </div>
+
+          <button onclick="submitOrder()" class="btn btn-primary btn-full btn-lg" style="margin-top:20px">
+            ✅ Confirm Order
+          </button>
+          <button onclick="orderOnFacebook()" class="cart-fb-btn" style="margin-top:10px">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Or Message Us Directly on Facebook
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="../js/products.js"></script>
+  <script src="../js/layout.js"></script>
+  <script src="../js/core.js"></script>
+  <script>
+    injectLayout('../');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCart();
+    });
+
+    function clearCart() {
+      if (!cart.length) return;
+      if (confirm('Remove all items from your cart?')) {
+        cart = [];
+        saveCart();
+        renderCart();
+        showToast('Cart cleared', 'default');
+      }
+    }
+
+    function orderOnFacebook() {
+      window.open('https://facebook.com/zenocart.bd', '_blank');
+    }
+
+    function proceedCheckout() {
+      if (cart.length === 0) {
+        showToast('Your cart is empty!', 'error');
+        return;
+      }
+      const modal = document.getElementById('checkout-modal');
+      modal.style.display = 'flex';
+
+      // Summary in modal
+      const summaryEl = document.getElementById('checkout-items-summary');
+      const subtotal = getCartTotal();
+      const shipping = subtotal >= 1000 ? 0 : 80;
+      summaryEl.innerHTML = cart.map(item => {
+        const p = PRODUCTS.find(pr => pr.id === item.id);
+        if (!p) return '';
+        return `<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;color:var(--dark-mid)">
+          <span>${p.shortName} × ${item.qty}</span>
+          <span style="font-weight:600">${formatPrice(p.price * item.qty)}</span>
+        </div>`;
+      }).join('') +
+      `<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;color:var(--dark)">
+        <span>Total</span><span>${formatPrice(subtotal + shipping)}</span>
+      </div>`;
+    }
+
+    function closeCheckout() {
+      document.getElementById('checkout-modal').style.display = 'none';
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('co-name').value.trim();
+      const phone = document.getElementById('co-phone').value.trim();
+      const address = document.getElementById('co-address').value.trim();
+
+      if (!name || !phone || !address) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+
+      // Build order message for Facebook
+      const items = cart.map(item => {
+        const p = PRODUCTS.find(pr => pr.id === item.id);
+        return p ? `• ${p.shortName} × ${item.qty} = ${formatPrice(p.price * item.qty)}` : '';
+      }).filter(Boolean).join('\n');
+
+      const total = getCartTotal();
+      const msg = encodeURIComponent(
+        `🛒 New Order from Zenocart!\n\n` +
+        `👤 Name: ${name}\n📞 Phone: ${phone}\n📍 Address: ${address}\n\n` +
+        `📦 Items:\n${items}\n\n💰 Total: ${formatPrice(total)}\n\n` +
+        `Notes: ${document.getElementById('co-notes').value || 'None'}`
+      );
+
+      closeCheckout();
+      showToast('Order submitted! Redirecting to Facebook...', 'success');
+
+      setTimeout(() => {
+        window.open(`https://m.me/zenocart.bd?text=${msg}`, '_blank');
+        // Optionally clear cart after order
+        // cart = []; saveCart(); renderCart();
+      }, 1500);
+    }
+
+    // Close modal on outside click
+    document.getElementById('checkout-modal')?.addEventListener('click', function(e) {
+      if (e.target === this) closeCheckout();
+    });
+  </script>
+</body>
+</html>
