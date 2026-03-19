@@ -188,8 +188,14 @@ tr:hover td{background:var(--bg)}
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <img src="/images/logo.png" alt="Zenocart" onerror="this.style.display='none'">
-      <h2>Admin Panel</h2>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px">
+        <img src="/images/logo.png" alt="Zenocart" style="height:52px;width:52px;object-fit:contain" onerror="this.style.display='none'">
+        <div style="text-align:left">
+          <div style="font-family:'DM Sans',sans-serif;font-size:1.5rem;font-weight:800;color:var(--dark);line-height:1"><span style="color:var(--primary)">ZENO</span>CART</div>
+          <div style="font-size:.7rem;color:var(--gray);letter-spacing:.08em;text-transform:uppercase">Online Marketplace</div>
+        </div>
+      </div>
+      <h2 style="font-size:1.1rem;margin-top:8px">Admin Panel</h2>
       <p>Sign in to manage your store</p>
     </div>
     <div class="login-err" id="login-err"></div>
@@ -212,8 +218,13 @@ tr:hover td{background:var(--bg)}
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <img src="/images/logo.png" alt="Zenocart">
-      <span>Admin Panel</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="/images/logo.png" alt="Zenocart" style="height:36px;width:36px;object-fit:contain" onerror="this.style.display='none'">
+        <div>
+          <div style="font-size:.95rem;font-weight:800;color:#fff;line-height:1"><span style="color:var(--accent)">ZENO</span>CART</div>
+          <div style="font-size:.62rem;color:rgba(255,255,255,.4);letter-spacing:.07em;text-transform:uppercase">Admin Panel</div>
+        </div>
+      </div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-item active" onclick="showTab('dashboard')">

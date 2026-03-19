@@ -6,6 +6,10 @@ function injectLayout(root) {
       <div class="navbar-inner">
         <a href="/" class="nav-logo">
           <img src="/images/logo.png" alt="Zenocart" onerror="this.style.display='none'">
+          <div class="nav-logo-text">
+            <span class="nav-logo-name"><span style="color:var(--primary)">ZENO</span>CART</span>
+            <span class="nav-logo-sub">Online Marketplace</span>
+          </div>
         </a>
         <div class="nav-search">
           <span class="nav-search-icon">🔍</span>
@@ -69,7 +73,13 @@ function injectLayout(root) {
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <img src="/images/logo.png" alt="Zenocart">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+            <img src="/images/logo.png" alt="Zenocart" style="height:44px;width:auto;filter:brightness(0) invert(1)">
+            <div>
+              <div style="font-family:'DM Sans',sans-serif;font-size:1.2rem;font-weight:700;color:#fff;line-height:1.1"><span style="color:var(--accent)">ZENO</span>CART</div>
+              <div style="font-size:.72rem;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase">Online Marketplace</div>
+            </div>
+          </div>
           <p>Zenocart is your trusted online marketplace for quality electronics and lifestyle products — delivered nationwide across Bangladesh.</p>
           <div class="footer-social">
             <a href="https://facebook.com/zenocart.bd" target="_blank" class="social-btn social-btn-fb">
