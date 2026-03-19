@@ -471,23 +471,57 @@ const srv = http.createServer(async (req, res) => {
 
 
   // ── BACKUP API ─────────────────────────────────────────────────────────────
-  // GET /api/admin/backup — download a full backup as a single JSON file
+  // GET /api/admin/backup — ZIP containing data JSON + all product images
   if(pn==='/api/admin/backup' && mt==='GET'){
     if(!requireAuth(req,res))return;
     try{
       const backup = {
-        version: '1.0',
+        version: '2.0',
         created_at: new Date().toISOString(),
         products:   readJSON(LOCAL_PRODUCTS,   []),
         categories: readJSON(CATEGORIES_FILE,  DEFAULT_CATS),
         delivery:   readJSON(DELIVERY_FILE,    DEFAULT_DELIVERY),
         orders:     readJSON(ORDERS_FILE,      [])
       };
-      const json = JSON.stringify(backup, null, 2);
-      const buf  = Buffer.from(json, 'utf8');
-      // Build a minimal ZIP in pure Node.js (no npm)
-      const zipBuf = buildZip([{ name: 'zenocart-backup.json', data: buf }]);
+      const zipFiles = [];
+
+      // 1. Add the data JSON
+      zipFiles.push({ name: 'zenocart-backup.json', data: Buffer.from(JSON.stringify(backup, null, 2), 'utf8') });
+
+      // 2. Collect unique image paths from products
+      const imagePaths = new Set();
+      backup.products.forEach(p => {
+        const imgs = typeof p.images === 'string' ? JSON.parse(p.images || '[]') : (p.images || []);
+        [p.image, ...imgs].forEach(img => { if(img && typeof img === 'string') imagePaths.add(img); });
+      });
+
+      // 3. Add each image file to the ZIP (skip external URLs & missing files)
+      let imageCount = 0;
+      for (const imgPath of imagePaths) {
+        if (imgPath.startsWith('http')) continue; // Cloudinary URL — skip, still accessible
+        // Try both /public/images/ and /uploads/
+        const candidates = [
+          path.join(PUBLIC, imgPath),
+          path.join(PUBLIC, 'images', path.basename(imgPath)),
+          path.join(__dirname, 'uploads', path.basename(imgPath)),
+          path.join(process.cwd(), imgPath)
+        ];
+        for (const candidate of candidates) {
+          if (fs.existsSync(candidate)) {
+            try {
+              const imgData = fs.readFileSync(candidate);
+              // Store as images/filename inside zip
+              zipFiles.push({ name: 'images/' + path.basename(imgPath), data: imgData });
+              imageCount++;
+            } catch(e) { /* skip unreadable */ }
+            break;
+          }
+        }
+      }
+
+      const zipBuf  = buildZip(zipFiles);
       const filename = 'zenocart-backup-' + new Date().toISOString().slice(0,10) + '.zip';
+      console.log('Backup created: ' + backup.products.length + ' products, ' + imageCount + ' images');
       res.writeHead(200, {
         'Content-Type':        'application/zip',
         'Content-Disposition': 'attachment; filename="' + filename + '"',
@@ -497,7 +531,7 @@ const srv = http.createServer(async (req, res) => {
     } catch(e){ console.error('Backup error:', e); return respond(res, 500, {error: e.message}); }
   }
 
-  // POST /api/admin/restore — upload a backup ZIP and restore all data
+  // POST /api/admin/restore — upload backup ZIP, restore data + images
   if(pn==='/api/admin/restore' && mt==='POST'){
     if(!requireAuth(req,res))return;
     try{
@@ -509,32 +543,66 @@ const srv = http.createServer(async (req, res) => {
       if(!fileBuffer || fileBuffer.length < 10)
         return respond(res, 400, {error: 'No file received'});
 
-      let jsonStr = '';
-      // If it's a ZIP, extract the first .json file inside
-      if(fileName.endsWith('.zip') || fileBuffer[0]===0x50 && fileBuffer[1]===0x4B){
-        jsonStr = extractFirstJsonFromZip(fileBuffer);
-        if(!jsonStr) return respond(res, 400, {error: 'No JSON found inside ZIP'});
+      // Ensure directories exist
+      if(!fs.existsSync(DATADIR)) fs.mkdirSync(DATADIR, {recursive: true});
+      const imgDir = path.join(PUBLIC, 'images');
+      if(!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, {recursive: true});
+
+      let backup = null;
+      let restoredImages = 0;
+
+      const isZip = fileName.endsWith('.zip') ||
+                    (fileBuffer[0]===0x50 && fileBuffer[1]===0x4B &&
+                     fileBuffer[2]===0x03 && fileBuffer[3]===0x04);
+
+      if(isZip){
+        // Extract ALL files from ZIP
+        const allFiles = extractAllFilesFromZip(fileBuffer);
+
+        for(const { name, data } of allFiles){
+          if(name === 'zenocart-backup.json' || name.endsWith('/zenocart-backup.json')){
+            try{ backup = JSON.parse(data.toString('utf8')); }catch(e){}
+          } else if(name.startsWith('images/') && data.length > 0){
+            // Restore image file
+            const imgName = path.basename(name);
+            const dest    = path.join(imgDir, imgName);
+            try{ fs.writeFileSync(dest, data); restoredImages++; }catch(e){ console.error('Image restore error:', imgName, e.message); }
+          }
+        }
+        if(!backup){
+          // Fallback: try old single-JSON method
+          const jsonStr = extractFirstJsonFromZip(fileBuffer);
+          if(jsonStr) try{ backup = JSON.parse(jsonStr); }catch(e){}
+        }
       } else {
         // Raw JSON file
-        jsonStr = fileBuffer.toString('utf8');
+        try{ backup = JSON.parse(fileBuffer.toString('utf8')); }catch(e){}
       }
 
-      let backup;
-      try{ backup = JSON.parse(jsonStr); }
-      catch(e){ return respond(res, 400, {error: 'Invalid JSON in backup file'}); }
-
+      if(!backup) return respond(res, 400, {error: 'Could not read backup data from file'});
       if(!backup.version) return respond(res, 400, {error: 'Not a valid Zenocart backup file'});
 
-      // Ensure data dir exists
-      if(!fs.existsSync(DATADIR)) fs.mkdirSync(DATADIR, {recursive: true});
-
       // Restore each data store
-      let restored = [];
-      if(Array.isArray(backup.products)){ writeJSON(LOCAL_PRODUCTS, backup.products); restored.push(backup.products.length + ' products'); }
-      if(Array.isArray(backup.categories)){ writeJSON(CATEGORIES_FILE, backup.categories); restored.push(backup.categories.length + ' categories'); }
-      if(Array.isArray(backup.delivery)){ writeJSON(DELIVERY_FILE, backup.delivery); restored.push(backup.delivery.length + ' delivery areas'); }
-      if(Array.isArray(backup.orders)){ writeJSON(ORDERS_FILE, backup.orders); restored.push(backup.orders.length + ' orders'); }
+      const restored = [];
+      if(Array.isArray(backup.products)){
+        writeJSON(LOCAL_PRODUCTS, backup.products);
+        restored.push(backup.products.length + ' products');
+      }
+      if(Array.isArray(backup.categories)){
+        writeJSON(CATEGORIES_FILE, backup.categories);
+        restored.push(backup.categories.length + ' categories');
+      }
+      if(Array.isArray(backup.delivery)){
+        writeJSON(DELIVERY_FILE, backup.delivery);
+        restored.push(backup.delivery.length + ' delivery areas');
+      }
+      if(Array.isArray(backup.orders)){
+        writeJSON(ORDERS_FILE, backup.orders);
+        restored.push(backup.orders.length + ' orders');
+      }
+      if(restoredImages > 0) restored.push(restoredImages + ' images');
 
+      console.log('Restore complete:', restored.join(', '));
       return respond(res, 200, {
         ok: true,
         message: 'Restore successful! Restored: ' + restored.join(', '),
@@ -648,6 +716,42 @@ function crc32(buf) {
     for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0);
   }
   return (crc ^ 0xFFFFFFFF) | 0;
+}
+
+// ── ZIP reader — extract ALL files from a ZIP buffer ───────────────────────
+function extractAllFilesFromZip(buf) {
+  const files = [];
+  let pos = 0;
+  while (pos < buf.length - 30) {
+    // Local file header signature: PK\x03\x04
+    if (buf[pos]===0x50 && buf[pos+1]===0x4B && buf[pos+2]===0x03 && buf[pos+3]===0x04) {
+      const compMethod = buf.readUInt16LE(pos + 8);
+      const compSize   = buf.readUInt32LE(pos + 18);
+      const uncompSize = buf.readUInt32LE(pos + 22);
+      const nameLen    = buf.readUInt16LE(pos + 26);
+      const extraLen   = buf.readUInt16LE(pos + 28);
+      const name       = buf.slice(pos + 30, pos + 30 + nameLen).toString('utf8');
+      const dataStart  = pos + 30 + nameLen + extraLen;
+      const dataEnd    = dataStart + compSize;
+
+      if (compSize > 0 && dataEnd <= buf.length && !name.endsWith('/')) {
+        const compData = buf.slice(dataStart, dataEnd);
+        let fileData   = compData;
+        if (compMethod === 8) {  // DEFLATE
+          try {
+            const zlib = require('zlib');
+            fileData = zlib.inflateRawSync(compData);
+          } catch(e) { fileData = compData; }
+        }
+        files.push({ name, data: fileData });
+      }
+      // Move to next entry
+      pos = dataEnd > pos + 1 ? dataEnd : pos + 1;
+    } else {
+      pos++;
+    }
+  }
+  return files;
 }
 
 // ── Minimal ZIP reader — extract first .json file content ───────────────────
