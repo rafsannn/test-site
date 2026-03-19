@@ -33,6 +33,12 @@ function updateCartUI() {
   document.querySelectorAll('.cart-count:not(.wishlist-count)').forEach(el => {
     el.textContent = count; el.classList.toggle('hidden', count === 0);
   });
+  // Mobile bottom bar cart count
+  const mcc = document.getElementById('mobile-cart-count');
+  if (mcc) {
+    mcc.textContent = count > 0 ? count : '';
+    mcc.classList.toggle('hidden', count === 0);
+  }
 }
 
 function toggleWishlist(productId, product) {
@@ -111,8 +117,16 @@ function initMobileMenu() {
   const h = document.getElementById('hamburger');
   const m = document.getElementById('mobile-menu');
   if (!h || !m) return;
-  h.addEventListener('click', () => m.classList.toggle('open'));
-  document.addEventListener('click', e => { if (!h.contains(e.target) && !m.contains(e.target)) m.classList.remove('open'); });
+  h.addEventListener('click', () => {
+    m.classList.toggle('open');
+    h.classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    if (!h.contains(e.target) && !m.contains(e.target)) {
+      m.classList.remove('open');
+      h.classList.remove('open');
+    }
+  });
 }
 
 async function renderCart() {
