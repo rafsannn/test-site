@@ -1,157 +1,161 @@
-# 🛒 Zenocart - Online Marketplace
+# 🛒 Zenocart — Full Stack Backend
 
-**"Shop Smart. Live Better."**
-
-A fully responsive, production-ready e-commerce website for Zenocart — your trusted online marketplace for electronics and gadgets in Bangladesh.
+**"Shop Smart. Live Better."**  
+Node.js backend with Admin Panel — zero npm dependencies required.
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 Quick Start (3 steps)
 
-### Option 1: Open Directly (Simplest)
-1. Extract / download the `zenocart` folder
-2. Open `index.html` in any modern browser (Chrome, Firefox, Edge)
-3. That's it! ✅
-
-> ⚠️ **Note:** Some browsers may block local assets if you double-click the file. Use Option 2 for the best experience.
-
-### Option 2: Use VS Code Live Server (Recommended)
-1. Install [VS Code](https://code.visualstudio.com/)
-2. Install the **Live Server** extension
-3. Right-click `index.html` → "Open with Live Server"
-4. Browser opens at `http://127.0.0.1:5500`
-
-### Option 3: Python Local Server
 ```bash
-cd zenocart
-python -m http.server 8080
-# Visit: http://localhost:8080
+# 1. Enter the project folder
+cd zenocart-backend
+
+# 2. Start the server
+node server.js
+
+# 3. Open your browser
+# Store    →  http://localhost:3000
+# Admin    →  http://localhost:3000/admin
 ```
 
-### Option 4: Node.js
-```bash
-cd zenocart
-npx serve .
-# Visit the URL shown in terminal
-```
+**Default admin login:**
+- Username: `admin`
+- Password: `admin123`
+
+> ⚠️ Change your password immediately after first login (Settings tab in admin panel).
 
 ---
 
 ## 📁 Project Structure
 
 ```
-zenocart/
-├── index.html              ← Home Page
-├── pages/
-│   ├── shop.html           ← Shop / All Products Page
-│   ├── product.html        ← Product Detail Page
-│   └── cart.html           ← Cart & Checkout Page
-├── css/
-│   └── style.css           ← All styles (responsive, animations)
-├── js/
-│   ├── products.js         ← Product database & helper functions
-│   ├── layout.js           ← Shared navbar & footer
-│   └── core.js             ← Cart, wishlist, toast, search logic
-└── images/
-    ├── logo.png            ← Your Zenocart logo
-    ├── cover.png           ← Hero banner image
-    ├── product-fan.jpg
-    ├── product-powerbank.jpg
-    ├── product-watch.jpg
-    ├── product-headphones.jpg
-    ├── product-headphones2.jpg
-    └── product-lamp.jpg
+zenocart-backend/
+├── server.js          ← Main server (run this)
+├── admin/
+│   └── index.html     ← Admin panel UI
+├── public/            ← Frontend (served automatically)
+│   ├── index.html
+│   ├── css/style.css
+│   ├── js/
+│   │   ├── products.js  ← Fetches from API
+│   │   ├── layout.js
+│   │   └── core.js
+│   ├── images/
+│   └── pages/
+│       ├── shop.html
+│       ├── product.html
+│       └── cart.html
+├── uploads/           ← Uploaded product images (auto-created)
+└── data/
+    ├── products.json  ← Product database (auto-created)
+    └── users.json     ← Admin credentials (auto-created)
 ```
 
 ---
 
-## ✨ Features
+## 🔧 Admin Panel Features
 
-| Feature | Status |
+| Feature | Description |
 |---|---|
-| Responsive design (mobile, tablet, desktop) | ✅ |
-| Product listing with grid | ✅ |
-| Category filtering (sidebar) | ✅ |
-| Price range filter | ✅ |
-| Sort by: featured, price, rating, bestselling | ✅ |
-| Product detail page | ✅ |
-| Add to cart | ✅ |
-| Qty increase/decrease/remove | ✅ |
-| Wishlist with slide-out drawer | ✅ |
-| Search bar with live dropdown | ✅ |
-| Cart persists across pages (localStorage) | ✅ |
-| Checkout form with Facebook redirect | ✅ |
-| "Order via Facebook" button | ✅ |
-| Toast notifications | ✅ |
-| Hero banner with Eid offer | ✅ |
-| Smooth animations | ✅ |
-| SEO meta tags | ✅ |
+| **Dashboard** | Stats overview + recent products |
+| **Products List** | Search, filter by category, view all |
+| **Add Product** | Upload image, fill details, publish |
+| **Edit Product** | Change any field, swap image |
+| **Delete Product** | With confirmation dialog |
+| **Change Password** | Update admin password |
+| **Export JSON** | Download products backup |
 
 ---
 
-## 🎨 Design
+## 🌐 API Endpoints
 
-- **Colors:** Teal/steel-blue gradient matching Zenocart logo (`#1e7a8f` primary)
-- **Fonts:** Playfair Display (headings) + DM Sans (body)
-- **Style:** Minimal & clean, conversion-focused
+| Method | URL | Description |
+|---|---|---|
+| `GET` | `/api/products` | List all products |
+| `GET` | `/api/products?category=fans` | Filter by category |
+| `GET` | `/api/products?q=fan` | Search products |
+| `GET` | `/api/products?sort=price-low` | Sort products |
+| `GET` | `/api/products/:id` | Get single product |
+| `POST` | `/api/auth/login` | Admin login |
+| `POST` | `/api/auth/logout` | Admin logout |
+| `POST` | `/api/admin/products` | Create product (auth) |
+| `PUT` | `/api/admin/products/:id` | Update product (auth) |
+| `DELETE` | `/api/admin/products/:id` | Delete product (auth) |
 
 ---
 
-## 📦 How to Add New Products
+## ➕ How to Add a Product
 
-Open `js/products.js` and add to the `PRODUCTS` array:
+1. Go to `http://localhost:3000/admin`
+2. Login with your credentials
+3. Click **"Add Product"** in the sidebar
+4. Fill in:
+   - Product name, short name
+   - Category (select from dropdown)
+   - Price in BDT (৳)
+   - Original/old price (optional — shows strikethrough)
+   - Rating, Units Sold
+   - Badge: Hot / New / Sale / None
+   - Description
+   - Specifications (add rows as needed)
+   - Upload product image
+5. Click **"Save Product"** ✅
 
-```javascript
-{
-  id: 13,                              // unique ID
-  name: "Full Product Name",
-  shortName: "Short Name",
-  category: "LED Lamps",               // display category
-  categorySlug: "lamps",              // fans | powerbanks | watches | headphones | lamps
-  price: 750,                          // in BDT
-  oldPrice: 1000,                      // original price (optional, for strikethrough)
-  rating: 4.5,
-  sold: 1200,
-  badge: "new",                        // "hot" | "new" | "sale" | null
-  image: "images/my-product.jpg",
-  images: ["images/my-product.jpg"],   // array for gallery
-  description: "Full product description...",
-  specs: [
-    { label: "Feature", value: "Value" }
-  ]
-}
+The product appears instantly on the storefront!
+
+---
+
+## 🖼️ Image Upload
+
+- Supported: JPG, PNG, WEBP, GIF
+- Max size: 5MB
+- Images saved to `uploads/` and served at `/images/filename`
+- You can also use existing images from the `public/images/` folder
+
+---
+
+## 🔒 Security Notes
+
+- Sessions use secure random tokens stored server-side
+- Passwords hashed with HMAC-SHA256 + salt
+- Admin routes require valid session cookie
+- Change default password on first use!
+
+---
+
+## 🌐 Deploy Online
+
+### Option 1 — Railway (Recommended, free tier)
+1. Push to GitHub
+2. Connect repo at [railway.app](https://railway.app)
+3. Set start command: `node server.js`
+4. Done — live URL provided automatically
+
+### Option 2 — Render.com
+1. New Web Service → connect GitHub repo
+2. Build command: *(leave empty)*
+3. Start command: `node server.js`
+4. Free tier available
+
+### Option 3 — VPS / Linux Server
+```bash
+git clone your-repo
+cd zenocart-backend
+node server.js
+# Or with pm2 for production:
+npm install -g pm2
+pm2 start server.js --name zenocart
+pm2 save && pm2 startup
 ```
 
 ---
 
-## 🔗 Facebook Integration
+## 🔁 Data Backup
 
-- **Facebook Page:** [facebook.com/zenocart.bd](https://facebook.com/zenocart.bd)
-- When customers click "Order via Facebook", they're redirected to your FB page
-- Checkout form builds a pre-filled message sent via Messenger
+Products are stored in `data/products.json`. Back it up regularly:
+```bash
+cp data/products.json data/products-backup-$(date +%Y%m%d).json
+```
 
-To update the Facebook link, search for `zenocart.bd` in:
-- `js/layout.js`
-- `pages/cart.html`
-- `pages/product.html`
-- `index.html`
-
----
-
-## 🌐 Deploy Online (Free)
-
-### GitHub Pages
-1. Create GitHub account → New repository → Upload all files
-2. Go to Settings → Pages → Source: main branch
-3. Your site: `https://yourusername.github.io/zenocart`
-
-### Netlify (Recommended - drag & drop!)
-1. Go to [netlify.com](https://netlify.com)
-2. Drag the `zenocart` folder to the deploy area
-3. Done! You get a free HTTPS URL instantly
-
----
-
-## 📞 Support
-
-For questions, message Zenocart on Facebook: [facebook.com/zenocart.bd](https://facebook.com/zenocart.bd)
+Or use the **Export JSON** button in Admin → Settings.

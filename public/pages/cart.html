@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cart | Zenocart</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
@@ -37,7 +37,7 @@
 
             <!-- Continue Shopping -->
             <div style="margin-top:16px">
-              <a href="shop.html" class="btn btn-outline" style="gap:8px">
+              <a href="/pages/shop.html" class="btn btn-outline" style="gap:8px">
                 ← Continue Shopping
               </a>
             </div>
@@ -127,11 +127,11 @@
 
   <div id="footer-placeholder"></div>
 
-  <script src="../js/products.js"></script>
-  <script src="../js/layout.js"></script>
-  <script src="../js/core.js"></script>
+  <script src="/js/products.js"></script>
+  <script src="/js/layout.js"></script>
+  <script src="/js/core.js"></script>
   <script>
-    injectLayout('../');
+    injectLayout('/');
 
     document.addEventListener('DOMContentLoaded', () => {
       renderCart();
@@ -158,22 +158,15 @@
       }
       const modal = document.getElementById('checkout-modal');
       modal.style.display = 'flex';
-
-      // Summary in modal
       const summaryEl = document.getElementById('checkout-items-summary');
       const subtotal = getCartTotal();
       const shipping = subtotal >= 1000 ? 0 : 80;
       summaryEl.innerHTML = cart.map(item => {
-        const p = PRODUCTS.find(pr => pr.id === item.id);
-        if (!p) return '';
-        return `<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;color:var(--dark-mid)">
-          <span>${p.shortName} × ${item.qty}</span>
-          <span style="font-weight:600">${formatPrice(p.price * item.qty)}</span>
-        </div>`;
+        const name = item.name || 'Product';
+        const price = item.price || 0;
+        return '<div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:6px;color:var(--dark-mid)"><span>' + name + ' × ' + item.qty + '</span><span style="font-weight:600">' + formatPrice(price * item.qty) + '</span></div>';
       }).join('') +
-      `<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:700;font-size:0.95rem;color:var(--dark)">
-        <span>Total</span><span>${formatPrice(subtotal + shipping)}</span>
-      </div>`;
+      '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:700;font-size:.95rem;color:var(--dark)"><span>Total</span><span>' + formatPrice(subtotal + shipping) + '</span></div>';
     }
 
     function closeCheckout() {
@@ -192,9 +185,10 @@
 
       // Build order message for Facebook
       const items = cart.map(item => {
-        const p = PRODUCTS.find(pr => pr.id === item.id);
-        return p ? `• ${p.shortName} × ${item.qty} = ${formatPrice(p.price * item.qty)}` : '';
-      }).filter(Boolean).join('\n');
+        const name = item.name || 'Product';
+        const price = item.price || 0;
+        return '• ' + name + ' × ' + item.qty + ' = ' + formatPrice(price * item.qty);
+      }).join('\n');
 
       const total = getCartTotal();
       const msg = encodeURIComponent(
