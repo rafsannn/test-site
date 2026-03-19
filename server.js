@@ -322,10 +322,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── SERVE ADMIN PANEL ────────────────────────────────────────────────────
-  if (pathname.startsWith('/admin')) {
-    const file = path.join(__dirname, 'admin', 'index.html');
-    if (fs.existsSync(file)) return serveStatic(res, file);
-    return respond(res, 404, 'Admin panel not found');
+  if (pathname === '/admin' || pathname === '/admin/' || pathname.startsWith('/admin/')) {
+    const adminPaths = [
+      path.join(__dirname, 'admin', 'index.html'),
+      path.join(__dirname, 'public', 'admin', 'index.html'),
+      path.join(process.cwd(), 'admin', 'index.html'),
+      path.join(process.cwd(), 'public', 'admin', 'index.html'),
+    ];
+    for (const file of adminPaths) {
+      if (fs.existsSync(file)) return serveStatic(res, file);
+    }
+    // Debug fallback — shows actual paths so you can diagnose
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    return res.end('<pre>Admin not found. __dirname=' + __dirname + ' cwd=' + process.cwd() + '</pre>');
   }
 
   // ── SERVE PUBLIC STATIC FILES ─────────────────────────────────────────────
@@ -333,7 +342,9 @@ const server = http.createServer(async (req, res) => {
   // Prevent path traversal
   if (!filePath.startsWith(PUBLIC)) { respond(res, 403, 'Forbidden'); return; }
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-    filePath = path.join(filePath, 'index.html');
+    // For /admin directory, always serve admin index
+    const dirIndex = path.join(filePath, 'index.html');
+    if (fs.existsSync(dirIndex)) return serveStatic(res, dirIndex);
   }
   if (fs.existsSync(filePath)) return serveStatic(res, filePath);
 
