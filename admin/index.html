@@ -555,6 +555,11 @@ function showTab(t){
   if(t==='categories')renderCats();
   if(t==='delivery')renderDel();
   if(t==='dashboard')renderDashboard();
+  if(t==='backup'){
+    loadBackupPreview();
+    const lb=localStorage.getItem('zc_last_backup');
+    if(lb) document.getElementById('last-backup-time').textContent='Last backup: '+lb;
+  }
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -965,16 +970,6 @@ async function doRestore(){
 }
 
 // Load backup preview when tab opens
-const _origShowTab = showTab;
-function showTab(t){
-  _origShowTab(t);
-  if(t==='backup'){
-    loadBackupPreview();
-    const lb = localStorage.getItem('zc_last_backup');
-    if(lb) document.getElementById('last-backup-time').textContent = 'Last backup: ' + lb;
-  }
-}
-
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAuth();
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});

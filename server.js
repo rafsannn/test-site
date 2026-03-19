@@ -265,7 +265,7 @@ function initData() {
     writeJSON(USERS_FILE,[{username:'admin',salt,hash,role:'admin'}]);
     console.log('Admin created: admin / admin123');
   }
-  if(!USE_SUPABASE && !fs.existsSync(LOCAL_PRODUCTS)){ writeJSON(LOCAL_PRODUCTS,defaultProducts()); }
+  if(!USE_SUPABASE && !fs.existsSync(LOCAL_PRODUCTS)){ writeJSON(LOCAL_PRODUCTS,[]); }
   if(!fs.existsSync(CATEGORIES_FILE)){ writeJSON(CATEGORIES_FILE,DEFAULT_CATS); }
   if(!fs.existsSync(DELIVERY_FILE)){ writeJSON(DELIVERY_FILE,DEFAULT_DELIVERY); }
   if(!fs.existsSync(ORDERS_FILE)){ writeJSON(ORDERS_FILE,[]); }
@@ -567,14 +567,7 @@ srv.listen(PORT,'0.0.0.0',()=>{
   console.log(`📦  API       →  http://0.0.0.0:${PORT}/api/products\n`);
 });
 
-function defaultProducts(){return[
-  {id:1,name:"Charging Portable Mini Fan - Bear Edition",short_name:"Mini USB Portable Fan",category:"Mini Fans",category_slug:"fans",price:650,old_price:850,rating:4.8,sold:9400,badge:"hot",image:"images/product-fan.jpg",images:["images/product-fan.jpg"],description:"Stay cool anywhere with this adorable bear-themed portable fan.",specs:[{label:"Type",value:"USB Rechargeable"}],created_at:new Date().toISOString()},
-  {id:2,name:"20000mAh Power Bank Fast Charging with Built-in Cables",short_name:"20000mAh Power Bank",category:"Power Banks",category_slug:"powerbanks",price:1250,old_price:1600,rating:4.9,sold:2900,badge:"new",image:"images/product-powerbank.jpg",images:["images/product-powerbank.jpg"],description:"20000mAh large capacity power bank with 20W fast charging.",specs:[{label:"Capacity",value:"20000mAh"}],created_at:new Date().toISOString()},
-  {id:3,name:"Luminous Waterproof Men's Watch - Black Edition",short_name:"Men's Stainless Steel Watch",category:"Watches",category_slug:"watches",price:1850,old_price:2400,rating:5.0,sold:951,badge:"sale",image:"images/product-watch.jpg",images:["images/product-watch.jpg"],description:"Stainless steel waterproof watch with luminous hands.",specs:[{label:"Material",value:"Stainless Steel"}],created_at:new Date().toISOString()},
-  {id:4,name:"Y10 Bluetooth Neckband Wireless Sports Earphone",short_name:"Neckband Bluetooth Earphones",category:"Headphones",category_slug:"headphones",price:890,old_price:1100,rating:5.0,sold:2800,badge:"hot",image:"images/product-headphones.jpg",images:["images/product-headphones.jpg"],description:"Sports neckband with ultra-long battery and noise reduction.",specs:[{label:"Battery",value:"500mAh"}],created_at:new Date().toISOString()},
-  {id:5,name:"Clip-On Rechargeable LED Study Lamp",short_name:"Clip-On LED Study Lamp",category:"LED Lamps",category_slug:"lamps",price:720,old_price:950,rating:4.7,sold:10900,badge:"hot",image:"images/product-lamp.jpg",images:["images/product-lamp.jpg"],description:"Eye-care clip-on LED lamp with 4000K natural light.",specs:[{label:"Color Temp",value:"4000K"}],created_at:new Date().toISOString()},
-  {id:6,name:"Human Body Sensor Night Light - Magnetic Rechargeable",short_name:"Motion Sensor Night Light",category:"LED Lamps",category_slug:"lamps",price:480,old_price:650,rating:4.3,sold:26600,badge:"hot",image:"images/product-lamp.jpg",images:["images/product-lamp.jpg"],description:"Smart wireless PIR night light with magnetic mount.",specs:[{label:"Sensor",value:"PIR Human Body"}],created_at:new Date().toISOString()}
-];}
+function defaultProducts(){ return []; } // No demo products — add real ones via admin panel
 
 // ── Pure-Node ZIP builder (no npm) ──────────────────────────────────────────
 // Builds a minimal ZIP archive containing an array of {name, data} entries.
