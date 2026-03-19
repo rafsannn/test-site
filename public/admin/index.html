@@ -384,8 +384,11 @@ tr:hover td{background:var(--bg)}
       <div id="tab-settings" style="display:none">
         <div style="display:flex;flex-direction:column;gap:20px;max-width:460px">
           <div class="setcard">
-            <h3>🗄️ Database Status</h3>
-            <div id="cfg-status" style="display:flex;flex-direction:column;gap:8px"></div>
+            <h3>🗄️ Storage Mode</h3>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="cfg-badge cfg-ok">✅ Local JSON — Backup &amp; Restore enabled</div>
+              <p style="font-size:.82rem;color:var(--gr);margin-top:4px">All data is stored in local JSON files. Use the <strong>Backup &amp; Restore</strong> tab to save and restore your data before/after redeployments.</p>
+            </div>
           </div>
           <div class="setcard">
             <h3>🔐 Change Password</h3>
@@ -502,7 +505,7 @@ async function doLogin(){
   }catch(e){le.textContent='Connection error';le.style.display='block';}
 }
 async function doLogout(){ await fetch('/api/auth/logout',{method:'POST',credentials:'include'}); document.getElementById('app').style.display='none'; document.getElementById('ls').style.display='flex'; }
-function showApp(){ document.getElementById('ls').style.display='none'; document.getElementById('app').style.display='block'; loadAll(); checkConfig(); }
+function showApp(){ document.getElementById('ls').style.display='none'; document.getElementById('app').style.display='block'; loadAll(); }
 
 // ── LOAD ALL ─────────────────────────────────────────────────────────────────
 async function loadAll(){ await Promise.all([loadProds(),loadOrders(),loadCats(),loadDelAreas()]); renderDashboard(); }
@@ -810,13 +813,7 @@ async function confirmDel(){
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
-async function checkConfig(){
-  try{const r=await fetch('/api/config',{credentials:'include'}); const d=await r.json();
-  document.getElementById('cfg-status').innerHTML=
-    '<div class="cfg-badge '+(d.supabase?'cfg-ok':'cfg-warn')+'">'+(d.supabase?'✅ Supabase Connected':'⚠️ Supabase NOT configured (local JSON)')+'</div>'+
-    '<div class="cfg-badge '+(d.cloudinary?'cfg-ok':'cfg-warn')+'">'+(d.cloudinary?'✅ Cloudinary Connected':'⚠️ Cloudinary NOT configured (local images)')+'</div>';
-  }catch(e){}
-}
+
 async function changePwd(){
   const np=document.getElementById('np').value, cp=document.getElementById('cp').value;
   if(!np){toast('Enter a new password','err');return;} if(np!==cp){toast('Passwords do not match','err');return;} if(np.length<6){toast('Min 6 characters','err');return;}

@@ -1,8 +1,7 @@
 /**
  * ZENOCART - Backend Server
  * Pure Node.js — zero npm dependencies
- * Database: Supabase (PostgreSQL via REST API)
- * Images:   Cloudinary (via REST API)
+ * Storage: Local JSON files (use Backup & Restore to persist across redeploys)
  * Run: node server.js
  */
 
@@ -10,22 +9,13 @@ const http   = require('http');
 const fs     = require('fs');
 const path   = require('path');
 const crypto = require('crypto');
-const https  = require('https');
 const { URL } = require('url');
 
 const PORT    = process.env.PORT || 3000;
 const PUBLIC  = path.join(__dirname, 'public');
 const DATADIR = path.join(__dirname, 'data');
 
-// ── Env config (set on Railway dashboard) ────────────────────────────────────
-const SUPABASE_URL    = (process.env.SUPABASE_URL    || '').replace(/\/$/, '');
-const SUPABASE_KEY    = process.env.SUPABASE_ANON_KEY || '';
-const CLOUD_NAME      = process.env.CLOUDINARY_CLOUD_NAME || '';
-const CLOUD_KEY       = process.env.CLOUDINARY_API_KEY    || '';
-const CLOUD_SECRET    = process.env.CLOUDINARY_API_SECRET || '';
-
-const USE_SUPABASE    = !!(SUPABASE_URL && SUPABASE_KEY);
-const USE_CLOUDINARY  = !!(CLOUD_NAME && CLOUD_KEY && CLOUD_SECRET);
+// ── Data files (all local — use Backup & Restore to persist across redeploys)
 const LOCAL_PRODUCTS  = path.join(DATADIR, 'products.json');
 const USERS_FILE      = path.join(DATADIR, 'users.json');
 
@@ -48,78 +38,15 @@ function requireAuth(req, res) {
   return true;
 }
 
-// ── Tiny HTTP fetch (no npm) ───────────────────────────────────────────────────
-function fetchJSON(urlStr, opts = {}) {
-  return new Promise((resolve, reject) => {
-    const u    = new URL(urlStr);
-    const lib  = u.protocol === 'https:' ? https : require('http');
-    const body = opts.body ? (typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body)) : null;
-    const ro   = {
-      hostname: u.hostname, port: u.port || (u.protocol === 'https:' ? 443 : 80),
-      path: u.pathname + (u.search || ''), method: opts.method || 'GET',
-      headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) }
-    };
-    if (body) ro.headers['Content-Length'] = Buffer.byteLength(body);
-    const req = lib.request(ro, res => {
-      const chunks = [];
-      res.on('data', c => chunks.push(c));
-      res.on('end', () => {
-        const txt = Buffer.concat(chunks).toString();
-        try { resolve({ ok: res.statusCode < 300, status: res.statusCode, data: JSON.parse(txt) }); }
-        catch { resolve({ ok: res.statusCode < 300, status: res.statusCode, data: txt }); }
-      });
-    });
-    req.on('error', reject);
-    if (body) req.write(body);
-    req.end();
-  });
-}
-
-// ── Supabase REST helpers ─────────────────────────────────────────────────────
-const SB = () => ({ apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' });
-
-async function sbList(filters) {
-  let url = `${SUPABASE_URL}/rest/v1/products?order=id.asc`;
-  if (filters.category) url += `&category_slug=eq.${encodeURIComponent(filters.category)}`;
-  if (filters.q) url += `&name=ilike.*${encodeURIComponent(filters.q)}*`;
-  const r = await fetchJSON(url, { headers: SB() });
-  if (!r.ok) throw new Error('Supabase list error: ' + JSON.stringify(r.data));
-  let list = r.data || [];
-  if (filters.sort === 'price-low')  list = list.sort((a,b) => a.price - b.price);
-  if (filters.sort === 'price-high') list = list.sort((a,b) => b.price - a.price);
-  if (filters.sort === 'rating')     list = list.sort((a,b) => b.rating - a.rating);
-  if (filters.sort === 'sold')       list = list.sort((a,b) => b.sold - a.sold);
-  return list;
-}
-async function sbGet(id) {
-  const r = await fetchJSON(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, { headers: SB() });
-  return (r.ok && r.data?.length) ? r.data[0] : null;
-}
-async function sbCreate(p) {
-  const r = await fetchJSON(`${SUPABASE_URL}/rest/v1/products`, { method:'POST', headers:SB(), body:JSON.stringify(p) });
-  if (!r.ok) throw new Error('Supabase create error: ' + JSON.stringify(r.data));
-  return Array.isArray(r.data) ? r.data[0] : r.data;
-}
-async function sbUpdate(id, p) {
-  const r = await fetchJSON(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, { method:'PATCH', headers:SB(), body:JSON.stringify(p) });
-  if (!r.ok) throw new Error('Supabase update error: ' + JSON.stringify(r.data));
-  return Array.isArray(r.data) ? r.data[0] : r.data;
-}
-async function sbDelete(id) {
-  const r = await fetchJSON(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, { method:'DELETE', headers:SB() });
-  return r.ok;
-}
-
-// ── Local JSON fallback ───────────────────────────────────────────────────────
+// ── JSON helpers ─────────────────────────────────────────────────────────────
 function readJSON(file, fb) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fb; } }
 function writeJSON(file, d) {
   try { const dir = path.dirname(file); if (!fs.existsSync(dir)) fs.mkdirSync(dir,{recursive:true}); fs.writeFileSync(file, JSON.stringify(d,null,2)); }
   catch(e) { console.error('writeJSON:', e.message); }
 }
 
-// ── Unified data layer ────────────────────────────────────────────────────────
+// ── Product CRUD (local JSON) ─────────────────────────────────────────────────
 async function getProducts(f={}) {
-  if (USE_SUPABASE) return sbList(f);
   let list = readJSON(LOCAL_PRODUCTS, []);
   if (f.category) list = list.filter(p => (p.category_slug||p.categorySlug) === f.category);
   if (f.q) { const q=f.q.toLowerCase(); list=list.filter(p=>p.name.toLowerCase().includes(q)); }
@@ -130,54 +57,26 @@ async function getProducts(f={}) {
   return list;
 }
 async function getProduct(id) {
-  if (USE_SUPABASE) return sbGet(id);
   return readJSON(LOCAL_PRODUCTS,[]).find(p=>p.id===id)||null;
 }
 async function createProduct(p) {
-  if (USE_SUPABASE) return sbCreate(p);
   const list=readJSON(LOCAL_PRODUCTS,[]); const maxId=list.reduce((m,x)=>Math.max(m,x.id||0),0);
   const np={...p,id:maxId+1}; list.push(np); writeJSON(LOCAL_PRODUCTS,list); return np;
 }
 async function updateProduct(id,p) {
-  if (USE_SUPABASE) return sbUpdate(id,p);
   const list=readJSON(LOCAL_PRODUCTS,[]); const i=list.findIndex(x=>x.id===id);
   if(i===-1)return null; list[i]={...list[i],...p}; writeJSON(LOCAL_PRODUCTS,list); return list[i];
 }
 async function deleteProduct(id) {
-  if (USE_SUPABASE) return sbDelete(id);
   const list=readJSON(LOCAL_PRODUCTS,[]); if(!list.find(p=>p.id===id))return false;
   writeJSON(LOCAL_PRODUCTS,list.filter(p=>p.id!==id)); return true;
 }
 
-// ── Cloudinary upload ─────────────────────────────────────────────────────────
+// ── Image upload (local filesystem) ──────────────────────────────────────────
 async function uploadImage(buf, fileName) {
-  if (!USE_CLOUDINARY) {
-    const fname = `product_${Date.now()}${path.extname(fileName)||'.jpg'}`;
-    fs.writeFileSync(path.join(PUBLIC,'images',fname), buf);
-    return `images/${fname}`;
-  }
-  const ts  = Math.floor(Date.now()/1000).toString();
-  const sig = crypto.createHash('sha1').update(`folder=zenocart&timestamp=${ts}${CLOUD_SECRET}`).digest('hex');
-  const boundary = '----ZC' + crypto.randomBytes(8).toString('hex');
-  const addField = (n,v) => `--${boundary}\r\nContent-Disposition: form-data; name="${n}"\r\n\r\n${v}\r\n`;
-  const textParts = Buffer.from([
-    addField('timestamp',ts), addField('api_key',CLOUD_KEY),
-    addField('signature',sig), addField('folder','zenocart')
-  ].join(''), 'utf8');
-  const filePart  = Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/octet-stream\r\n\r\n`, 'utf8');
-  const body      = Buffer.concat([textParts, filePart, buf, Buffer.from(`\r\n--${boundary}--`, 'utf8')]);
-  return new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname:'api.cloudinary.com', port:443, method:'POST',
-      path:`/v1_1/${CLOUD_NAME}/image/upload`,
-      headers:{'Content-Type':`multipart/form-data; boundary=${boundary}`,'Content-Length':body.length}
-    }, res => {
-      const chunks=[];
-      res.on('data',c=>chunks.push(c));
-      res.on('end',()=>{ try{const d=JSON.parse(Buffer.concat(chunks).toString()); d.secure_url?resolve(d.secure_url):reject(new Error(d.error?.message||'Cloudinary failed'));}catch(e){reject(e);} });
-    });
-    req.on('error',reject); req.write(body); req.end();
-  });
+  const fname = 'product_' + Date.now() + (path.extname(fileName)||'.jpg');
+  fs.writeFileSync(path.join(PUBLIC,'images',fname), buf);
+  return 'images/' + fname;
 }
 
 // ── Multipart parser ──────────────────────────────────────────────────────────
@@ -226,8 +125,8 @@ function buildProduct(fields, imagePath, existing={}) {
     badge:         fields.badge!==undefined ? (fields.badge||null) : (existing.badge||null),
     description:   fields.description || existing.description || '',
     image:         imagePath           || existing.image || 'images/product-fan.jpg',
-    images:        JSON.stringify([imagePath || existing.image || 'images/product-fan.jpg']),
-    specs:         USE_SUPABASE ? JSON.stringify(specs) : specs,
+    images:        [imagePath || existing.image || 'images/product-fan.jpg'],
+    specs:         specs,
     updated_at:    new Date().toISOString()
   };
 }
@@ -265,12 +164,11 @@ function initData() {
     writeJSON(USERS_FILE,[{username:'admin',salt,hash,role:'admin'}]);
     console.log('Admin created: admin / admin123');
   }
-  if(!USE_SUPABASE && !fs.existsSync(LOCAL_PRODUCTS)){ writeJSON(LOCAL_PRODUCTS,[]); }
+  if(!fs.existsSync(LOCAL_PRODUCTS))  { writeJSON(LOCAL_PRODUCTS,[]); }
   if(!fs.existsSync(CATEGORIES_FILE)){ writeJSON(CATEGORIES_FILE,DEFAULT_CATS); }
-  if(!fs.existsSync(DELIVERY_FILE)){ writeJSON(DELIVERY_FILE,DEFAULT_DELIVERY); }
-  if(!fs.existsSync(ORDERS_FILE)){ writeJSON(ORDERS_FILE,[]); }
-  console.log(USE_SUPABASE ? 'Supabase: connected' : 'Supabase: local fallback');
-  console.log(USE_CLOUDINARY ? 'Cloudinary: connected' : 'Cloudinary: local fallback');
+  if(!fs.existsSync(DELIVERY_FILE))  { writeJSON(DELIVERY_FILE,DEFAULT_DELIVERY); }
+  if(!fs.existsSync(ORDERS_FILE))    { writeJSON(ORDERS_FILE,[]); }
+  console.log('Storage: local JSON + Backup/Restore');
 }
 
 // ── Router ────────────────────────────────────────────────────────────────────
@@ -290,7 +188,7 @@ const srv = http.createServer(async (req, res) => {
     catch(e){ return respond(res,500,{error:e.message}); }
   }
   if(pn==='/api/config' && mt==='GET'){
-    return respond(res,200,{supabase:USE_SUPABASE,cloudinary:USE_CLOUDINARY,mode:USE_SUPABASE?'persistent':'local'});
+    return respond(res,200,{mode:'local',storage:'json+backup'});
   }
 
   // Auth
@@ -498,7 +396,7 @@ const srv = http.createServer(async (req, res) => {
       // 3. Add each image file to the ZIP (skip external URLs & missing files)
       let imageCount = 0;
       for (const imgPath of imagePaths) {
-        if (imgPath.startsWith('http')) continue; // Cloudinary URL — skip, still accessible
+        if (imgPath.startsWith('http')) continue; // External URL — already hosted elsewhere, skip
         // Try both /public/images/ and /uploads/
         const candidates = [
           path.join(PUBLIC, imgPath),
