@@ -38,21 +38,24 @@
               <div id="detail-price" class="product-detail-price"></div>
               <div id="detail-old-price" class="product-detail-old-price"></div>
               <p class="product-detail-desc" id="detail-desc"></p>
-              <!-- Qty + Add to Cart + Wishlist -->
-              <div class="product-detail-actions">
-                <div class="qty-control" style="margin-right:4px">
+              <!-- Qty + Wishlist row -->
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div class="qty-control">
                   <button class="qty-btn" id="qty-minus">−</button>
                   <div class="qty-val" id="detail-qty">1</div>
                   <button class="qty-btn" id="qty-plus">+</button>
                 </div>
-                <button class="btn btn-primary btn-lg" id="add-to-cart-detail" style="flex:1">🛒 Add to Cart</button>
-                <button class="btn btn-outline" id="wishlist-detail-btn" style="width:52px;height:52px;padding:0;font-size:1.3rem">🤍</button>
+                <button class="btn btn-outline" id="wishlist-detail-btn" style="width:48px;height:48px;padding:0;font-size:1.2rem;flex-shrink:0">🤍</button>
               </div>
-              <!-- Order Now -->
-              <button class="btn btn-full btn-lg" id="order-now-btn"
-                style="background:var(--primary-dark);color:#fff;border:none;margin-bottom:20px;gap:8px">
-                ⚡ Order Now
-              </button>
+              <!-- Order Now + Add to Cart side by side -->
+              <div style="display:flex;gap:10px;margin-bottom:20px">
+                <button class="btn btn-lg product-order-now-btn" id="order-now-btn" style="flex:1">
+                  ⚡ Order Now
+                </button>
+                <button class="btn btn-lg product-add-cart-btn" id="add-to-cart-detail" style="flex:1">
+                  🛒 Add to Cart
+                </button>
+              </div>
               <div class="product-detail-meta" id="detail-specs"></div>
             </div>
           </div>
