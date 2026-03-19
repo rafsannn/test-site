@@ -310,15 +310,6 @@ tr:hover td{background:var(--bg)}
       <div id="tab-backup" style="display:none">
         <div style="max-width:640px;display:flex;flex-direction:column;gap:20px">
 
-          <!-- Info banner -->
-          <div style="background:linear-gradient(135deg,#e8f5f8,#d4edf5);border:1.5px solid var(--pl);border-radius:var(--r);padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
-            <div style="font-size:2rem;flex-shrink:0">💡</div>
-            <div>
-              <div style="font-weight:700;font-size:.95rem;color:var(--pd);margin-bottom:6px">Why do I need backups?</div>
-              <p style="font-size:.85rem;color:var(--dm);line-height:1.6">Every time you push new code to GitHub, Railway redeploys your app and the local data files are wiped. <strong>Take a backup before every deployment</strong>, then restore it after. Your backup ZIP contains all products, categories, delivery settings, and orders.</p>
-            </div>
-          </div>
-
           <!-- BACKUP CARD -->
           <div style="background:var(--wh);border-radius:var(--r);border:1px solid var(--br);overflow:hidden">
             <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
@@ -383,29 +374,6 @@ tr:hover td{background:var(--bg)}
                 style="background:var(--org);color:#fff;border:none;opacity:.6;font-size:.9rem;gap:8px">
                 <span>⬆️</span> Restore from Backup
               </button>
-            </div>
-          </div>
-
-          <!-- WORKFLOW GUIDE -->
-          <div style="background:var(--wh);border-radius:var(--r);border:1px solid var(--br);padding:18px 20px">
-            <div style="font-weight:700;font-size:.9rem;color:var(--dk);margin-bottom:14px">📋 Recommended Workflow</div>
-            <div style="display:flex;flex-direction:column;gap:10px">
-              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
-                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">1</div>
-                <div><strong>Before pushing to GitHub</strong> — click "Download Backup ZIP" to save your data</div>
-              </div>
-              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
-                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">2</div>
-                <div><strong>Push your code changes</strong> — Railway redeploys (data is wiped on the server)</div>
-              </div>
-              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
-                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">3</div>
-                <div><strong>After redeploy, go to /admin → Backup & Restore</strong> — upload your backup ZIP and click Restore</div>
-              </div>
-              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
-                <div style="width:24px;height:24px;background:var(--grn);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">✓</div>
-                <div><strong>Done!</strong> All your products, orders, and settings are back instantly</div>
-              </div>
             </div>
           </div>
 
