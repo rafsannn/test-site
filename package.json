@@ -1,0 +1,12 @@
+{
+  "name": "zenocart",
+  "version": "1.0.0",
+  "description": "Zenocart Online Marketplace",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
