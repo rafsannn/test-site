@@ -232,18 +232,45 @@ function buildProduct(fields, imagePath, existing={}) {
   };
 }
 
+// ── Extra data files
+const CATEGORIES_FILE = path.join(DATADIR,'categories.json');
+const DELIVERY_FILE   = path.join(DATADIR,'delivery.json');
+const ORDERS_FILE     = path.join(DATADIR,'orders.json');
+const DEFAULT_CATS    = [
+  {id:1,name:'Mini Fans',slug:'fans',icon:'\u{1F32C}\uFE0F',active:true},
+  {id:2,name:'Power Banks',slug:'powerbanks',icon:'\uD83D\uDD0B',active:true},
+  {id:3,name:'Watches',slug:'watches',icon:'\u231A',active:true},
+  {id:4,name:'Headphones',slug:'headphones',icon:'\uD83C\uDFA7',active:true},
+  {id:5,name:'LED Lamps',slug:'lamps',icon:'\uD83D\uDCA1',active:true}
+];
+const DEFAULT_DELIVERY = [
+  {id:1,area:'Dhaka City',price:60,active:true},
+  {id:2,area:'Dhaka District',price:80,active:true},
+  {id:3,area:'Chittagong City',price:80,active:true},
+  {id:4,area:'Chittagong District',price:100,active:true},
+  {id:5,area:'Sylhet',price:100,active:true},
+  {id:6,area:'Rajshahi',price:100,active:true},
+  {id:7,area:'Khulna',price:100,active:true},
+  {id:8,area:'Barisal',price:110,active:true},
+  {id:9,area:'Rangpur',price:110,active:true},
+  {id:10,area:'Mymensingh',price:100,active:true}
+];
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 function initData() {
-  [DATADIR, path.join(PUBLIC,'images')].forEach(d=>{ if(!fs.existsSync(d)){fs.mkdirSync(d,{recursive:true});console.log('📁 Created:',d);} });
+  [DATADIR, path.join(PUBLIC,'images')].forEach(d=>{ if(!fs.existsSync(d)){fs.mkdirSync(d,{recursive:true});console.log('Created:',d);} });
   if(!fs.existsSync(USERS_FILE)){
     const salt=crypto.randomBytes(16).toString('hex');
     const hash=crypto.createHmac('sha256',salt).update('admin123').digest('hex');
     writeJSON(USERS_FILE,[{username:'admin',salt,hash,role:'admin'}]);
-    console.log('✅  Admin created  →  user: admin  |  pass: admin123');
+    console.log('Admin created: admin / admin123');
   }
-  if(!USE_SUPABASE && !fs.existsSync(LOCAL_PRODUCTS)){ writeJSON(LOCAL_PRODUCTS,defaultProducts()); console.log('✅  Demo products seeded'); }
-  console.log(USE_SUPABASE   ? '🗄️   Supabase: CONNECTED (persistent)' : '⚠️   Supabase: NOT configured — using local JSON (data lost on redeploy!)');
-  console.log(USE_CLOUDINARY ? '🖼️   Cloudinary: CONNECTED (persistent)' : '⚠️   Cloudinary: NOT configured — images saved locally (lost on redeploy!)');
+  if(!USE_SUPABASE && !fs.existsSync(LOCAL_PRODUCTS)){ writeJSON(LOCAL_PRODUCTS,defaultProducts()); }
+  if(!fs.existsSync(CATEGORIES_FILE)){ writeJSON(CATEGORIES_FILE,DEFAULT_CATS); }
+  if(!fs.existsSync(DELIVERY_FILE)){ writeJSON(DELIVERY_FILE,DEFAULT_DELIVERY); }
+  if(!fs.existsSync(ORDERS_FILE)){ writeJSON(ORDERS_FILE,[]); }
+  console.log(USE_SUPABASE ? 'Supabase: connected' : 'Supabase: local fallback');
+  console.log(USE_CLOUDINARY ? 'Cloudinary: connected' : 'Cloudinary: local fallback');
 }
 
 // ── Router ────────────────────────────────────────────────────────────────────
@@ -324,6 +351,122 @@ const srv = http.createServer(async (req, res) => {
     const id=parseInt(pn.split('/')[4]);
     try{const ok=await deleteProduct(id);return ok?respond(res,200,{ok:true}):respond(res,404,{error:'Not found'});}
     catch(e){return respond(res,500,{error:e.message});}
+  }
+
+  // ── CATEGORIES API ────────────────────────────────────────────────────────
+  if(pn==='/api/categories' && mt==='GET'){
+    const cats = readJSON(CATEGORIES_FILE, DEFAULT_CATS);
+    const all = pn.includes('all'); // admin wants all; public wants active only
+    return respond(res,200, cats);
+  }
+  if(pn==='/api/admin/categories' && mt==='GET'){
+    if(!requireAuth(req,res))return;
+    return respond(res,200,readJSON(CATEGORIES_FILE,DEFAULT_CATS));
+  }
+  if(pn==='/api/admin/categories' && mt==='POST'){
+    if(!requireAuth(req,res))return;
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    if(!b.name||!b.slug)return respond(res,400,{error:'name and slug required'});
+    const cats=readJSON(CATEGORIES_FILE,DEFAULT_CATS);
+    const maxId=cats.reduce((m,c)=>Math.max(m,c.id||0),0);
+    const nc={id:maxId+1,name:b.name,slug:b.slug,icon:b.icon||'📦',active:b.active!==false};
+    cats.push(nc); writeJSON(CATEGORIES_FILE,cats);
+    return respond(res,201,nc);
+  }
+  if(pn.match(/^\/api\/admin\/categories\/\d+$/) && mt==='PUT'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    const cats=readJSON(CATEGORIES_FILE,DEFAULT_CATS);
+    const i=cats.findIndex(c=>c.id===id); if(i===-1)return respond(res,404,{error:'Not found'});
+    cats[i]={...cats[i],...b,id}; writeJSON(CATEGORIES_FILE,cats);
+    return respond(res,200,cats[i]);
+  }
+  if(pn.match(/^\/api\/admin\/categories\/\d+$/) && mt==='DELETE'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    let cats=readJSON(CATEGORIES_FILE,DEFAULT_CATS);
+    if(!cats.find(c=>c.id===id))return respond(res,404,{error:'Not found'});
+    writeJSON(CATEGORIES_FILE,cats.filter(c=>c.id!==id));
+    return respond(res,200,{ok:true});
+  }
+
+  // ── DELIVERY API ───────────────────────────────────────────────────────────
+  if(pn==='/api/delivery' && mt==='GET'){
+    return respond(res,200,readJSON(DELIVERY_FILE,DEFAULT_DELIVERY).filter(d=>d.active));
+  }
+  if(pn==='/api/admin/delivery' && mt==='GET'){
+    if(!requireAuth(req,res))return;
+    return respond(res,200,readJSON(DELIVERY_FILE,DEFAULT_DELIVERY));
+  }
+  if(pn==='/api/admin/delivery' && mt==='POST'){
+    if(!requireAuth(req,res))return;
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    if(!b.area)return respond(res,400,{error:'area required'});
+    const list=readJSON(DELIVERY_FILE,DEFAULT_DELIVERY);
+    const maxId=list.reduce((m,d)=>Math.max(m,d.id||0),0);
+    const nd={id:maxId+1,area:b.area,price:parseInt(b.price)||0,active:b.active!==false};
+    list.push(nd); writeJSON(DELIVERY_FILE,list);
+    return respond(res,201,nd);
+  }
+  if(pn.match(/^\/api\/admin\/delivery\/\d+$/) && mt==='PUT'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    const list=readJSON(DELIVERY_FILE,DEFAULT_DELIVERY);
+    const i=list.findIndex(d=>d.id===id); if(i===-1)return respond(res,404,{error:'Not found'});
+    list[i]={...list[i],...b,id}; writeJSON(DELIVERY_FILE,list);
+    return respond(res,200,list[i]);
+  }
+  if(pn.match(/^\/api\/admin\/delivery\/\d+$/) && mt==='DELETE'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    let list=readJSON(DELIVERY_FILE,DEFAULT_DELIVERY);
+    if(!list.find(d=>d.id===id))return respond(res,404,{error:'Not found'});
+    writeJSON(DELIVERY_FILE,list.filter(d=>d.id!==id));
+    return respond(res,200,{ok:true});
+  }
+
+  // ── ORDERS API ─────────────────────────────────────────────────────────────
+  if(pn==='/api/orders' && mt==='POST'){
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    if(!b.name||!b.phone||!b.whatsapp||!b.address)return respond(res,400,{error:'Missing required fields'});
+    const orders=readJSON(ORDERS_FILE,[]);
+    const maxId=orders.reduce((m,o)=>Math.max(m,o.id||0),0);
+    const order={
+      id:maxId+1, name:b.name, phone:b.phone, whatsapp:b.whatsapp,
+      address:b.address, area:b.area||'', notes:b.notes||'',
+      items:b.items||[], subtotal:b.subtotal||0,
+      delivery_charge:b.delivery_charge||0, total:b.total||0,
+      payment:b.payment||'cod', status:'pending',
+      created_at:new Date().toISOString()
+    };
+    orders.push(order); writeJSON(ORDERS_FILE,orders);
+    return respond(res,201,{ok:true,orderId:order.id});
+  }
+  if(pn==='/api/admin/orders' && mt==='GET'){
+    if(!requireAuth(req,res))return;
+    const orders=readJSON(ORDERS_FILE,[]);
+    return respond(res,200,[...orders].reverse()); // newest first
+  }
+  if(pn.match(/^\/api\/admin\/orders\/\d+\/status$/) && mt==='PUT'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    const orders=readJSON(ORDERS_FILE,[]);
+    const i=orders.findIndex(o=>o.id===id); if(i===-1)return respond(res,404,{error:'Not found'});
+    orders[i].status=b.status||orders[i].status;
+    orders[i].updated_at=new Date().toISOString();
+    writeJSON(ORDERS_FILE,orders);
+    return respond(res,200,orders[i]);
+  }
+  if(pn.match(/^\/api\/admin\/orders\/\d+$/) && mt==='DELETE'){
+    if(!requireAuth(req,res))return;
+    const id=parseInt(pn.split('/')[4]);
+    let orders=readJSON(ORDERS_FILE,[]);
+    if(!orders.find(o=>o.id===id))return respond(res,404,{error:'Not found'});
+    writeJSON(ORDERS_FILE,orders.filter(o=>o.id!==id));
+    return respond(res,200,{ok:true});
   }
 
   // Admin panel
