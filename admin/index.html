@@ -187,6 +187,7 @@ tr:hover td{background:var(--bg)}
       <div class="ni" onclick="showTab('orders')"><span class="ic">🧾</span> Orders</div>
       <div class="ni" onclick="showTab('categories')"><span class="ic">🏷️</span> Categories</div>
       <div class="ni" onclick="showTab('delivery')"><span class="ic">🚚</span> Delivery &amp; COD</div>
+      <div class="ni" onclick="showTab('backup')"><span class="ic">💾</span> Backup &amp; Restore</div>
       <div class="ni" onclick="showTab('settings')"><span class="ic">⚙️</span> Settings</div>
     </nav>
     <div class="sb-foot"><button onclick="doLogout()">🚪 Sign Out</button></div>
@@ -303,6 +304,112 @@ tr:hover td{background:var(--bg)}
           <thead><tr><th>Area / Location</th><th>COD Charge (৳)</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="del-tbody"></tbody>
         </table></div>
+      </div>
+
+      <!-- BACKUP & RESTORE -->
+      <div id="tab-backup" style="display:none">
+        <div style="max-width:640px;display:flex;flex-direction:column;gap:20px">
+
+          <!-- Info banner -->
+          <div style="background:linear-gradient(135deg,#e8f5f8,#d4edf5);border:1.5px solid var(--pl);border-radius:var(--r);padding:18px 20px;display:flex;gap:14px;align-items:flex-start">
+            <div style="font-size:2rem;flex-shrink:0">💡</div>
+            <div>
+              <div style="font-weight:700;font-size:.95rem;color:var(--pd);margin-bottom:6px">Why do I need backups?</div>
+              <p style="font-size:.85rem;color:var(--dm);line-height:1.6">Every time you push new code to GitHub, Railway redeploys your app and the local data files are wiped. <strong>Take a backup before every deployment</strong>, then restore it after. Your backup ZIP contains all products, categories, delivery settings, and orders.</p>
+            </div>
+          </div>
+
+          <!-- BACKUP CARD -->
+          <div style="background:var(--wh);border-radius:var(--r);border:1px solid var(--br);overflow:hidden">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;background:#e8fff0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬇️</div>
+              <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Create Backup</div><div style="font-size:.78rem;color:var(--gr)">Download everything as a ZIP file</div></div>
+            </div>
+            <div style="padding:20px">
+              <div id="backup-preview" style="background:var(--bg);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:var(--dm);line-height:1.8">
+                <div style="font-weight:600;margin-bottom:8px;color:var(--dk)">📦 What gets backed up:</div>
+                <div>• <span id="bp-products">Loading...</span></div>
+                <div>• <span id="bp-categories">Loading...</span></div>
+                <div>• <span id="bp-delivery">Loading...</span></div>
+                <div>• <span id="bp-orders">Loading...</span></div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button class="btn btn-p" onclick="downloadBackup()" id="backup-btn" style="gap:8px;font-size:.9rem">
+                  <span>⬇️</span> Download Backup ZIP
+                </button>
+                <span style="font-size:.78rem;color:var(--gr)" id="last-backup-time"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RESTORE CARD -->
+          <div style="background:var(--wh);border-radius:var(--r);border:1px solid var(--br);overflow:hidden">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;background:#fff6e8;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬆️</div>
+              <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Restore from Backup</div><div style="font-size:.78rem;color:var(--gr)">Upload a backup ZIP to restore your data</div></div>
+            </div>
+            <div style="padding:20px">
+              <div style="background:#fff6e8;border:1.5px solid #f5c87a;border-radius:9px;padding:12px 14px;margin-bottom:16px;font-size:.82rem;color:#7a5200;display:flex;gap:8px">
+                <span style="flex-shrink:0">⚠️</span>
+                <span><strong>Warning:</strong> Restoring will <strong>replace all current data</strong> with the backup. This cannot be undone. Make sure you're uploading the correct backup file.</span>
+              </div>
+
+              <!-- Drop zone -->
+              <div id="restore-drop" onclick="document.getElementById('restore-file').click()"
+                style="border:2.5px dashed var(--br);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:var(--t);margin-bottom:14px"
+                ondragover="event.preventDefault();this.style.borderColor='var(--p)';this.style.background='var(--pu)'"
+                ondragleave="this.style.borderColor='var(--br)';this.style.background=''"
+                ondrop="event.preventDefault();this.style.borderColor='var(--br)';this.style.background='';handleRestoreDrop(event)">
+                <div style="font-size:2.5rem;margin-bottom:10px">📂</div>
+                <div style="font-weight:600;font-size:.9rem;color:var(--dk);margin-bottom:4px">Click to select or drag & drop</div>
+                <div style="font-size:.78rem;color:var(--gr)">Accepts .zip or .json backup files</div>
+              </div>
+              <input type="file" id="restore-file" accept=".zip,.json" style="display:none" onchange="previewRestore(this)">
+
+              <!-- File preview -->
+              <div id="restore-preview" style="display:none;background:var(--bg);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:.85rem">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                  <span style="font-size:1.2rem">📄</span>
+                  <strong id="restore-filename" style="color:var(--dk)"></strong>
+                  <button onclick="clearRestoreFile()" style="margin-left:auto;background:#fff0f0;color:var(--red);border:none;padding:3px 8px;border-radius:5px;font-size:.75rem;cursor:pointer">✕ Clear</button>
+                </div>
+                <div id="restore-file-info" style="color:var(--gr)"></div>
+              </div>
+
+              <div id="restore-err" style="background:#fff0f0;border:1px solid #fcc;border-radius:8px;padding:9px 12px;font-size:.83rem;color:var(--red);margin-bottom:12px;display:none"></div>
+              <div id="restore-success" style="background:#e8fff0;border:1px solid #7fd4a0;border-radius:8px;padding:12px 14px;font-size:.85rem;color:#1a6e3c;margin-bottom:12px;display:none"></div>
+
+              <button class="btn btn-full" id="restore-btn" onclick="doRestore()" disabled
+                style="background:var(--org);color:#fff;border:none;opacity:.6;font-size:.9rem;gap:8px">
+                <span>⬆️</span> Restore from Backup
+              </button>
+            </div>
+          </div>
+
+          <!-- WORKFLOW GUIDE -->
+          <div style="background:var(--wh);border-radius:var(--r);border:1px solid var(--br);padding:18px 20px">
+            <div style="font-weight:700;font-size:.9rem;color:var(--dk);margin-bottom:14px">📋 Recommended Workflow</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
+                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">1</div>
+                <div><strong>Before pushing to GitHub</strong> — click "Download Backup ZIP" to save your data</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
+                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">2</div>
+                <div><strong>Push your code changes</strong> — Railway redeploys (data is wiped on the server)</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
+                <div style="width:24px;height:24px;background:var(--p);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">3</div>
+                <div><strong>After redeploy, go to /admin → Backup & Restore</strong> — upload your backup ZIP and click Restore</div>
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:.85rem">
+                <div style="width:24px;height:24px;background:var(--grn);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0">✓</div>
+                <div><strong>Done!</strong> All your products, orders, and settings are back instantly</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- SETTINGS -->
@@ -437,8 +544,8 @@ async function loadCats(){ try{ const r=await fetch('/api/admin/categories',{cre
 async function loadDelAreas(){ try{ const r=await fetch('/api/admin/delivery',{credentials:'include'}); allDel=await r.json(); }catch(e){} }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
-const TABS=['dashboard','products','add','orders','categories','delivery','settings'];
-const TITLES={dashboard:'Dashboard',products:'Products',add:'Add Product',orders:'Orders',categories:'Categories',delivery:'Delivery & COD',settings:'Settings'};
+const TABS=['dashboard','products','add','orders','categories','delivery','backup','settings'];
+const TITLES={dashboard:'Dashboard',products:'Products',add:'Add Product',orders:'Orders',categories:'Categories',delivery:'Delivery & COD',backup:'Backup & Restore',settings:'Settings'};
 function showTab(t){
   TABS.forEach(x=>{ document.getElementById('tab-'+x).style.display=x===t?'block':'none'; });
   document.querySelectorAll('.ni').forEach((el,i)=>el.classList.toggle('active',TABS[i]===t));
@@ -754,6 +861,119 @@ async function exportData(type){
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function toast(msg,type='info'){ const w=document.getElementById('toasts'); const el=document.createElement('div'); el.className='toast '+type; el.textContent=msg; w.appendChild(el); setTimeout(()=>{el.style.animation='sOut .3s ease forwards';setTimeout(()=>el.remove(),300);},3500); }
+
+// ── BACKUP & RESTORE ──────────────────────────────────────────────────────────
+let restoreFile = null;
+
+async function loadBackupPreview(){
+  try{
+    const [pr, cr, dr, or2] = await Promise.all([
+      fetch('/api/products').then(r=>r.json()).catch(()=>[]),
+      fetch('/api/admin/categories',{credentials:'include'}).then(r=>r.json()).catch(()=>[]),
+      fetch('/api/admin/delivery',{credentials:'include'}).then(r=>r.json()).catch(()=>[]),
+      fetch('/api/admin/orders',{credentials:'include'}).then(r=>r.json()).catch(()=>[])
+    ]);
+    document.getElementById('bp-products').textContent   = (pr.length||0) + ' products';
+    document.getElementById('bp-categories').textContent = (cr.length||0) + ' categories';
+    document.getElementById('bp-delivery').textContent   = (dr.length||0) + ' delivery areas';
+    document.getElementById('bp-orders').textContent     = (or2.length||0) + ' orders';
+  }catch(e){}
+}
+
+async function downloadBackup(){
+  const btn = document.getElementById('backup-btn');
+  btn.disabled = true; btn.innerHTML = '<span>⏳</span> Creating backup...';
+  try{
+    const r = await fetch('/api/admin/backup', {credentials:'include'});
+    if(!r.ok){ toast('Backup failed','err'); return; }
+    const blob  = await r.blob();
+    const fname = r.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1] || 'zenocart-backup.zip';
+    const url   = URL.createObjectURL(blob);
+    const a     = document.createElement('a'); a.href=url; a.download=fname; a.click();
+    URL.revokeObjectURL(url);
+    const now = new Date().toLocaleString();
+    document.getElementById('last-backup-time').textContent = 'Last backup: ' + now;
+    localStorage.setItem('zc_last_backup', now);
+    toast('✅ Backup downloaded!','ok');
+  }catch(e){ toast('Backup error: '+e.message,'err'); }
+  finally{ btn.disabled=false; btn.innerHTML='<span>⬇️</span> Download Backup ZIP'; }
+}
+
+function previewRestore(input){
+  const file = input.files[0]; if(!file)return;
+  restoreFile = file;
+  document.getElementById('restore-preview').style.display = 'block';
+  document.getElementById('restore-filename').textContent = file.name;
+  document.getElementById('restore-file-info').textContent = 'Size: ' + (file.size/1024).toFixed(1) + ' KB  |  Type: ' + (file.name.endsWith('.zip')?'ZIP archive':'JSON file');
+  document.getElementById('restore-btn').disabled = false;
+  document.getElementById('restore-btn').style.opacity = '1';
+  document.getElementById('restore-err').style.display = 'none';
+  document.getElementById('restore-success').style.display = 'none';
+  // If it's a JSON file, try to preview its contents
+  if(file.name.endsWith('.json')){
+    const reader = new FileReader();
+    reader.onload = e => {
+      try{
+        const d = JSON.parse(e.target.result);
+        if(d.version) document.getElementById('restore-file-info').textContent += '  |  Backup from: ' + (d.created_at ? new Date(d.created_at).toLocaleString() : 'unknown date');
+      }catch(e){}
+    };
+    reader.readAsText(file);
+  }
+}
+
+function handleRestoreDrop(e){
+  const file = e.dataTransfer.files[0];
+  if(!file) return;
+  const input = document.getElementById('restore-file');
+  const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+  previewRestore(input);
+}
+
+function clearRestoreFile(){
+  restoreFile = null;
+  document.getElementById('restore-file').value = '';
+  document.getElementById('restore-preview').style.display = 'none';
+  document.getElementById('restore-btn').disabled = true;
+  document.getElementById('restore-btn').style.opacity = '0.6';
+  document.getElementById('restore-err').style.display = 'none';
+  document.getElementById('restore-success').style.display = 'none';
+}
+
+async function doRestore(){
+  if(!restoreFile){ toast('Please select a backup file','err'); return; }
+  const btn = document.getElementById('restore-btn');
+  const errEl = document.getElementById('restore-err');
+  const succEl = document.getElementById('restore-success');
+  errEl.style.display = 'none'; succEl.style.display = 'none';
+  if(!confirm('⚠️ This will REPLACE all current data with the backup.\n\nAre you sure?')) return;
+  btn.disabled = true; btn.innerHTML = '<span>⏳</span> Restoring...';
+  try{
+    const fd = new FormData(); fd.append('backup', restoreFile, restoreFile.name);
+    const r = await fetch('/api/admin/restore', {method:'POST', body:fd, credentials:'include'});
+    const d = await r.json();
+    if(!r.ok){ errEl.textContent = d.error || 'Restore failed'; errEl.style.display='block'; return; }
+    succEl.innerHTML = '✅ <strong>Restore successful!</strong><br>' + d.message + '<br><small style="color:#666">Backup was from: ' + (d.backup_date ? new Date(d.backup_date).toLocaleString() : 'unknown') + '</small>';
+    succEl.style.display = 'block';
+    toast('Data restored successfully!','ok');
+    clearRestoreFile();
+    // Reload all data
+    await loadAll(); renderDashboard();
+    loadBackupPreview();
+  }catch(e){ errEl.textContent = 'Network error: '+e.message; errEl.style.display='block'; }
+  finally{ btn.disabled=false; btn.innerHTML='<span>⬆️</span> Restore from Backup'; }
+}
+
+// Load backup preview when tab opens
+const _origShowTab = showTab;
+function showTab(t){
+  _origShowTab(t);
+  if(t==='backup'){
+    loadBackupPreview();
+    const lb = localStorage.getItem('zc_last_backup');
+    if(lb) document.getElementById('last-backup-time').textContent = 'Last backup: ' + lb;
+  }
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAuth();

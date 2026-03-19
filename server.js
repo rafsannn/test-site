@@ -469,6 +469,81 @@ const srv = http.createServer(async (req, res) => {
     return respond(res,200,{ok:true});
   }
 
+
+  // ── BACKUP API ─────────────────────────────────────────────────────────────
+  // GET /api/admin/backup — download a full backup as a single JSON file
+  if(pn==='/api/admin/backup' && mt==='GET'){
+    if(!requireAuth(req,res))return;
+    try{
+      const backup = {
+        version: '1.0',
+        created_at: new Date().toISOString(),
+        products:   readJSON(LOCAL_PRODUCTS,   []),
+        categories: readJSON(CATEGORIES_FILE,  DEFAULT_CATS),
+        delivery:   readJSON(DELIVERY_FILE,    DEFAULT_DELIVERY),
+        orders:     readJSON(ORDERS_FILE,      [])
+      };
+      const json = JSON.stringify(backup, null, 2);
+      const buf  = Buffer.from(json, 'utf8');
+      // Build a minimal ZIP in pure Node.js (no npm)
+      const zipBuf = buildZip([{ name: 'zenocart-backup.json', data: buf }]);
+      const filename = 'zenocart-backup-' + new Date().toISOString().slice(0,10) + '.zip';
+      res.writeHead(200, {
+        'Content-Type':        'application/zip',
+        'Content-Disposition': 'attachment; filename="' + filename + '"',
+        'Content-Length':       zipBuf.length
+      });
+      return res.end(zipBuf);
+    } catch(e){ console.error('Backup error:', e); return respond(res, 500, {error: e.message}); }
+  }
+
+  // POST /api/admin/restore — upload a backup ZIP and restore all data
+  if(pn==='/api/admin/restore' && mt==='POST'){
+    if(!requireAuth(req,res))return;
+    try{
+      const ct = req.headers['content-type'] || '';
+      const bm = ct.match(/boundary=(.+)/);
+      if(!bm) return respond(res, 400, {error: 'Expected multipart'});
+      const rawBuf = await readBody(req);
+      const { fileBuffer, fileName } = parseMultipart(rawBuf, bm[1]);
+      if(!fileBuffer || fileBuffer.length < 10)
+        return respond(res, 400, {error: 'No file received'});
+
+      let jsonStr = '';
+      // If it's a ZIP, extract the first .json file inside
+      if(fileName.endsWith('.zip') || fileBuffer[0]===0x50 && fileBuffer[1]===0x4B){
+        jsonStr = extractFirstJsonFromZip(fileBuffer);
+        if(!jsonStr) return respond(res, 400, {error: 'No JSON found inside ZIP'});
+      } else {
+        // Raw JSON file
+        jsonStr = fileBuffer.toString('utf8');
+      }
+
+      let backup;
+      try{ backup = JSON.parse(jsonStr); }
+      catch(e){ return respond(res, 400, {error: 'Invalid JSON in backup file'}); }
+
+      if(!backup.version) return respond(res, 400, {error: 'Not a valid Zenocart backup file'});
+
+      // Ensure data dir exists
+      if(!fs.existsSync(DATADIR)) fs.mkdirSync(DATADIR, {recursive: true});
+
+      // Restore each data store
+      let restored = [];
+      if(Array.isArray(backup.products)){ writeJSON(LOCAL_PRODUCTS, backup.products); restored.push(backup.products.length + ' products'); }
+      if(Array.isArray(backup.categories)){ writeJSON(CATEGORIES_FILE, backup.categories); restored.push(backup.categories.length + ' categories'); }
+      if(Array.isArray(backup.delivery)){ writeJSON(DELIVERY_FILE, backup.delivery); restored.push(backup.delivery.length + ' delivery areas'); }
+      if(Array.isArray(backup.orders)){ writeJSON(ORDERS_FILE, backup.orders); restored.push(backup.orders.length + ' orders'); }
+
+      return respond(res, 200, {
+        ok: true,
+        message: 'Restore successful! Restored: ' + restored.join(', '),
+        backup_date: backup.created_at || 'unknown',
+        restored
+      });
+    } catch(e){ console.error('Restore error:', e); return respond(res, 500, {error: e.message}); }
+  }
+
   // Admin panel
   if(pn==='/admin'||pn==='/admin/'||pn.startsWith('/admin/')){
     for(const fp of [path.join(__dirname,'admin','index.html'),path.join(__dirname,'public','admin','index.html'),path.join(process.cwd(),'admin','index.html'),path.join(process.cwd(),'public','admin','index.html')]){
@@ -500,3 +575,118 @@ function defaultProducts(){return[
   {id:5,name:"Clip-On Rechargeable LED Study Lamp",short_name:"Clip-On LED Study Lamp",category:"LED Lamps",category_slug:"lamps",price:720,old_price:950,rating:4.7,sold:10900,badge:"hot",image:"images/product-lamp.jpg",images:["images/product-lamp.jpg"],description:"Eye-care clip-on LED lamp with 4000K natural light.",specs:[{label:"Color Temp",value:"4000K"}],created_at:new Date().toISOString()},
   {id:6,name:"Human Body Sensor Night Light - Magnetic Rechargeable",short_name:"Motion Sensor Night Light",category:"LED Lamps",category_slug:"lamps",price:480,old_price:650,rating:4.3,sold:26600,badge:"hot",image:"images/product-lamp.jpg",images:["images/product-lamp.jpg"],description:"Smart wireless PIR night light with magnetic mount.",specs:[{label:"Sensor",value:"PIR Human Body"}],created_at:new Date().toISOString()}
 ];}
+
+// ── Pure-Node ZIP builder (no npm) ──────────────────────────────────────────
+// Builds a minimal ZIP archive containing an array of {name, data} entries.
+// Uses STORE (no compression) for simplicity and zero dependencies.
+function buildZip(files) {
+  const zlib = require('zlib');
+  const parts = [];
+  const centralDir = [];
+  let offset = 0;
+
+  for (const file of files) {
+    const nameBytes  = Buffer.from(file.name, 'utf8');
+    const data       = Buffer.isBuffer(file.data) ? file.data : Buffer.from(file.data, 'utf8');
+    const crc        = crc32(data);
+    const now        = new Date();
+    const dosDate    = ((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+    const dosTime    = (now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+
+    // Local file header
+    const lfh = Buffer.alloc(30 + nameBytes.length);
+    lfh.writeUInt32LE(0x04034b50, 0);  // signature
+    lfh.writeUInt16LE(20, 4);           // version needed
+    lfh.writeUInt16LE(0, 6);            // flags
+    lfh.writeUInt16LE(0, 8);            // compression (STORE)
+    lfh.writeUInt16LE(dosTime, 10);
+    lfh.writeUInt16LE(dosDate, 12);
+    lfh.writeInt32LE(crc, 14);
+    lfh.writeUInt32LE(data.length, 18); // compressed size
+    lfh.writeUInt32LE(data.length, 22); // uncompressed size
+    lfh.writeUInt16LE(nameBytes.length, 26);
+    lfh.writeUInt16LE(0, 28);           // extra field length
+    nameBytes.copy(lfh, 30);
+
+    // Central directory entry
+    const cde = Buffer.alloc(46 + nameBytes.length);
+    cde.writeUInt32LE(0x02014b50, 0);  // signature
+    cde.writeUInt16LE(20, 4);           // version made by
+    cde.writeUInt16LE(20, 6);           // version needed
+    cde.writeUInt16LE(0, 8);            // flags
+    cde.writeUInt16LE(0, 10);           // compression
+    cde.writeUInt16LE(dosTime, 12);
+    cde.writeUInt16LE(dosDate, 14);
+    cde.writeInt32LE(crc, 16);
+    cde.writeUInt32LE(data.length, 20);
+    cde.writeUInt32LE(data.length, 24);
+    cde.writeUInt16LE(nameBytes.length, 28);
+    cde.writeUInt16LE(0, 30);           // extra length
+    cde.writeUInt16LE(0, 32);           // comment length
+    cde.writeUInt16LE(0, 34);           // disk start
+    cde.writeUInt16LE(0, 36);           // internal attrs
+    cde.writeUInt32LE(0, 38);           // external attrs
+    cde.writeUInt32LE(offset, 42);      // local header offset
+    nameBytes.copy(cde, 46);
+
+    parts.push(lfh, data);
+    centralDir.push(cde);
+    offset += lfh.length + data.length;
+  }
+
+  const cdBuf   = Buffer.concat(centralDir);
+  const eocd    = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0); // signature
+  eocd.writeUInt16LE(0, 4);           // disk number
+  eocd.writeUInt16LE(0, 6);           // disk with CD
+  eocd.writeUInt16LE(files.length, 8);
+  eocd.writeUInt16LE(files.length, 10);
+  eocd.writeUInt32LE(cdBuf.length, 12);
+  eocd.writeUInt32LE(offset, 16);
+  eocd.writeUInt16LE(0, 20);          // comment length
+
+  return Buffer.concat([...parts, cdBuf, eocd]);
+}
+
+function crc32(buf) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < buf.length; i++) {
+    crc ^= buf[i];
+    for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0);
+  }
+  return (crc ^ 0xFFFFFFFF) | 0;
+}
+
+// ── Minimal ZIP reader — extract first .json file content ───────────────────
+function extractFirstJsonFromZip(buf) {
+  // Scan for local file headers (PK)
+  let pos = 0;
+  while (pos < buf.length - 30) {
+    if (buf[pos]===0x50 && buf[pos+1]===0x4B && buf[pos+2]===0x03 && buf[pos+3]===0x04) {
+      const compMethod   = buf.readUInt16LE(pos + 8);
+      const compSize     = buf.readUInt32LE(pos + 18);
+      const nameLen      = buf.readUInt16LE(pos + 26);
+      const extraLen     = buf.readUInt16LE(pos + 28);
+      const name         = buf.slice(pos + 30, pos + 30 + nameLen).toString('utf8');
+      const dataStart    = pos + 30 + nameLen + extraLen;
+      const dataEnd      = dataStart + compSize;
+
+      if (name.endsWith('.json') && compSize > 0 && dataEnd <= buf.length) {
+        const fileData = buf.slice(dataStart, dataEnd);
+        // compMethod 0 = STORE (no compression), 8 = DEFLATE
+        if (compMethod === 0) return fileData.toString('utf8');
+        if (compMethod === 8) {
+          try {
+            const zlib = require('zlib');
+            return zlib.inflateRawSync(fileData).toString('utf8');
+          } catch(e) { return fileData.toString('utf8'); }
+        }
+      }
+      pos = dataEnd > pos ? dataEnd : pos + 1;
+    } else {
+      pos++;
+    }
+  }
+  return null;
+}
+
