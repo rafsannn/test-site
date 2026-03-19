@@ -860,11 +860,28 @@ function readJSON(file, fallback) {
   catch { return fallback; }
 }
 function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  try {
+    const dir = path.dirname(file);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  } catch(e) {
+    console.error('writeJSON error:', e.message);
+  }
 }
 
 // Seed default admin + demo products on first run
 function initData() {
+  // Ensure required directories exist (critical for cloud deployments like Railway)
+  const dataDir    = path.dirname(DATA_FILE);
+  const uploadsDir = UPLOADS;
+  const publicImgDir = path.join(PUBLIC, 'images');
+  [dataDir, uploadsDir, publicImgDir].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log('📁  Created directory:', dir);
+    }
+  });
+
   if (!fs.existsSync(USERS_FILE)) {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = crypto.createHmac('sha256', salt).update('admin123').digest('hex');
@@ -1170,10 +1187,10 @@ const server = http.createServer(async (req, res) => {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 initData();
-server.listen(PORT, () => {
-  console.log(`\n🚀  Zenocart running at  →  http://localhost:${PORT}`);
-  console.log(`🔧  Admin panel          →  http://localhost:${PORT}/admin`);
-  console.log(`📦  API                  →  http://localhost:${PORT}/api/products\n`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀  Zenocart running at  →  http://0.0.0.0:${PORT}`);
+  console.log(`🔧  Admin panel          →  http://0.0.0.0:${PORT}/admin`);
+  console.log(`📦  API                  →  http://0.0.0.0:${PORT}/api/products\n`);
 });
 
 // ── Default products ──────────────────────────────────────────────────────────
