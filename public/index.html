@@ -15,10 +15,10 @@
       <div class="container">
         <div class="hero-inner">
           <div class="hero-content">
-            <div class="hero-eyebrow"><span class="dot"></span><span id="hero-pill-text">🎉 EID SPECIAL OFFER IS HERE</span></div>
+            <div class="hero-eyebrow" id="hero-eyebrow"><span class="dot"></span><span id="hero-pill-text">🎉 EID SPECIAL OFFER IS HERE</span></div>
             <h1>Shop Smart.<br><span class="highlight">Live Better.</span></h1>
             <p class="hero-desc">Discover top-quality electronics, gadgets, and lifestyle products — at the best prices, delivered to your doorstep across Bangladesh.</p>
-            <div class="hero-offer-badge">
+            <div class="hero-offer-badge" id="hero-offer-badge">
               <span class="offer-text" id="offer-badge-main">5–7% OFF</span>
               <div class="offer-sub" id="offer-badge-sub"><strong>Eid Special Discount!</strong><br>5% (Air) · 7% (Sea) on all products</div>
             </div>
@@ -109,11 +109,27 @@
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
-    // Load hero text from settings
+    // Load hero text from settings — hide sections if empty
     fetch('/api/settings').then(r=>r.json()).then(cfg=>{
-      if(cfg.heroPill)       document.getElementById('hero-pill-text').textContent = cfg.heroPill;
-      if(cfg.offerBadgeMain) document.getElementById('offer-badge-main').textContent = cfg.offerBadgeMain;
-      if(cfg.offerBadgeSub)  document.getElementById('offer-badge-sub').innerHTML = cfg.offerBadgeSub;
+      // Pill (eyebrow)
+      const pill = document.getElementById('hero-eyebrow');
+      if(cfg.heroPill && cfg.heroPill.trim()){
+        document.getElementById('hero-pill-text').textContent = cfg.heroPill.trim();
+        pill.style.display = '';
+      } else {
+        pill.style.display = 'none';
+      }
+      // Offer badge
+      const badge = document.getElementById('hero-offer-badge');
+      const hasMain = cfg.offerBadgeMain && cfg.offerBadgeMain.trim();
+      const hasSub  = cfg.offerBadgeSub  && cfg.offerBadgeSub.trim();
+      if(hasMain || hasSub){
+        if(hasMain) document.getElementById('offer-badge-main').textContent = cfg.offerBadgeMain.trim();
+        if(hasSub)  document.getElementById('offer-badge-sub').innerHTML = cfg.offerBadgeSub.trim();
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
     }).catch(()=>{});
 
     document.addEventListener('DOMContentLoaded', async () => {
