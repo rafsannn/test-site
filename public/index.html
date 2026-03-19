@@ -15,12 +15,12 @@
       <div class="container">
         <div class="hero-inner">
           <div class="hero-content">
-            <div class="hero-eyebrow"><span class="dot"></span>🎉 EID SPECIAL OFFER IS HERE</div>
+            <div class="hero-eyebrow"><span class="dot"></span><span id="hero-pill-text">🎉 EID SPECIAL OFFER IS HERE</span></div>
             <h1>Shop Smart.<br><span class="highlight">Live Better.</span></h1>
             <p class="hero-desc">Discover top-quality electronics, gadgets, and lifestyle products — at the best prices, delivered to your doorstep across Bangladesh.</p>
             <div class="hero-offer-badge">
-              <span class="offer-text">5–7% OFF</span>
-              <div class="offer-sub"><strong>Eid Special Discount!</strong><br>5% (Air) · 7% (Sea) on all products</div>
+              <span class="offer-text" id="offer-badge-main">5–7% OFF</span>
+              <div class="offer-sub" id="offer-badge-sub"><strong>Eid Special Discount!</strong><br>5% (Air) · 7% (Sea) on all products</div>
             </div>
             <div class="hero-actions">
               <a href="/pages/shop.html" class="btn btn-white btn-lg">🛍️ Shop Now</a>
@@ -109,6 +109,13 @@
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
+    // Load hero text from settings
+    fetch('/api/settings').then(r=>r.json()).then(cfg=>{
+      if(cfg.heroPill)       document.getElementById('hero-pill-text').textContent = cfg.heroPill;
+      if(cfg.offerBadgeMain) document.getElementById('offer-badge-main').textContent = cfg.offerBadgeMain;
+      if(cfg.offerBadgeSub)  document.getElementById('offer-badge-sub').innerHTML = cfg.offerBadgeSub;
+    }).catch(()=>{});
+
     document.addEventListener('DOMContentLoaded', async () => {
       // Categories
       const catGrid = document.getElementById('home-categories');

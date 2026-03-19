@@ -19,7 +19,14 @@ const DATADIR = path.join(__dirname, 'data');
 const LOCAL_PRODUCTS  = path.join(DATADIR, 'products.json');
 const USERS_FILE      = path.join(DATADIR, 'users.json');
 const SETTINGS_FILE   = path.join(DATADIR, 'settings.json');
-const DEFAULT_SETTINGS = { whatsapp: '', storeName: 'Zenocart', fbPage: 'zenocart.bd' };
+const DEFAULT_SETTINGS = {
+  whatsapp:      '',
+  storeName:     'Zenocart',
+  fbPage:        'zenocart.bd',
+  heroPill:      '🎉 EID SPECIAL OFFER IS HERE',
+  offerBadgeMain: '5–7% OFF',
+  offerBadgeSub:  'Eid Special Discount! 5% (Air) · 7% (Sea) on all products'
+};
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
 const sessions = {};
@@ -126,6 +133,7 @@ function buildProduct(fields, imagePath, existing={}) {
     sold:          parseInt(fields.sold)      || existing.sold    || 0,
     badge:         fields.badge!==undefined ? (fields.badge||null) : (existing.badge||null),
     description:   fields.description || existing.description || '',
+    fb_link:       fields.fb_link !== undefined ? (fields.fb_link || '') : (existing.fb_link || ''),
     image:         imagePath           || existing.image || 'images/product-fan.jpg',
     images:        [imagePath || existing.image || 'images/product-fan.jpg'],
     specs:         specs,

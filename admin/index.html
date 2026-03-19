@@ -254,6 +254,10 @@ tr:hover td{background:var(--bg)}
             <div class="fr"><div class="fg2"><label>Price (৳) *</label><input type="number" id="a-price" placeholder="0" min="0"></div><div class="fg2"><label>Old Price (৳)</label><input type="number" id="a-oldp" placeholder="0" min="0"></div></div>
             <div class="fr"><div class="fg2"><label>Rating</label><input type="number" id="a-rating" value="5.0" min="1" max="5" step="0.1"></div><div class="fg2"><label>Units Sold</label><input type="number" id="a-sold" value="0" min="0"></div></div>
             <div class="fr"><div class="fg2"><label>Badge</label><select id="a-badge"><option value="">None</option><option value="hot">🔥 Hot</option><option value="new">✨ New</option><option value="sale">💸 Sale</option></select></div></div>
+            <div class="fr full"><div class="fg2">
+              <label>Facebook Post Link <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional — shows "Order via Facebook" button on product page)</span></label>
+              <input type="url" id="a-fblink" placeholder="https://facebook.com/zenocart.bd/posts/...">
+            </div></div>
             <div class="fr full"><div class="fg2"><label>Description *</label><textarea id="a-desc" rows="3" placeholder="Full product description..."></textarea></div></div>
             <div style="margin-bottom:18px"><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specifications</label><div id="a-specs"></div><button class="add-spec" onclick="addSpec('a-specs')">+ Add Spec</button></div>
             <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-o" onclick="resetAdd()">Reset</button><button class="btn btn-p" onclick="submitProd()">✅ Save Product</button></div>
@@ -396,6 +400,20 @@ tr:hover td{background:var(--bg)}
                 <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1">
               </div>
             </div>
+            <div style="border-top:1px solid var(--br);margin:18px 0 16px"></div>
+            <div style="font-size:.8rem;font-weight:700;color:var(--dk);margin-bottom:12px">🏠 Hero Banner Text</div>
+            <div class="fg2" style="margin-bottom:12px">
+              <label>Top Pill Text <span style="font-size:.72rem;color:var(--gr);font-weight:400">(e.g. 🎉 EID SPECIAL OFFER IS HERE)</span></label>
+              <input type="text" id="hero-pill" placeholder="🎉 EID SPECIAL OFFER IS HERE">
+            </div>
+            <div class="fg2" style="margin-bottom:12px">
+              <label>Offer Badge — Main Text <span style="font-size:.72rem;color:var(--gr);font-weight:400">(e.g. 5–7% OFF)</span></label>
+              <input type="text" id="offer-main" placeholder="5–7% OFF">
+            </div>
+            <div class="fg2" style="margin-bottom:18px">
+              <label>Offer Badge — Sub Text <span style="font-size:.72rem;color:var(--gr);font-weight:400">(supports HTML like &lt;strong&gt;)</span></label>
+              <input type="text" id="offer-sub" placeholder="Eid Special Discount! 5% (Air) · 7% (Sea) on all products">
+            </div>
             <button class="btn btn-p btn-sm" onclick="saveSettings()">💾 Save Settings</button>
           </div>
           <div class="setcard">
@@ -446,6 +464,10 @@ tr:hover td{background:var(--bg)}
       <div class="fr"><div class="fg2"><label>Price (৳) *</label><input type="number" id="e-price" min="0"></div><div class="fg2"><label>Old Price (৳)</label><input type="number" id="e-oldp" min="0"></div></div>
       <div class="fr"><div class="fg2"><label>Rating</label><input type="number" id="e-rating" min="1" max="5" step="0.1"></div><div class="fg2"><label>Sold</label><input type="number" id="e-sold" min="0"></div></div>
       <div class="fr"><div class="fg2"><label>Badge</label><select id="e-badge"><option value="">None</option><option value="hot">🔥 Hot</option><option value="new">✨ New</option><option value="sale">💸 Sale</option></select></div></div>
+      <div class="fr full"><div class="fg2">
+        <label>Facebook Post Link <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional)</span></label>
+        <input type="url" id="e-fblink" placeholder="https://facebook.com/zenocart.bd/posts/...">
+      </div></div>
       <div class="fr full"><div class="fg2"><label>Description</label><textarea id="e-desc" rows="3"></textarea></div></div>
       <div><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specs</label><div id="e-specs"></div><button class="add-spec" onclick="addSpec('e-specs')">+ Add Spec</button></div>
     </div>
@@ -617,6 +639,7 @@ async function submitProd(){
   fd.append('rating',document.getElementById('a-rating').value||'5');
   fd.append('sold',document.getElementById('a-sold').value||'0');
   fd.append('badge',document.getElementById('a-badge').value);
+  fd.append('fb_link',document.getElementById('a-fblink').value.trim());
   fd.append('description',desc); fd.append('specs',JSON.stringify(getSpecs('a-specs')));
   const img=document.getElementById('add-img').files[0]; if(img)fd.append('image',img);
   try{
@@ -628,7 +651,7 @@ async function submitProd(){
 }
 
 function resetAdd(){
-  ['a-name','a-short','a-price','a-oldp','a-desc'].forEach(id=>document.getElementById(id).value='');
+  ['a-name','a-short','a-price','a-oldp','a-desc','a-fblink'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-cat').value=''; document.getElementById('a-slug').value='';
   document.getElementById('a-badge').value=''; document.getElementById('a-rating').value='5.0';
   document.getElementById('a-sold').value='0'; document.getElementById('a-specs').innerHTML='';
@@ -647,6 +670,7 @@ function openEdit(id){
   document.getElementById('e-rating').value=p.rating||5;
   document.getElementById('e-sold').value=p.sold||0;
   document.getElementById('e-badge').value=p.badge||'';
+  document.getElementById('e-fblink').value=p.fb_link||'';
   document.getElementById('e-desc').value=p.description||'';
   // Set category
   setTimeout(()=>{ document.getElementById('e-cat').value=p.category||''; document.getElementById('e-slug').value=p.category_slug||p.categorySlug||''; },50);
@@ -674,6 +698,7 @@ async function saveEdit(){
   fd.append('rating',document.getElementById('e-rating').value);
   fd.append('sold',document.getElementById('e-sold').value);
   fd.append('badge',document.getElementById('e-badge').value);
+  fd.append('fb_link',document.getElementById('e-fblink').value.trim());
   fd.append('description',document.getElementById('e-desc').value.trim());
   fd.append('specs',JSON.stringify(getSpecs('e-specs')));
   const img=document.getElementById('edit-img').files[0]; if(img)fd.append('image',img);
@@ -956,16 +981,24 @@ async function loadSettings(){
   try{
     const r=await fetch('/api/settings',{credentials:'include'});
     const d=await r.json();
-    document.getElementById('wa-number').value=d.whatsapp||'';
-    document.getElementById('fb-page').value=d.fbPage||'zenocart.bd';
+    document.getElementById('wa-number').value   = d.whatsapp||'';
+    document.getElementById('fb-page').value     = d.fbPage||'zenocart.bd';
+    document.getElementById('hero-pill').value   = d.heroPill||'';
+    document.getElementById('offer-main').value  = d.offerBadgeMain||'';
+    document.getElementById('offer-sub').value   = d.offerBadgeSub||'';
   }catch(e){}
 }
 async function saveSettings(){
-  const wa=document.getElementById('wa-number').value.trim();
-  const fb=document.getElementById('fb-page').value.trim();
+  const data = {
+    whatsapp:       document.getElementById('wa-number').value.trim(),
+    fbPage:         document.getElementById('fb-page').value.trim(),
+    heroPill:       document.getElementById('hero-pill').value.trim(),
+    offerBadgeMain: document.getElementById('offer-main').value.trim(),
+    offerBadgeSub:  document.getElementById('offer-sub').value.trim()
+  };
   try{
-    const r=await fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({whatsapp:wa,fbPage:fb}),credentials:'include'});
-    if(r.ok){toast('Settings saved!','ok');}
+    const r=await fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),credentials:'include'});
+    if(r.ok){toast('Settings saved! Refresh store to see changes.','ok');}
     else toast('Failed to save settings','err');
   }catch(e){toast('Network error','err');}
 }
