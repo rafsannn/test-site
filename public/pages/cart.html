@@ -311,7 +311,18 @@
     }
 
     function orderOnFacebook() {
-      window.open('https://facebook.com/zenocart.bd','_blank');
+      // Build message from current cart
+      const items = cart.map(i=>'• '+(i.name||'Product')+' x'+i.qty+' = '+formatPrice((i.price||0)*i.qty)).join('\n');
+      const area = selectedDelivery ? selectedDelivery.area : '(area not selected)';
+      const total = getCartTotal() + (selectedDelivery ? selectedDelivery.price : 0);
+      const msg = encodeURIComponent(
+        '🛒 Order from Zenocart\n\n'+
+        (items ? '📦 Items:\n'+items+'\n\n' : '')+
+        '🗺️ Delivery Area: '+area+'\n'+
+        '💵 Total: '+formatPrice(total)+'\n\n'+
+        'Please confirm my order. Thank you!'
+      );
+      window.open('https://m.me/zenocart.bd?text='+msg,'_blank');
     }
 
     async function submitOrder() {
@@ -348,7 +359,23 @@
         const d = await r.json();
         if(!r.ok){ err.textContent=d.error||'Failed to place order'; err.style.display='block'; btn.disabled=false; btn.textContent='✅ Confirm Order'; return; }
 
-        // Show success
+        // Build order message BEFORE clearing cart
+        const itemLines = orderData.items.map(i=>'• '+i.name+' x'+i.qty+' = '+formatPrice(i.price*i.qty)).join('\n');
+        const orderMsg =
+          '🛒 New Order #'+d.orderId+' — Zenocart\n\n'+
+          '👤 Name: '+name+'\n'+
+          '📞 Phone: '+phone+'\n'+
+          '📱 WhatsApp: '+whatsapp+'\n'+
+          '📍 Address: '+address+'\n'+
+          '🗺️ Area: '+selectedDelivery.area+'\n'+
+          '💳 Payment: '+(selectedPayment==='cod'?'Cash on Delivery':selectedPayment==='bkash'?'bKash/Nagad':'Facebook Order')+'\n\n'+
+          '📦 Items:\n'+itemLines+'\n\n'+
+          '💰 Subtotal: '+formatPrice(subtotal)+'\n'+
+          '🚚 Delivery: '+formatPrice(delivery_charge)+'\n'+
+          '💵 TOTAL: '+formatPrice(total)+
+          (orderData.notes?'\n\n📝 Notes: '+orderData.notes:'');
+
+        // Show success screen
         document.getElementById('checkout-form').style.display = 'none';
         document.getElementById('order-success').style.display = 'block';
         document.getElementById('success-order-id').textContent = 'Order #' + d.orderId;
@@ -357,19 +384,16 @@
         // Clear cart
         cart = []; saveCart(); renderCart();
 
-        // Send WhatsApp message
-        const msg = encodeURIComponent(
-          'New Order #'+d.orderId+' from Zenocart!\n\n'+
-          'Name: '+name+'\nPhone: '+phone+'\nWhatsApp: '+whatsapp+'\n'+
-          'Address: '+address+'\nArea: '+selectedDelivery.area+'\n'+
-          'Payment: '+selectedPayment.toUpperCase()+'\n\n'+
-          'Items:\n'+cart.map(i=>'• '+(i.name||'Product')+' x'+i.qty+' = '+formatPrice((i.price||0)*i.qty)).join('\n')+
-          '\n\nSubtotal: '+formatPrice(subtotal)+
-          '\nDelivery: '+formatPrice(delivery_charge)+
-          '\nTotal: '+formatPrice(total)+
-          (orderData.notes?'\n\nNotes: '+orderData.notes:'')
-        );
-        setTimeout(()=>{ window.open('https://wa.me/880'+whatsapp.replace(/^0/,'')+'?text='+msg,'_blank'); }, 1500);
+        // Redirect based on payment method
+        const encoded = encodeURIComponent(orderMsg);
+        if(selectedPayment === 'facebook') {
+          // Facebook Messenger with pre-filled message
+          setTimeout(()=>{ window.open('https://m.me/zenocart.bd?text='+encoded,'_blank'); }, 1200);
+        } else {
+          // WhatsApp with pre-filled message (COD or bKash)
+          const waNum = '880' + whatsapp.replace(/^(\+88|88)?0?/, '');
+          setTimeout(()=>{ window.open('https://wa.me/'+waNum+'?text='+encoded,'_blank'); }, 1200);
+        }
 
       } catch(e) { err.textContent='Network error. Please try again.'; err.style.display='block'; btn.disabled=false; btn.textContent='✅ Confirm Order'; }
     }
