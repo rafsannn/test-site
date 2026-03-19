@@ -362,6 +362,42 @@ ul{list-style:none}
 .product-detail-actions .btn-primary{flex:1;min-width:150px}
 .product-detail-actions .btn-outline{width:50px;height:50px;padding:0;font-size:1.3rem;flex-shrink:0}
 .product-detail-meta{padding-top:18px;border-top:1px solid var(--border)}
+
+/* ── Product page Order Now / Add to Cart buttons ── */
+.product-order-now-btn{
+  background:#e8510a !important;
+  color:#fff !important;
+  border:2px solid #e8510a !important;
+  cursor:pointer !important;
+  transition:all .2s ease !important;
+}
+.product-order-now-btn:hover{
+  background:#c7420a !important;
+  border-color:#c7420a !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 6px 20px rgba(232,81,10,.35) !important;
+}
+.product-order-now-btn:active{
+  transform:translateY(0) scale(.98) !important;
+  box-shadow:none !important;
+}
+.product-add-cart-btn{
+  background:var(--primary) !important;
+  color:#fff !important;
+  border:2px solid var(--primary) !important;
+  cursor:pointer !important;
+  transition:all .2s ease !important;
+}
+.product-add-cart-btn:hover{
+  background:var(--primary-dark) !important;
+  border-color:var(--primary-dark) !important;
+  transform:translateY(-2px) !important;
+  box-shadow:0 6px 20px rgba(30,122,143,.3) !important;
+}
+.product-add-cart-btn:active{
+  transform:translateY(0) scale(.98) !important;
+  box-shadow:none !important;
+}
 .meta-row{display:flex;gap:8px;align-items:flex-start;font-size:.875rem;color:var(--dark-mid);margin-bottom:8px}
 .meta-row strong{color:var(--dark);min-width:80px;flex-shrink:0}
 
