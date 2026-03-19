@@ -18,6 +18,8 @@ const DATADIR = path.join(__dirname, 'data');
 // ── Data files (all local — use Backup & Restore to persist across redeploys)
 const LOCAL_PRODUCTS  = path.join(DATADIR, 'products.json');
 const USERS_FILE      = path.join(DATADIR, 'users.json');
+const SETTINGS_FILE   = path.join(DATADIR, 'settings.json');
+const DEFAULT_SETTINGS = { whatsapp: '', storeName: 'Zenocart', fbPage: 'zenocart.bd' };
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
 const sessions = {};
@@ -165,6 +167,7 @@ function initData() {
     console.log('Admin created: admin / admin123');
   }
   if(!fs.existsSync(LOCAL_PRODUCTS))  { writeJSON(LOCAL_PRODUCTS,[]); }
+  if(!fs.existsSync(SETTINGS_FILE))   { writeJSON(SETTINGS_FILE, DEFAULT_SETTINGS); }
   if(!fs.existsSync(CATEGORIES_FILE)){ writeJSON(CATEGORIES_FILE,DEFAULT_CATS); }
   if(!fs.existsSync(DELIVERY_FILE))  { writeJSON(DELIVERY_FILE,DEFAULT_DELIVERY); }
   if(!fs.existsSync(ORDERS_FILE))    { writeJSON(ORDERS_FILE,[]); }
@@ -379,7 +382,8 @@ const srv = http.createServer(async (req, res) => {
         products:   readJSON(LOCAL_PRODUCTS,   []),
         categories: readJSON(CATEGORIES_FILE,  DEFAULT_CATS),
         delivery:   readJSON(DELIVERY_FILE,    DEFAULT_DELIVERY),
-        orders:     readJSON(ORDERS_FILE,      [])
+        orders:     readJSON(ORDERS_FILE,      []),
+        settings:   readJSON(SETTINGS_FILE,    DEFAULT_SETTINGS)
       };
       const zipFiles = [];
 
@@ -498,6 +502,10 @@ const srv = http.createServer(async (req, res) => {
         writeJSON(ORDERS_FILE, backup.orders);
         restored.push(backup.orders.length + ' orders');
       }
+      if(backup.settings && typeof backup.settings === 'object'){
+        writeJSON(SETTINGS_FILE, {...DEFAULT_SETTINGS, ...backup.settings});
+        restored.push('settings');
+      }
       if(restoredImages > 0) restored.push(restoredImages + ' images');
 
       console.log('Restore complete:', restored.join(', '));
@@ -508,6 +516,19 @@ const srv = http.createServer(async (req, res) => {
         restored
       });
     } catch(e){ console.error('Restore error:', e); return respond(res, 500, {error: e.message}); }
+  }
+
+  // ── SETTINGS API ─────────────────────────────────────────────────────────
+  if(pn==='/api/settings' && mt==='GET'){
+    return respond(res,200,readJSON(SETTINGS_FILE, DEFAULT_SETTINGS));
+  }
+  if(pn==='/api/admin/settings' && mt==='PUT'){
+    if(!requireAuth(req,res))return;
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    const current=readJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
+    const updated={...current,...b};
+    writeJSON(SETTINGS_FILE, updated);
+    return respond(res,200,updated);
   }
 
   // Admin panel

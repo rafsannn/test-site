@@ -38,6 +38,7 @@
               <div id="detail-price" class="product-detail-price"></div>
               <div id="detail-old-price" class="product-detail-old-price"></div>
               <p class="product-detail-desc" id="detail-desc"></p>
+              <!-- Qty + Add to Cart + Wishlist -->
               <div class="product-detail-actions">
                 <div class="qty-control" style="margin-right:4px">
                   <button class="qty-btn" id="qty-minus">−</button>
@@ -47,10 +48,11 @@
                 <button class="btn btn-primary btn-lg" id="add-to-cart-detail" style="flex:1">🛒 Add to Cart</button>
                 <button class="btn btn-outline" id="wishlist-detail-btn" style="width:52px;height:52px;padding:0;font-size:1.3rem">🤍</button>
               </div>
-              <a href="https://facebook.com/zenocart.bd" target="_blank" class="cart-fb-btn" style="text-decoration:none;margin-bottom:20px">
-                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Order via Facebook Page
-              </a>
+              <!-- Order Now -->
+              <button class="btn btn-full btn-lg" id="order-now-btn"
+                style="background:var(--primary-dark);color:#fff;border:none;margin-bottom:20px;gap:8px">
+                ⚡ Order Now
+              </button>
               <div class="product-detail-meta" id="detail-specs"></div>
             </div>
           </div>
@@ -70,6 +72,135 @@
     </div>
   </main>
   <div id="footer-placeholder"></div>
+  <!-- Direct checkout modal styles -->
+  <style>
+    .dco-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:3000;display:none;align-items:flex-end;justify-content:center}
+    .dco-overlay.open{display:flex}
+    .dco-box{background:#fff;width:100%;max-width:520px;max-height:96vh;overflow-y:auto;border-radius:20px 20px 0 0;-webkit-overflow-scrolling:touch}
+    .dco-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10}
+    .dco-header h3{font-size:1rem;font-weight:700;color:var(--dark)}
+    .dco-close{width:32px;height:32px;background:var(--bg);border:none;border-radius:50%;font-size:1rem;cursor:pointer}
+    .dco-body{padding:18px 22px}
+    .dco-product-row{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:10px;padding:12px;margin-bottom:18px}
+    .dco-product-row img{width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0}
+    .dco-product-name{font-size:.88rem;font-weight:600;color:var(--dark)}
+    .dco-product-price{font-size:1rem;font-weight:700;color:var(--primary-dark);margin-top:3px}
+    .wa-field{background:linear-gradient(135deg,#e8fff0,#d4f5e2);border:2px solid #25d366;border-radius:10px;padding:12px 14px;margin-bottom:14px}
+    .wa-field label{display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:700;color:#128c4a;margin-bottom:7px}
+    .wa-field input{width:100%;padding:10px 13px;border:1.5px solid #25d366;border-radius:8px;font-size:16px;outline:none;background:#fff}
+    .wa-field input:focus{border-color:#128c4a;box-shadow:0 0 0 3px rgba(37,211,102,.12)}
+    .dco-field{margin-bottom:12px}
+    .dco-field label{display:block;font-size:.78rem;font-weight:600;color:var(--dark);margin-bottom:5px}
+    .dco-field input,.dco-field select,.dco-field textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;outline:none;background:#fff;font-family:'DM Sans',sans-serif;transition:var(--t)}
+    .dco-field input:focus,.dco-field select:focus,.dco-field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--accent-glow)}
+    .dco-field textarea{resize:vertical;min-height:70px}
+    .dco-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+    @media(max-width:480px){.dco-2col{grid-template-columns:1fr}}
+    .dco-total{background:var(--primary-ultra);border:1.5px solid var(--primary-light);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.875rem}
+    .dco-total-row{display:flex;justify-content:space-between;margin-bottom:4px;color:var(--dark-mid)}
+    .dco-total-row.grand{font-weight:700;font-size:1rem;color:var(--dark);padding-top:8px;border-top:1px solid var(--primary-light);margin-top:6px}
+    .dco-err{background:#fff0f0;border:1px solid #fcc;border-radius:8px;padding:9px 12px;font-size:.83rem;color:var(--danger);margin-bottom:12px;display:none}
+    .dco-success{display:none;text-align:center;padding:32px 20px}
+    .dco-success .ico{font-size:3.5rem;margin-bottom:12px}
+    .dco-success h3{font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:8px}
+    .dco-success p{color:var(--gray);font-size:.875rem;margin-bottom:20px}
+    .dco-success .oid{background:var(--primary-ultra);border:1px solid var(--primary-light);border-radius:8px;padding:10px 18px;display:inline-block;font-weight:700;color:var(--primary-dark);margin-bottom:16px}
+  </style>
+
+  <!-- Direct Checkout Modal -->
+  <div class="dco-overlay" id="dco-overlay">
+    <div class="dco-box">
+      <!-- Success -->
+      <div class="dco-success" id="dco-success">
+        <div class="ico">🎉</div>
+        <h3>Order Placed!</h3>
+        <div class="oid" id="dco-order-id">Order #—</div>
+        <p>Thank you! We'll contact you on WhatsApp at <strong id="dco-success-wa"></strong> to confirm.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="document.getElementById('dco-overlay').classList.remove('open');document.body.style.overflow=''">Continue Shopping</button>
+          <a href="/pages/cart.html" class="btn btn-outline">View Cart</a>
+        </div>
+      </div>
+      <!-- Form -->
+      <div id="dco-form">
+        <div class="dco-header">
+          <h3>⚡ Order Now</h3>
+          <button class="dco-close" onclick="document.getElementById('dco-overlay').classList.remove('open');document.body.style.overflow=''">✕</button>
+        </div>
+        <div class="dco-body">
+          <!-- Product summary -->
+          <div class="dco-product-row" id="dco-product-row">
+            <img id="dco-img" src="" alt="">
+            <div style="flex:1">
+              <div class="dco-product-name" id="dco-pname"></div>
+              <div class="dco-product-price" id="dco-pprice"></div>
+            </div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="dcoChangeQty(-1)">−</button>
+              <div class="qty-val" id="dco-qty">1</div>
+              <button class="qty-btn" onclick="dcoChangeQty(1)">+</button>
+            </div>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="wa-field">
+            <label>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp Number <span style="color:var(--danger)">*</span>
+              <span style="background:#25d366;color:#fff;font-size:.68rem;padding:1px 7px;border-radius:100px;margin-left:4px">REQUIRED</span>
+            </label>
+            <input type="tel" id="dco-whatsapp" placeholder="01XXXXXXXXX — We'll confirm your order here">
+          </div>
+
+          <!-- Name + Phone -->
+          <div class="dco-2col">
+            <div class="dco-field"><label>Full Name <span style="color:var(--danger)">*</span></label><input type="text" id="dco-name" placeholder="Your name"></div>
+            <div class="dco-field"><label>Phone <span style="color:var(--danger)">*</span></label><input type="tel" id="dco-phone" placeholder="01XXXXXXXXX"></div>
+          </div>
+
+          <!-- Area -->
+          <div class="dco-field">
+            <label>Delivery Area <span style="color:var(--danger)">*</span></label>
+            <select id="dco-area" onchange="dcoUpdateTotal()">
+              <option value="">— Select your area —</option>
+            </select>
+          </div>
+
+          <!-- Address -->
+          <div class="dco-field">
+            <label>Delivery Address <span style="color:var(--danger)">*</span></label>
+            <textarea id="dco-address" placeholder="House, Road, Area, City"></textarea>
+          </div>
+
+          <!-- Payment -->
+          <div class="dco-field">
+            <label>Payment Method</label>
+            <select id="dco-payment">
+              <option value="cod">💵 Cash on Delivery (COD)</option>
+              <option value="bkash">📱 bKash / Nagad</option>
+            </select>
+          </div>
+
+          <!-- Notes -->
+          <div class="dco-field">
+            <label>Notes <span style="font-weight:400;color:var(--gray)">(optional)</span></label>
+            <input type="text" id="dco-notes" placeholder="Any special instructions...">
+          </div>
+
+          <!-- Total -->
+          <div class="dco-total" id="dco-total-box">
+            <div class="dco-total-row"><span>Product</span><span id="dco-subtotal">৳0</span></div>
+            <div class="dco-total-row"><span>Delivery</span><span id="dco-delivery-cost">Select area</span></div>
+            <div class="dco-total-row grand"><span>Total</span><span id="dco-grand">৳0</span></div>
+          </div>
+
+          <div class="dco-err" id="dco-err"></div>
+          <button class="btn btn-primary btn-full btn-lg" id="dco-submit-btn" onclick="dcoSubmit()">✅ Confirm Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="/js/products.js"></script>
   <script src="/js/layout.js"></script>
   <script src="/js/core.js"></script>
@@ -132,12 +263,144 @@
       wBtn.dataset.wishlistId = product.id;
       wBtn.onclick = () => { toggleWishlist(product.id, product); wBtn.textContent=isWishlisted(product.id)?'❤️':'🤍'; };
 
+      // Order Now — opens inline checkout for just this product
+      document.getElementById('order-now-btn').onclick = () => {
+        openDirectCheckout(product, qty);
+      };
+
       // Related
       const all = await loadProducts();
       const related = all.filter(p=>p.categorySlug===product.categorySlug&&p.id!==product.id).slice(0,4);
       const show = related.length ? related : all.filter(p=>p.id!==product.id).slice(0,4);
       document.getElementById('related-grid').innerHTML = show.map(p=>renderProductCard(p,'/')).join('');
     });
+  </script>
+  <script>
+  // ── Direct Checkout (Order Now) ──────────────────────────────────────────────
+  let dcoProduct = null;
+  let dcoQty     = 1;
+  let dcoAreas   = [];
+
+  // Load delivery areas into select
+  fetch('/api/delivery').then(r=>r.json()).then(data=>{
+    dcoAreas = data;
+    const sel = document.getElementById('dco-area');
+    data.forEach(d=>{
+      const o = document.createElement('option');
+      o.value = d.id;
+      o.textContent = d.area + ' — ৳' + d.price;
+      sel.appendChild(o);
+    });
+  });
+
+  function openDirectCheckout(product, qty) {
+    dcoProduct = product;
+    dcoQty     = qty || 1;
+    // Fill product row
+    const imgSrc = product.image ? (product.image.startsWith('http') ? product.image : '/' + product.image) : '/images/product-fan.jpg';
+    document.getElementById('dco-img').src   = imgSrc;
+    document.getElementById('dco-pname').textContent  = product.name;
+    document.getElementById('dco-qty').textContent    = dcoQty;
+    dcoUpdateTotal();
+    // Reset form state
+    document.getElementById('dco-form').style.display    = 'block';
+    document.getElementById('dco-success').style.display = 'none';
+    document.getElementById('dco-err').style.display     = 'none';
+    document.getElementById('dco-submit-btn').disabled   = false;
+    document.getElementById('dco-submit-btn').textContent = '✅ Confirm Order';
+    // Open modal
+    document.getElementById('dco-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function dcoChangeQty(delta) {
+    dcoQty = Math.max(1, dcoQty + delta);
+    document.getElementById('dco-qty').textContent = dcoQty;
+    dcoUpdateTotal();
+  }
+
+  function dcoUpdateTotal() {
+    if (!dcoProduct) return;
+    const subtotal = dcoProduct.price * dcoQty;
+    const areaId   = parseInt(document.getElementById('dco-area').value);
+    const area     = dcoAreas.find(a => a.id === areaId);
+    const delivery = area ? area.price : 0;
+    const total    = subtotal + delivery;
+    document.getElementById('dco-pprice').textContent    = formatPrice(dcoProduct.price) + ' × ' + dcoQty;
+    document.getElementById('dco-subtotal').textContent   = formatPrice(subtotal);
+    document.getElementById('dco-delivery-cost').textContent = area ? formatPrice(delivery) : 'Select area';
+    document.getElementById('dco-grand').textContent      = area ? formatPrice(total) : '—';
+  }
+
+  async function dcoSubmit() {
+    const err      = document.getElementById('dco-err');
+    err.style.display = 'none';
+    const whatsapp = document.getElementById('dco-whatsapp').value.trim();
+    const name     = document.getElementById('dco-name').value.trim();
+    const phone    = document.getElementById('dco-phone').value.trim();
+    const address  = document.getElementById('dco-address').value.trim();
+    const areaId   = parseInt(document.getElementById('dco-area').value);
+    const area     = dcoAreas.find(a => a.id === areaId);
+    const payment  = document.getElementById('dco-payment').value;
+    const notes    = document.getElementById('dco-notes').value.trim();
+
+    if (!whatsapp) { err.textContent='⚠️ WhatsApp number is required!'; err.style.display='block'; document.getElementById('dco-whatsapp').focus(); return; }
+    if (!name)     { err.textContent='Please enter your full name'; err.style.display='block'; return; }
+    if (!phone)    { err.textContent='Please enter your phone number'; err.style.display='block'; return; }
+    if (!area)     { err.textContent='Please select a delivery area'; err.style.display='block'; return; }
+    if (!address)  { err.textContent='Please enter your delivery address'; err.style.display='block'; return; }
+
+    const subtotal        = dcoProduct.price * dcoQty;
+    const delivery_charge = area.price;
+    const total           = subtotal + delivery_charge;
+
+    const orderData = {
+      name, phone, whatsapp, address,
+      area: area.area, notes, payment,
+      subtotal, delivery_charge, total,
+      items: [{ id: dcoProduct.id, name: dcoProduct.name, qty: dcoQty, price: dcoProduct.price }]
+    };
+
+    const btn = document.getElementById('dco-submit-btn');
+    btn.disabled = true; btn.textContent = 'Placing order…';
+
+    try {
+      const r = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(orderData) });
+      const d = await r.json();
+      if (!r.ok) { err.textContent = d.error || 'Failed to place order'; err.style.display='block'; btn.disabled=false; btn.textContent='✅ Confirm Order'; return; }
+
+      // Build WhatsApp confirmation message
+      const msg = encodeURIComponent(
+        '🛒 New Order #' + d.orderId + ' — Zenocart\n\n' +
+        '👤 Name: ' + name + '\n' +
+        '📞 Phone: ' + phone + '\n' +
+        '📱 WhatsApp: ' + whatsapp + '\n' +
+        '📍 Address: ' + address + '\n' +
+        '🗺️ Area: ' + area.area + '\n' +
+        '💳 Payment: ' + (payment === 'cod' ? 'Cash on Delivery' : 'bKash/Nagad') + '\n\n' +
+        '📦 ' + dcoProduct.name + ' × ' + dcoQty + ' = ' + formatPrice(subtotal) + '\n' +
+        '🚚 Delivery: ' + formatPrice(delivery_charge) + '\n' +
+        '💵 TOTAL: ' + formatPrice(total) +
+        (notes ? '\n\n📝 Notes: ' + notes : '')
+      );
+
+      // Show success
+      document.getElementById('dco-form').style.display    = 'none';
+      document.getElementById('dco-success').style.display = 'block';
+      document.getElementById('dco-order-id').textContent  = 'Order #' + d.orderId;
+      document.getElementById('dco-success-wa').textContent = whatsapp;
+
+      // Open WhatsApp with order details
+      const waNum = '880' + whatsapp.replace(/^(\+?880?)?/, '').replace(/^0/, '');
+      setTimeout(() => { window.open('https://wa.me/' + waNum + '?text=' + msg, '_blank'); }, 1200);
+
+    } catch(e) { err.textContent='Network error. Please try again.'; err.style.display='block'; btn.disabled=false; btn.textContent='✅ Confirm Order'; }
+  }
+
+  // Close on backdrop click
+  document.getElementById('dco-overlay').addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.remove('open'); document.body.style.overflow=''; }
+  });
   </script>
 </body>
 </html>

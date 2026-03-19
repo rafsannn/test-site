@@ -384,6 +384,21 @@ tr:hover td{background:var(--bg)}
       <div id="tab-settings" style="display:none">
         <div style="display:flex;flex-direction:column;gap:20px;max-width:460px">
           <div class="setcard">
+            <h3>📱 Store Settings</h3>
+            <div class="fg2" style="margin-bottom:14px">
+              <label>WhatsApp Number <span style="font-size:.72rem;color:var(--gr);font-weight:400">(customers order directly to this number)</span></label>
+              <input type="tel" id="wa-number" placeholder="01XXXXXXXXX" style="font-size:.9rem">
+            </div>
+            <div class="fg2" style="margin-bottom:18px">
+              <label>Facebook Page Username</label>
+              <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:8px;overflow:hidden">
+                <span style="padding:9px 10px;background:var(--bg);color:var(--gr);font-size:.82rem;border-right:1px solid var(--br);white-space:nowrap">facebook.com/</span>
+                <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1">
+              </div>
+            </div>
+            <button class="btn btn-p btn-sm" onclick="saveSettings()">💾 Save Settings</button>
+          </div>
+          <div class="setcard">
             <h3>🗄️ Storage Mode</h3>
             <div style="display:flex;flex-direction:column;gap:8px">
               <div class="cfg-badge cfg-ok">✅ Local JSON — Backup &amp; Restore enabled</div>
@@ -526,6 +541,7 @@ function showTab(t){
   if(t==='categories')renderCats();
   if(t==='delivery')renderDel();
   if(t==='dashboard')renderDashboard();
+  if(t==='settings') loadSettings();
   if(t==='backup'){
     loadBackupPreview();
     const lb=localStorage.getItem('zc_last_backup');
@@ -935,6 +951,25 @@ async function doRestore(){
 }
 
 // Load backup preview when tab opens
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+async function loadSettings(){
+  try{
+    const r=await fetch('/api/settings',{credentials:'include'});
+    const d=await r.json();
+    document.getElementById('wa-number').value=d.whatsapp||'';
+    document.getElementById('fb-page').value=d.fbPage||'zenocart.bd';
+  }catch(e){}
+}
+async function saveSettings(){
+  const wa=document.getElementById('wa-number').value.trim();
+  const fb=document.getElementById('fb-page').value.trim();
+  try{
+    const r=await fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({whatsapp:wa,fbPage:fb}),credentials:'include'});
+    if(r.ok){toast('Settings saved!','ok');}
+    else toast('Failed to save settings','err');
+  }catch(e){toast('Network error','err');}
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAuth();
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});

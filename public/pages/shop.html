@@ -4,6 +4,50 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop | Zenocart Online Marketplace</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Mobile filter toggle button ── */
+    .filter-toggle-btn {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      transition: var(--t);
+    }
+    .filter-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-toggle-btn .badge-count {
+      background: var(--primary);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 100px;
+      display: none;
+    }
+    .filter-toggle-btn .badge-count.show { display: inline-block; }
+
+    /* Mobile: show toggle, hide sidebar by default */
+    @media(max-width:899px) {
+      .filter-toggle-btn { display: flex; }
+      .shop-sidebar { display: none; }
+      .shop-sidebar.open { display: block; }
+    }
+
+    /* Active filter indicator dot */
+    .filter-active-dot {
+      width: 8px; height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: none;
+    }
+    .filter-active-dot.show { display: inline-block; }
+  </style>
 </head>
 <body>
   <div id="nav-placeholder"></div>
@@ -11,8 +55,25 @@
   <main>
     <section class="shop-page">
       <div class="container">
+
+        <!-- Mobile filter bar (visible only on mobile) -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px">
+          <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilters()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+            Filters
+            <span class="badge-count" id="filter-badge">0</span>
+          </button>
+          <p class="shop-count" id="shop-count" style="font-size:.85rem;color:var(--gray)">Loading…</p>
+        </div>
+
         <div class="shop-layout">
-          <aside class="shop-sidebar">
+          <aside class="shop-sidebar" id="shop-sidebar">
+            <!-- Close button (mobile only) -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px" class="sidebar-mobile-header">
+              <span style="font-size:.9rem;font-weight:700;color:var(--dark)">🔍 Filters</span>
+              <button onclick="toggleFilters()" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.8rem;cursor:pointer;color:var(--dark)">✕ Close</button>
+            </div>
+
             <div class="sidebar-section">
               <div class="sidebar-title">Categories</div>
               <div id="sidebar-categories"></div>
@@ -20,11 +81,11 @@
             <div class="sidebar-section">
               <div class="sidebar-title">Price Range</div>
               <div style="display:flex;flex-direction:column;gap:8px">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="all" checked onchange="filterProducts()"> All Prices</label>
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="under500" onchange="filterProducts()"> Under ৳500</label>
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="500to1000" onchange="filterProducts()"> ৳500 – ৳1,000</label>
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="1000to2000" onchange="filterProducts()"> ৳1,000 – ৳2,000</label>
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="above2000" onchange="filterProducts()"> Above ৳2,000</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="all" checked onchange="filterProducts();updateFilterBadge()"> All Prices</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="under500" onchange="filterProducts();updateFilterBadge()"> Under ৳500</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="500to1000" onchange="filterProducts();updateFilterBadge()"> ৳500 – ৳1,000</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="1000to2000" onchange="filterProducts();updateFilterBadge()"> ৳1,000 – ৳2,000</label>
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="price" value="above2000" onchange="filterProducts();updateFilterBadge()"> Above ৳2,000</label>
               </div>
             </div>
             <div class="sidebar-section">
@@ -37,10 +98,15 @@
                 <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.875rem;color:var(--dark-mid)"><input type="radio" name="sort" value="sold" onchange="filterProducts()"> Best Selling</label>
               </div>
             </div>
+
+            <!-- Reset button (mobile) -->
+            <button onclick="resetFilters()" class="btn btn-outline btn-full btn-sm" style="margin-top:8px">Reset Filters</button>
           </aside>
+
           <div>
-            <div class="shop-main-header">
-              <p class="shop-count" id="shop-count">Loading…</p>
+            <!-- Desktop count (hidden on mobile — shown in the bar above) -->
+            <div class="shop-main-header" style="display:none" id="desktop-count-bar">
+              <p class="shop-count" id="shop-count-desktop"></p>
             </div>
             <div class="products-grid" id="shop-grid"><div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--gray)">Loading products…</div></div>
             <div id="no-results" style="display:none;text-align:center;padding:64px 0">
@@ -65,32 +131,64 @@
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cat')) activeCategory = urlParams.get('cat');
 
+    function toggleFilters() {
+      const sidebar = document.getElementById('shop-sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    function updateFilterBadge() {
+      const price = document.querySelector('input[name="price"]:checked')?.value || 'all';
+      const sort  = document.querySelector('input[name="sort"]:checked')?.value  || 'default';
+      let active  = 0;
+      if (activeCategory !== 'all') active++;
+      if (price !== 'all') active++;
+      if (sort !== 'default') active++;
+      const badge = document.getElementById('filter-badge');
+      badge.textContent = active;
+      badge.classList.toggle('show', active > 0);
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
-      // Sidebar categories
       const sidebarCats = document.getElementById('sidebar-categories');
       allLoaded = await loadProducts();
       const counts = {};
-      allLoaded.forEach(p => { counts[p.categorySlug] = (counts[p.categorySlug]||0)+1; });
-      CATEGORIES.forEach(cat => {
+      allLoaded.forEach(p => { counts[p.categorySlug||p.category_slug] = (counts[p.categorySlug||p.category_slug]||0)+1; });
+
+      // Try to load categories from API first
+      let cats = CATEGORIES;
+      try {
+        const cr = await fetch('/api/categories');
+        const apiCats = await cr.json();
+        if (apiCats.length) cats = [{slug:'all',label:'All Products',icon:'🛍️'}, ...apiCats.map(c=>({slug:c.slug,label:c.name,icon:c.icon||'📦'}))];
+      } catch(e) {}
+
+      cats.forEach(cat => {
         const count = cat.slug === 'all' ? allLoaded.length : (counts[cat.slug]||0);
         const div = document.createElement('div');
         div.className = 'sidebar-category-item' + (activeCategory===cat.slug?' active':'');
         div.dataset.slug = cat.slug;
-        div.innerHTML = '<span>' + cat.icon + ' ' + cat.label + '</span><span class="count">' + count + '</span>';
+        div.innerHTML = '<span>' + (cat.icon||'') + ' ' + (cat.label||cat.name) + '</span><span class="count">' + count + '</span>';
         div.onclick = () => {
           activeCategory = cat.slug;
           document.querySelectorAll('.sidebar-category-item').forEach(el=>el.classList.remove('active'));
           div.classList.add('active');
           filterProducts();
+          updateFilterBadge();
+          // Auto-close sidebar on mobile after selecting category
+          if(window.innerWidth < 900) document.getElementById('shop-sidebar').classList.remove('open');
         };
         sidebarCats.appendChild(div);
       });
+
+      // If URL had category param, open filter to show it's active on mobile
+      if (urlParams.get('cat')) updateFilterBadge();
+
       filterProducts();
     });
 
     function filterProducts() {
       let filtered = [...allLoaded];
-      if (activeCategory !== 'all') filtered = filtered.filter(p => p.categorySlug === activeCategory);
+      if (activeCategory !== 'all') filtered = filtered.filter(p => (p.categorySlug||p.category_slug) === activeCategory);
       const price = document.querySelector('input[name="price"]:checked')?.value||'all';
       if (price==='under500') filtered=filtered.filter(p=>p.price<500);
       else if(price==='500to1000') filtered=filtered.filter(p=>p.price>=500&&p.price<=1000);
@@ -103,11 +201,20 @@
       else if(sort==='sold') filtered.sort((a,b)=>b.sold-a.sold);
       const grid=document.getElementById('shop-grid');
       const noRes=document.getElementById('no-results');
-      const countEl=document.getElementById('shop-count');
-      if(!filtered.length){grid.innerHTML='';grid.style.display='none';noRes.style.display='block';countEl.textContent='No products found';}
-      else{grid.style.display='grid';noRes.style.display='none';countEl.textContent='Showing '+filtered.length+' product'+(filtered.length!==1?'s':'');grid.innerHTML=filtered.map(p=>renderProductCard(p,'/')).join('');}
+      const countText = filtered.length + ' product' + (filtered.length!==1?'s':'');
+      document.getElementById('shop-count').textContent = countText;
+      if(!filtered.length){grid.innerHTML='';grid.style.display='none';noRes.style.display='block';}
+      else{grid.style.display='grid';noRes.style.display='none';grid.innerHTML=filtered.map(p=>renderProductCard(p,'/')).join('');}
     }
-    function resetFilters(){activeCategory='all';document.querySelectorAll('.sidebar-category-item').forEach(el=>el.classList.toggle('active',el.dataset.slug==='all'));document.querySelector('input[name="price"][value="all"]').checked=true;document.querySelector('input[name="sort"][value="default"]').checked=true;filterProducts();}
+
+    function resetFilters(){
+      activeCategory='all';
+      document.querySelectorAll('.sidebar-category-item').forEach(el=>el.classList.toggle('active',el.dataset.slug==='all'));
+      document.querySelector('input[name="price"][value="all"]').checked=true;
+      document.querySelector('input[name="sort"][value="default"]').checked=true;
+      filterProducts();
+      updateFilterBadge();
+    }
   </script>
 </body>
 </html>
