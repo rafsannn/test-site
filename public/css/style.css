@@ -442,3 +442,6 @@ ul{list-style:none}
 @media(min-width:600px){#checkout-modal{align-items:center!important;padding:16px!important}}
 #checkout-modal > div{border-radius:var(--r-lg) var(--r-lg) 0 0}
 @media(min-width:600px){#checkout-modal > div{border-radius:var(--r-lg)}}
+
+/* ── WhatsApp Floating Button ── */
+#wa-float a:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.5) !important; }

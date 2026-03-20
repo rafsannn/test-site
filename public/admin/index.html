@@ -206,11 +206,20 @@ tr:hover td{background:var(--bg)}
 
       <!-- DASHBOARD -->
       <div id="tab-dashboard">
-        <div class="stats-grid">
+        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
           <div class="sc"><div class="si" style="background:var(--pu)">📦</div><div><div class="sl">Products</div><div class="sv" id="s-prod">—</div></div></div>
-          <div class="sc"><div class="si" style="background:#e8fff0">🧾</div><div><div class="sl">Orders</div><div class="sv" id="s-ord">—</div></div></div>
+          <div class="sc"><div class="si" style="background:#e8fff0">🧾</div><div><div class="sl">Total Orders</div><div class="sv" id="s-ord">—</div></div></div>
           <div class="sc"><div class="si" style="background:#fff6e8">⏳</div><div><div class="sl">Pending</div><div class="sv" id="s-pend">—</div></div></div>
           <div class="sc"><div class="si" style="background:#e8fff0">✅</div><div><div class="sl">Delivered</div><div class="sv" id="s-del">—</div></div></div>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-top:0">
+          <div class="sc"><div class="si" style="background:#f0e8ff">💰</div><div><div class="sl">Total Revenue</div><div class="sv" id="s-rev" style="font-size:1.1rem">—</div></div></div>
+          <div class="sc"><div class="si" style="background:#fff0e8">📈</div><div><div class="sl">This Month</div><div class="sv" id="s-month" style="font-size:1.1rem">—</div></div></div>
+          <div class="sc"><div class="si" style="background:#e8f0ff">🏆</div><div><div class="sl">Best Seller</div><div class="sv" id="s-best" style="font-size:.85rem;line-height:1.2">—</div></div></div>
+        </div>
+        <!-- Low stock alerts -->
+        <div id="low-stock-bar" style="display:none;background:#fff6e8;border:1.5px solid #f5c87a;border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:.85rem">
+          <strong>⚠️ Low Stock Alert:</strong> <span id="low-stock-list"></span>
         </div>
         <div class="sb2"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders')">View All →</button></div>
         <div class="tw"><table><thead><tr><th>#</th><th>Customer</th><th>WhatsApp</th><th>Area</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
@@ -257,6 +266,21 @@ tr:hover td{background:var(--bg)}
             <div class="fr full"><div class="fg2">
               <label>Facebook Post Link <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional — shows "Order via Facebook" button on product page)</span></label>
               <input type="url" id="a-fblink" placeholder="https://facebook.com/zenocart.bd/posts/...">
+            </div></div>
+            <div class="fr">
+              <div class="fg2">
+                <label>Stock Count</label>
+                <input type="number" id="a-stock" placeholder="0" min="0" value="0">
+              </div>
+              <div class="fg2">
+                <label style="display:flex;align-items:center;gap:8px;margin-top:22px;cursor:pointer">
+                  <input type="checkbox" id="a-instock" checked style="width:16px;height:16px;accent-color:var(--p)"> In Stock
+                </label>
+              </div>
+            </div>
+            <div class="fr full"><div class="fg2">
+              <label>Meta Description <span style="font-weight:400;color:var(--gr);font-size:.72rem">(for Google — 150 chars max)</span></label>
+              <input type="text" id="a-metadesc" placeholder="Brief product description for search engines..." maxlength="160">
             </div></div>
             <div class="fr full"><div class="fg2"><label>Description *</label><textarea id="a-desc" rows="3" placeholder="Full product description..."></textarea></div></div>
             <div style="margin-bottom:18px"><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specifications</label><div id="a-specs"></div><button class="add-spec" onclick="addSpec('a-specs')">+ Add Spec</button></div>
@@ -468,6 +492,14 @@ tr:hover td{background:var(--bg)}
         <label>Facebook Post Link <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional)</span></label>
         <input type="url" id="e-fblink" placeholder="https://facebook.com/zenocart.bd/posts/...">
       </div></div>
+      <div class="fr">
+        <div class="fg2"><label>Stock Count</label><input type="number" id="e-stock" min="0" value="0"></div>
+        <div class="fg2"><label style="display:flex;align-items:center;gap:8px;margin-top:22px;cursor:pointer"><input type="checkbox" id="e-instock" checked style="width:16px;height:16px;accent-color:var(--p)"> In Stock</label></div>
+      </div>
+      <div class="fr full"><div class="fg2">
+        <label>Meta Description <span style="font-weight:400;color:var(--gr);font-size:.72rem">(for Google)</span></label>
+        <input type="text" id="e-metadesc" maxlength="160">
+      </div></div>
       <div class="fr full"><div class="fg2"><label>Description</label><textarea id="e-desc" rows="3"></textarea></div></div>
       <div><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specs</label><div id="e-specs"></div><button class="add-spec" onclick="addSpec('e-specs')">+ Add Spec</button></div>
     </div>
@@ -480,7 +512,10 @@ tr:hover td{background:var(--bg)}
   <div class="mo">
     <div class="mh"><h3 id="ord-modal-title">🧾 Order Details</h3><button class="mc" onclick="closeModal('ord-ov')">✕</button></div>
     <div class="mb" id="ord-modal-body"></div>
-    <div class="mf"><button class="btn btn-o" onclick="closeModal('ord-ov')">Close</button></div>
+    <div class="mf" style="gap:8px;flex-wrap:wrap">
+      <button class="btn btn-o" onclick="closeModal('ord-ov')">Close</button>
+      <button class="btn btn-sm" onclick="printOrder()" style="background:#6c5ce7;color:#fff;border:none">🖨️ Print</button>
+    </div>
   </div>
 </div>
 
@@ -577,6 +612,26 @@ function renderDashboard(){
   document.getElementById('s-ord').textContent=allOrders.length;
   document.getElementById('s-pend').textContent=allOrders.filter(o=>o.status==='pending').length;
   document.getElementById('s-del').textContent=allOrders.filter(o=>o.status==='delivered').length;
+
+  // Revenue
+  const totalRev = allOrders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0);
+  document.getElementById('s-rev').textContent='৳'+totalRev.toLocaleString();
+  const now=new Date(); const thisMonth=allOrders.filter(o=>{const d=new Date(o.created_at);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()&&o.status!=='cancelled';});
+  const monthRev=thisMonth.reduce((s,o)=>s+(o.total||0),0);
+  document.getElementById('s-month').textContent='৳'+monthRev.toLocaleString();
+
+  // Best seller from orders
+  const soldMap={};
+  allOrders.filter(o=>o.status!=='cancelled').forEach(o=>{(o.items||[]).forEach(i=>{soldMap[i.name]=(soldMap[i.name]||0)+i.qty;});});
+  const best=Object.entries(soldMap).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('s-best').textContent=best?best[0]+' ('+best[1]+')':'—';
+
+  // Low stock alerts (stock_count <= 5 and in_stock)
+  const lowStock=allProds.filter(p=>p.in_stock!==false && p.stock_count>0 && p.stock_count<=5);
+  const bar=document.getElementById('low-stock-bar');
+  if(lowStock.length){ bar.style.display='block'; document.getElementById('low-stock-list').textContent=lowStock.map(p=>p.name+' ('+p.stock_count+' left)').join(', '); }
+  else bar.style.display='none';
+
   const tbody=document.getElementById('dash-orders-tbody');
   const recent=[...allOrders].slice(0,8);
   tbody.innerHTML=recent.length ? recent.map(o=>orderRow(o,true)).join('') : '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gr)">No orders yet</td></tr>';
@@ -640,6 +695,9 @@ async function submitProd(){
   fd.append('sold',document.getElementById('a-sold').value||'0');
   fd.append('badge',document.getElementById('a-badge').value);
   fd.append('fb_link',document.getElementById('a-fblink').value.trim());
+  fd.append('in_stock',document.getElementById('a-instock').checked);
+  fd.append('stock_count',document.getElementById('a-stock').value||'0');
+  fd.append('meta_desc',document.getElementById('a-metadesc').value.trim());
   fd.append('description',desc); fd.append('specs',JSON.stringify(getSpecs('a-specs')));
   const img=document.getElementById('add-img').files[0]; if(img)fd.append('image',img);
   try{
@@ -651,7 +709,9 @@ async function submitProd(){
 }
 
 function resetAdd(){
-  ['a-name','a-short','a-price','a-oldp','a-desc','a-fblink'].forEach(id=>document.getElementById(id).value='');
+  ['a-name','a-short','a-price','a-oldp','a-desc','a-fblink','a-metadesc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('a-stock').value='0';
+  document.getElementById('a-instock').checked=true;
   document.getElementById('a-cat').value=''; document.getElementById('a-slug').value='';
   document.getElementById('a-badge').value=''; document.getElementById('a-rating').value='5.0';
   document.getElementById('a-sold').value='0'; document.getElementById('a-specs').innerHTML='';
@@ -671,6 +731,9 @@ function openEdit(id){
   document.getElementById('e-sold').value=p.sold||0;
   document.getElementById('e-badge').value=p.badge||'';
   document.getElementById('e-fblink').value=p.fb_link||'';
+  document.getElementById('e-stock').value=p.stock_count||0;
+  document.getElementById('e-instock').checked=p.in_stock!==false;
+  document.getElementById('e-metadesc').value=p.meta_desc||'';
   document.getElementById('e-desc').value=p.description||'';
   // Set category
   setTimeout(()=>{ document.getElementById('e-cat').value=p.category||''; document.getElementById('e-slug').value=p.category_slug||p.categorySlug||''; },50);
@@ -699,6 +762,9 @@ async function saveEdit(){
   fd.append('sold',document.getElementById('e-sold').value);
   fd.append('badge',document.getElementById('e-badge').value);
   fd.append('fb_link',document.getElementById('e-fblink').value.trim());
+  fd.append('in_stock',document.getElementById('e-instock').checked);
+  fd.append('stock_count',document.getElementById('e-stock').value||'0');
+  fd.append('meta_desc',document.getElementById('e-metadesc').value.trim());
   fd.append('description',document.getElementById('e-desc').value.trim());
   fd.append('specs',JSON.stringify(getSpecs('e-specs')));
   const img=document.getElementById('edit-img').files[0]; if(img)fd.append('image',img);
@@ -758,8 +824,29 @@ function viewOrder(id){
     '<div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:700;font-size:1rem;border-top:1.5px solid var(--p)"><span>Total</span><span style="color:var(--pd)">৳'+(o.total||0).toLocaleString()+'</span></div></div>'+
     '<div><label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:6px">Update Status:</label>'+
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
-    ['pending','confirmed','shipped','delivered','cancelled'].map(s=>'<button onclick="updateOrderStatus('+o.id+',\''+s+'\');closeModal(\'ord-ov\')" class="btn btn-sm" style="'+(o.status===s?'background:var(--p);color:#fff':'background:var(--bg);border:1px solid var(--br);color:var(--dk)')+'">'+({pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[s])+'</button>').join('')+
-    '</div></div>';
+    ['pending','confirmed','shipped','delivered','cancelled'].map(st=>'<button onclick="updateOrderStatus('+o.id+',\''+st+'\');closeModal(\'ord-ov\')" class="btn btn-sm" style="'+(o.status===st?'background:var(--p);color:#fff':'background:var(--bg);border:1px solid var(--br);color:var(--dk)')+'">'+({pending:'⏳ Pending',confirmed:'✅ Confirmed',shipped:'🚚 Shipped',delivered:'🎉 Delivered',cancelled:'❌ Cancelled'}[st])+'</button>').join('')+
+    '</div></div>'+
+    '<div style="margin-top:16px;border-top:1px solid var(--br);padding-top:14px">'+
+    '<label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:6px">📱 Notify Customer on WhatsApp:</label>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap">'+
+    ['confirmed','shipped','delivered','cancelled'].map(st=>{
+      const icons={confirmed:'✅',shipped:'🚚',delivered:'🎉',cancelled:'❌'};
+      const msgs={
+        confirmed:'Hi '+o.name+'! ✅ Your Zenocart order #'+o.id+' has been CONFIRMED! We are preparing it now. Thank you for your order! 🛒',
+        shipped:'Hi '+o.name+'! 🚚 Your Zenocart order #'+o.id+' has been SHIPPED! It is on its way to '+o.area+'. Expected delivery in 2-3 days. Thank you! 🛒',
+        delivered:'Hi '+o.name+'! 🎉 Your Zenocart order #'+o.id+' has been DELIVERED! We hope you love your purchase. Thank you for shopping with us! 💛',
+        cancelled:'Hi '+o.name+', your Zenocart order #'+o.id+' has been cancelled. Please contact us if you have any questions. Sorry for the inconvenience.'
+      };
+      const waNum='880'+(o.whatsapp||'').replace(/^(\+?880?)?/,'').replace(/^0/,'');
+      const url='https://wa.me/'+waNum+'?text='+encodeURIComponent(msgs[st]);
+      return '<a href="'+url+'" target="_blank" class="btn btn-sm" style="background:#25d366;color:#fff;text-decoration:none">'+icons[st]+' '+st.charAt(0).toUpperCase()+st.slice(1)+'</a>';
+    }).join('')+
+    '</div></div>'+
+    '<div style="margin-top:14px">'+
+    '<label style="font-size:.78rem;font-weight:600;display:block;margin-bottom:6px">📝 Internal Notes (only you see this):</label>'+
+    '<textarea id="order-notes-input" style="width:100%;padding:9px 12px;border:1.5px solid var(--br);border-radius:8px;font-size:.85rem;resize:vertical;min-height:70px;font-family:inherit" placeholder="Add notes about this order...">'+( o.admin_notes||'')+'</textarea>'+
+    '<button onclick="saveOrderNotes('+o.id+')" class="btn btn-sm btn-p" style="margin-top:6px">💾 Save Notes</button>'+
+    '</div>';
   document.getElementById('ord-ov').classList.add('open');
 }
 
@@ -872,6 +959,23 @@ async function exportData(type){
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 function toast(msg,type='info'){ const w=document.getElementById('toasts'); const el=document.createElement('div'); el.className='toast '+type; el.textContent=msg; w.appendChild(el); setTimeout(()=>{el.style.animation='sOut .3s ease forwards';setTimeout(()=>el.remove(),300);},3500); }
+
+// ── ORDER NOTES & PRINT ──────────────────────────────────────────────────────
+async function saveOrderNotes(id){
+  const notes = document.getElementById('order-notes-input')?.value||'';
+  try{
+    const r=await fetch('/api/admin/orders/'+id+'/notes',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({notes}),credentials:'include'});
+    if(r.ok){toast('Notes saved!','ok'); await loadOrders();}
+    else toast('Failed','err');
+  }catch(e){toast('Network error','err');}
+}
+
+function printOrder(){
+  const body = document.getElementById('ord-modal-body')?.innerHTML||'';
+  const w = window.open('','_blank');
+  w.document.write('<html><head><title>Order</title><style>body{font-family:sans-serif;padding:20px;max-width:600px}table{width:100%}a{color:#000}button{display:none}.btn{display:none}</style></head><body>'+body+'</body></html>');
+  w.document.close(); w.print();
+}
 
 // ── BACKUP & RESTORE ──────────────────────────────────────────────────────────
 let restoreFile = null;
