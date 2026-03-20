@@ -74,13 +74,7 @@ function injectLayout(root) {
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-            <img src="/images/logo.png" alt="Zenocart" style="height:38px;width:auto;filter:brightness(0) invert(1)">
-            <div>
-              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;line-height:1.1;letter-spacing:.01em"><span style="color:var(--accent)">ZENO</span>CART</div>
-              <div style="font-size:.6rem;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">Online Marketplace</div>
-            </div>
-          </div>
+          <img src="/images/logo.png" alt="Zenocart" style="height:44px;width:auto;filter:brightness(0) invert(1);margin-bottom:14px">
           <p>Your trusted online marketplace for quality electronics and lifestyle products — delivered nationwide across Bangladesh.</p>
           <div class="footer-social">
             <a href="https://facebook.com/zenocart.bd" target="_blank" class="social-btn social-btn-fb">
