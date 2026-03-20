@@ -297,21 +297,33 @@
       // Variants
       const variants = typeof product.variants==='string'?JSON.parse(product.variants||'[]'):(product.variants||[]);
       const varSection = document.getElementById('variants-section');
+      basePrice = product.price || 0;
       if(variants.length>0){
         varSection.style.display='block';
         varSection.innerHTML = variants.map((v,vi)=>`
           <div class="variant-group">
             <span class="variant-label">${v.name}:</span>
             <div class="variant-options">
-              ${(v.values||[]).map((val,i)=>`<button class="variant-btn${i===0?' selected':''}" onclick="selectVariant(this,'variant-group-${vi}')">${val}</button>`).join('')}
+              ${(v.values||[]).map((val,i)=>{
+                const prices = v.prices||{};
+                const hasPrice = prices[val]>0;
+                const dp = hasPrice ? ` data-price="${prices[val]}"` : '';
+                const pTag = hasPrice ? `<span style="font-size:.72rem;color:${i===0?'rgba(255,255,255,.8)':'var(--primary)'};margin-left:4px">৳${prices[val].toLocaleString()}</span>` : '';
+                return `<button class="variant-btn${i===0?' selected':''}"${dp} onclick="selectVariant(this,'variant-group-${vi}')">${val}${pTag}</button>`;
+              }).join('')}
             </div>
           </div>`).join('');
+        // Set initial price from first variant option if it has a price
+        updatePriceFromVariants();
       }
 
       // Qty controls
       document.getElementById('qty-minus').onclick = () => { qty=Math.max(1,qty-1); document.getElementById('detail-qty').textContent=qty; };
       document.getElementById('qty-plus').onclick  = () => { qty++; document.getElementById('detail-qty').textContent=qty; };
-      document.getElementById('add-to-cart-detail').onclick = () => addToCart(product.id, qty, product);
+      document.getElementById('add-to-cart-detail').onclick = () => {
+        const currentPrice = parseFloat(document.getElementById('detail-price').textContent.replace(/[^\d.]/g,''))||product.price;
+        addToCart(product.id, qty, {...product, price: currentPrice});
+      };
 
       // Wishlist
       const wBtn = document.getElementById('wishlist-detail-btn');
@@ -319,7 +331,13 @@
       wBtn.onclick = () => { toggleWishlist(product.id, product); wBtn.textContent=isWishlisted(product.id)?'❤️':'🤍'; };
 
       // Order Now
-      document.getElementById('order-now-btn').onclick = () => { openDirectCheckout(product, qty); };
+      document.getElementById('order-now-btn').onclick = () => {
+        // Use current displayed price (might have been updated by variant selection)
+        const currentPrice = parseFloat(document.getElementById('detail-price').textContent.replace(/[^\d.]/g,''))||product.price;
+        const productWithPrice = {...product, price: currentPrice};
+        window._dcoProductRef = productWithPrice;
+        openDirectCheckout(productWithPrice, qty);
+      };
 
       // Facebook button
       const fbBtn = document.getElementById('order-fb-btn');
@@ -336,9 +354,30 @@
     });
 
     // ── Variant selection ─────────────────────────────────────────────────────
+    let basePrice = 0;
     function selectVariant(btn, groupId){
       btn.closest('.variant-options').querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('selected'));
       btn.classList.add('selected');
+      updatePriceFromVariants();
+    }
+
+    function updatePriceFromVariants(){
+      // Find the highest-priority selected variant price
+      let selectedPrice = null;
+      document.querySelectorAll('#variants-section .variant-group').forEach(group=>{
+        const selected = group.querySelector('.variant-btn.selected');
+        if(selected){
+          const price = parseFloat(selected.dataset.price);
+          if(!isNaN(price) && price > 0){
+            // Last variant with a price wins (or could take max/first — using last)
+            selectedPrice = price;
+          }
+        }
+      });
+      const finalPrice = selectedPrice !== null ? selectedPrice : basePrice;
+      document.getElementById('detail-price').textContent = formatPrice(finalPrice);
+      // Update dcoProduct price for Order Now
+      if(window._dcoProductRef) window._dcoProductRef.price = finalPrice;
     }
 
     // ── Reviews ────────────────────────────────────────────────────────────────

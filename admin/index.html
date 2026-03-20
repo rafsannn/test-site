@@ -722,29 +722,70 @@ function prevImgs(input, boxId){
 }
 function addSpec(listId,label='',value=''){ const l=document.getElementById(listId); const d=document.createElement('div'); d.className='spec-row'; d.innerHTML='<input type="text" placeholder="Label" value="'+label+'"><input type="text" placeholder="Value" value="'+value+'"><button onclick="this.parentElement.remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.9rem">✕</button>'; l.appendChild(d); }
 
-function addVariantGroup(listId, existing={name:'',values:''}){
+function addVariantGroup(listId, existing={name:'',values:[],prices:{}}){
   const l=document.getElementById(listId);
   const d=document.createElement('div');
+  d.className='variant-group-wrap';
   d.style.cssText='background:var(--bg);border:1.5px solid var(--br);border-radius:10px;padding:12px;margin-bottom:10px';
+  const existingVals = Array.isArray(existing.values) ? existing.values : (existing.values||'').split(',').map(v=>v.trim()).filter(Boolean);
+  const existingPrices = existing.prices||{};
   d.innerHTML=`
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
       <input type="text" placeholder="Variant type (e.g. Size, Color)" value="${existing.name||''}"
         style="flex:1;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none"
-        class="variant-name">
-      <button onclick="this.closest('div[style]').remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.85rem">✕</button>
+        class="variant-name" oninput="">
+      <button onclick="this.closest('.variant-group-wrap').remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.85rem">✕</button>
     </div>
-    <input type="text" placeholder="Options separated by commas (e.g. S, M, L, XL)" value="${existing.values||''}"
-      style="width:100%;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none"
-      class="variant-values">
-    <div style="font-size:.7rem;color:var(--gr);margin-top:4px">Separate each option with a comma</div>`;
+    <div style="margin-bottom:6px">
+      <input type="text" placeholder="Options separated by commas (e.g. S, M, L, XL)" value="${existingVals.join(', ')}"
+        style="width:100%;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none;margin-bottom:4px"
+        class="variant-values" oninput="updateVariantPriceRows(this)">
+      <div style="font-size:.7rem;color:var(--gr)">Separate each option with a comma</div>
+    </div>
+    <div class="variant-price-rows" style="margin-top:8px"></div>`;
   l.appendChild(d);
+  // Render price rows for existing values
+  const input = d.querySelector('.variant-values');
+  updateVariantPriceRows(input, existingPrices);
+}
+
+function updateVariantPriceRows(input, existingPrices={}){
+  const wrap = input.closest('.variant-group-wrap');
+  const priceRows = wrap.querySelector('.variant-price-rows');
+  const values = input.value.split(',').map(v=>v.trim()).filter(Boolean);
+  if(!values.length){ priceRows.innerHTML=''; return; }
+  // Save current prices before re-render
+  const currentPrices = {};
+  priceRows.querySelectorAll('.vpr').forEach(row=>{
+    const lbl=row.querySelector('.vpr-label')?.textContent;
+    const val=row.querySelector('.vpr-price')?.value;
+    if(lbl&&val) currentPrices[lbl]=val;
+  });
+  const merged = {...currentPrices, ...existingPrices};
+  priceRows.innerHTML = '<div style="font-size:.72rem;font-weight:600;color:var(--gr);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Price per option (leave blank = use base price)</div>' +
+    values.map(v=>`
+      <div class="vpr" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span class="vpr-label" style="min-width:80px;font-size:.82rem;font-weight:600;color:var(--dk)">${v}</span>
+        <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:6px;overflow:hidden;flex:1">
+          <span style="padding:6px 8px;background:#fff;color:var(--gr);font-size:.8rem;border-right:1px solid var(--br)">৳</span>
+          <input type="number" class="vpr-price" placeholder="Base price" value="${merged[v]||''}" min="0"
+            style="border:none;outline:none;padding:6px 8px;font-size:.82rem;width:100%">
+        </div>
+      </div>`).join('');
 }
 
 function getVariants(listId){
-  return [...document.querySelectorAll('#'+listId+' div[style]')].map(d=>({
-    name: d.querySelector('.variant-name')?.value?.trim()||'',
-    values: (d.querySelector('.variant-values')?.value||'').split(',').map(v=>v.trim()).filter(Boolean)
-  })).filter(v=>v.name&&v.values.length>0);
+  return [...document.querySelectorAll('#'+listId+' .variant-group-wrap')].map(d=>{
+    const name = d.querySelector('.variant-name')?.value?.trim()||'';
+    const values = (d.querySelector('.variant-values')?.value||'').split(',').map(v=>v.trim()).filter(Boolean);
+    const prices = {};
+    d.querySelectorAll('.vpr').forEach(row=>{
+      const lbl=row.querySelector('.vpr-label')?.textContent?.trim();
+      const val=row.querySelector('.vpr-price')?.value?.trim();
+      if(lbl&&val) prices[lbl]=parseFloat(val);
+    });
+    return {name, values, prices};
+  }).filter(v=>v.name&&v.values.length>0);
 }
 
 function renderCurrentImages(imgs, containerId, keptId){
@@ -833,7 +874,7 @@ function openEdit(id){
   // Render variants
   const vContainer=document.getElementById('e-variants'); vContainer.innerHTML='';
   const variants=typeof p.variants==='string'?JSON.parse(p.variants||'[]'):(p.variants||[]);
-  variants.forEach(v=>addVariantGroup('e-variants',{name:v.name,values:(v.values||[]).join(', ')}));
+  variants.forEach(v=>addVariantGroup('e-variants',{name:v.name,values:(v.values||[]),prices:(v.prices||{})}));
   // Set category
   setTimeout(()=>{ document.getElementById('e-cat').value=p.category||''; document.getElementById('e-slug').value=p.category_slug||p.categorySlug||''; },50);
   const img=p.image?(p.image.startsWith('http')?p.image:'/'+p.image):'/images/product-fan.jpg';
