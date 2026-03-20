@@ -20,12 +20,12 @@ const LOCAL_PRODUCTS  = path.join(DATADIR, 'products.json');
 const USERS_FILE      = path.join(DATADIR, 'users.json');
 const SETTINGS_FILE   = path.join(DATADIR, 'settings.json');
 const DEFAULT_SETTINGS = {
-  whatsapp:      '',
-  storeName:     'Zenocart',
-  fbPage:        'zenocart.bd',
-  heroPill:      '🎉 EID SPECIAL OFFER IS HERE',
-  offerBadgeMain: '5–7% OFF',
-  offerBadgeSub:  'Eid Special Discount! 5% (Air) · 7% (Sea) on all products'
+  whatsapp:       '',
+  storeName:      'Zenocart',
+  fbPage:         'zenocart.bd',
+  heroPill:       '',
+  offerBadgeMain: '',
+  offerBadgeSub:  ''
 };
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
