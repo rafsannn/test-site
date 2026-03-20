@@ -32,6 +32,13 @@
     .star-select { display:flex; gap:6px; margin-bottom:12px; }
     .star-select span { font-size:1.5rem; cursor:pointer; opacity:.4; transition:var(--t); }
     .star-select span.on { opacity:1; }
+    /* Variants */
+    .variant-group { margin-bottom:14px; }
+    .variant-label { font-size:.8rem; font-weight:700; color:var(--dark); margin-bottom:8px; display:block; }
+    .variant-options { display:flex; gap:8px; flex-wrap:wrap; }
+    .variant-btn { padding:7px 16px; border:1.5px solid var(--border); border-radius:8px; font-size:.85rem; cursor:pointer; background:#fff; color:var(--dark); transition:var(--t); font-family:'DM Sans',sans-serif; }
+    .variant-btn:hover { border-color:var(--primary); color:var(--primary); }
+    .variant-btn.selected { background:var(--primary); color:#fff; border-color:var(--primary); }
     /* Button styles */
     .product-order-now-btn { background:#e8510a!important; color:#fff!important; border:2px solid #e8510a!important; cursor:pointer!important; transition:all .2s ease!important; }
     .product-order-now-btn:hover { background:#c7420a!important; border-color:#c7420a!important; transform:translateY(-2px)!important; box-shadow:0 6px 20px rgba(232,81,10,.35)!important; }
@@ -103,6 +110,10 @@
             </div>
 
             <p class="product-detail-desc" id="detail-desc"></p>
+
+            <!-- Variants -->
+            <div id="variants-section" style="margin-bottom:18px;display:none">
+            </div>
 
             <!-- Trust badges -->
             <div class="trust-badges">
@@ -283,6 +294,20 @@
       const specs = typeof product.specs==='string'?JSON.parse(product.specs||'[]'):(product.specs||[]);
       if(specs.length){ document.getElementById('detail-specs').innerHTML='<div style="margin-bottom:12px"><strong style="font-size:.85rem">Product Specifications</strong></div>'+specs.map(s=>'<div class="meta-row"><strong>'+s.label+'</strong> '+s.value+'</div>').join(''); }
 
+      // Variants
+      const variants = typeof product.variants==='string'?JSON.parse(product.variants||'[]'):(product.variants||[]);
+      const varSection = document.getElementById('variants-section');
+      if(variants.length>0){
+        varSection.style.display='block';
+        varSection.innerHTML = variants.map((v,vi)=>`
+          <div class="variant-group">
+            <span class="variant-label">${v.name}:</span>
+            <div class="variant-options">
+              ${(v.values||[]).map((val,i)=>`<button class="variant-btn${i===0?' selected':''}" onclick="selectVariant(this,'variant-group-${vi}')">${val}</button>`).join('')}
+            </div>
+          </div>`).join('');
+      }
+
       // Qty controls
       document.getElementById('qty-minus').onclick = () => { qty=Math.max(1,qty-1); document.getElementById('detail-qty').textContent=qty; };
       document.getElementById('qty-plus').onclick  = () => { qty++; document.getElementById('detail-qty').textContent=qty; };
@@ -309,6 +334,12 @@
       const related = all.filter(p=>p.id!==product.id && (p.category_slug||p.categorySlug)===(product.category_slug||product.categorySlug)).slice(0,4);
       document.getElementById('related-grid').innerHTML = related.length ? related.map(p=>renderProductCard(p,'/')).join('') : '<p style="color:var(--gray);padding:20px">No related products found.</p>';
     });
+
+    // ── Variant selection ─────────────────────────────────────────────────────
+    function selectVariant(btn, groupId){
+      btn.closest('.variant-options').querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
 
     // ── Reviews ────────────────────────────────────────────────────────────────
     function renderReviews(reviews){

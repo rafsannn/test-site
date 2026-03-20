@@ -124,11 +124,20 @@ function serveStatic(res,fp) {
 }
 
 // ── Build product object from form fields ─────────────────────────────────────
-function buildProduct(fields, imagePath, existing={}) {
+function buildProduct(fields, imagePath, existing={}, newImages=[]) {
   let specs=existing.specs||[];
   try{ if(fields.specs) specs=JSON.parse(fields.specs); }catch{}
   let reviews=existing.reviews||[];
   try{ if(fields.reviews) reviews=JSON.parse(fields.reviews); }catch{}
+  let variants=existing.variants||[];
+  try{ if(fields.variants) variants=JSON.parse(fields.variants); }catch{}
+
+  // Image list: start from kept existing images, then add new uploads
+  let keptImages=existing.images||[];
+  try{ if(fields.keptImages) keptImages=JSON.parse(fields.keptImages); }catch{}
+  const finalImages = newImages.length>0 ? [...keptImages, ...newImages] : (keptImages.length>0 ? keptImages : (imagePath?[imagePath]:[]));
+  const mainImage   = finalImages[0] || imagePath || existing.image || '';
+
   return {
     name:          fields.name         || existing.name        || 'New Product',
     short_name:    fields.shortName    || existing.short_name  || fields.name || 'Product',
@@ -144,9 +153,10 @@ function buildProduct(fields, imagePath, existing={}) {
     meta_desc:     fields.meta_desc    || existing.meta_desc   || '',
     description:   fields.description || existing.description || '',
     fb_link:       fields.fb_link !== undefined ? (fields.fb_link || '') : (existing.fb_link || ''),
-    image:         imagePath           || existing.image || '',
-    images:        [imagePath || existing.image || ''],
+    image:         mainImage,
+    images:        finalImages,
     specs:         specs,
+    variants:      variants,
     reviews:       reviews,
     updated_at:    new Date().toISOString()
   };
@@ -244,20 +254,17 @@ const srv = http.createServer(async (req, res) => {
     if(!requireAuth(req,res))return;
     const ct=req.headers['content-type']||''; const bm=ct.match(/boundary=(.+)/);
     if(!bm)return respond(res,400,{error:'Expected multipart'});
-    const {fields,fileBuffer,fileName}=parseMultipart(await readBody(req),bm[1]);
-    let img=fields.existingImage||'';
-    const allImgs=[];
-    if(files&&files.length>0){
-      for(const f of files){
-        if(f.data&&f.data.length>100){
-          try{ const url=await uploadImage(f.data,f.name); allImgs.push(url); if(!img)img=url; }
-          catch(e){ console.error('Upload error:',e.message); }
-        }
+    const parsed=parseMultipart(await readBody(req),bm[1]);
+    const {fields,files}=parsed;
+    const newImgs=[];
+    for(const f of (files||[])){
+      if(f.data&&f.data.length>100){
+        try{ newImgs.push(await uploadImage(f.data,f.name)); }
+        catch(e){ console.error('Upload error:',e.message); }
       }
     }
     try{
-      const p=buildProduct(fields,img); p.created_at=new Date().toISOString();
-      if(allImgs.length>1) p.images=allImgs;
+      const p=buildProduct(fields,'',{},newImgs); p.created_at=new Date().toISOString();
       return respond(res,201,await createProduct(p));
     }catch(e){console.error(e);return respond(res,500,{error:e.message});}
   }
@@ -265,23 +272,22 @@ const srv = http.createServer(async (req, res) => {
   if(pn.match(/^\/api\/admin\/products\/\d+$/) && mt==='PUT'){
     if(!requireAuth(req,res))return;
     const id=parseInt(pn.split('/')[4]); const ct=req.headers['content-type']||'';
-    let fields={},fileBuffer=null,fileName='';
-    if(ct.includes('multipart')){const bm=ct.match(/boundary=(.+)/);({fields,fileBuffer,fileName}=parseMultipart(await readBody(req),bm[1]));}
-    else{fields=JSON.parse((await readBody(req)).toString()||'{}');}
+    let fields={}, files=[];
+    if(ct.includes('multipart')){
+      const bm=ct.match(/boundary=(.+)/);
+      const parsed=parseMultipart(await readBody(req),bm[1]);
+      fields=parsed.fields; files=parsed.files||[];
+    } else { fields=JSON.parse((await readBody(req)).toString()||'{}'); }
     const existing=await getProduct(id); if(!existing)return respond(res,404,{error:'Not found'});
-    let img=existing.image;
-    const updImgs=[];
-    if(files&&files.length>0){
-      for(const f of files){
-        if(f.data&&f.data.length>100){
-          try{ const url=await uploadImage(f.data,f.name); updImgs.push(url); if(updImgs.length===1)img=url; }
-          catch(e){ console.error('Upload error:',e.message); }
-        }
+    const newImgs=[];
+    for(const f of files){
+      if(f.data&&f.data.length>100){
+        try{ newImgs.push(await uploadImage(f.data,f.name)); }
+        catch(e){ console.error('Upload error:',e.message); }
       }
     }
     try{
-      const updated=buildProduct(fields,img,existing);
-      if(updImgs.length>1) updated.images=updImgs;
+      const updated=buildProduct(fields,'',existing,newImgs);
       return respond(res,200,await updateProduct(id,updated)||existing);
     }catch(e){console.error(e);return respond(res,500,{error:e.message});}
   }

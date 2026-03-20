@@ -287,6 +287,12 @@ tr:hover td{background:var(--bg)}
             </div></div>
             <div class="fr full"><div class="fg2"><label>Description *</label><textarea id="a-desc" rows="3" placeholder="Full product description..."></textarea></div></div>
             <div style="margin-bottom:18px"><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specifications</label><div id="a-specs"></div><button class="add-spec" onclick="addSpec('a-specs')">+ Add Spec</button></div>
+            <!-- Variants -->
+            <div style="margin-bottom:18px">
+              <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:4px">Product Variants <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional — e.g. Size, Color)</span></label>
+              <div id="a-variants"></div>
+              <button class="add-spec" onclick="addVariantGroup('a-variants')" style="margin-top:6px">+ Add Variant Type</button>
+            </div>
             <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn btn-o" onclick="resetAdd()">Reset</button><button class="btn btn-p" onclick="submitProd()">✅ Save Product</button></div>
           </div>
         </div>
@@ -507,7 +513,19 @@ tr:hover td{background:var(--bg)}
         <input type="text" id="e-metadesc" maxlength="160">
       </div></div>
       <div class="fr full"><div class="fg2"><label>Description</label><textarea id="e-desc" rows="3"></textarea></div></div>
-      <div><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specs</label><div id="e-specs"></div><button class="add-spec" onclick="addSpec('e-specs')">+ Add Spec</button></div>
+      <div style="margin-bottom:18px"><label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Specs</label><div id="e-specs"></div><button class="add-spec" onclick="addSpec('e-specs')">+ Add Spec</button></div>
+      <!-- Image editor -->
+      <div style="margin-bottom:18px">
+        <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:8px">Current Images <span style="font-weight:400;color:var(--gr);font-size:.72rem">(click × to remove)</span></label>
+        <div id="e-current-imgs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"></div>
+        <input type="hidden" id="e-kept-images" value="[]">
+      </div>
+      <!-- Variants -->
+      <div style="margin-bottom:18px">
+        <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:4px">Product Variants <span style="font-weight:400;color:var(--gr);font-size:.72rem">(optional)</span></label>
+        <div id="e-variants"></div>
+        <button class="add-spec" onclick="addVariantGroup('e-variants')" style="margin-top:6px">+ Add Variant Type</button>
+      </div>
     </div>
     <div class="mf"><button class="btn btn-o" onclick="closeModal('edit-ov')">Cancel</button><button class="btn btn-p" onclick="saveEdit()">💾 Save</button></div>
   </div>
@@ -703,6 +721,54 @@ function prevImgs(input, boxId){
   });
 }
 function addSpec(listId,label='',value=''){ const l=document.getElementById(listId); const d=document.createElement('div'); d.className='spec-row'; d.innerHTML='<input type="text" placeholder="Label" value="'+label+'"><input type="text" placeholder="Value" value="'+value+'"><button onclick="this.parentElement.remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.9rem">✕</button>'; l.appendChild(d); }
+
+function addVariantGroup(listId, existing={name:'',values:''}){
+  const l=document.getElementById(listId);
+  const d=document.createElement('div');
+  d.style.cssText='background:var(--bg);border:1.5px solid var(--br);border-radius:10px;padding:12px;margin-bottom:10px';
+  d.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input type="text" placeholder="Variant type (e.g. Size, Color)" value="${existing.name||''}"
+        style="flex:1;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none"
+        class="variant-name">
+      <button onclick="this.closest('div[style]').remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.85rem">✕</button>
+    </div>
+    <input type="text" placeholder="Options separated by commas (e.g. S, M, L, XL)" value="${existing.values||''}"
+      style="width:100%;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none"
+      class="variant-values">
+    <div style="font-size:.7rem;color:var(--gr);margin-top:4px">Separate each option with a comma</div>`;
+  l.appendChild(d);
+}
+
+function getVariants(listId){
+  return [...document.querySelectorAll('#'+listId+' div[style]')].map(d=>({
+    name: d.querySelector('.variant-name')?.value?.trim()||'',
+    values: (d.querySelector('.variant-values')?.value||'').split(',').map(v=>v.trim()).filter(Boolean)
+  })).filter(v=>v.name&&v.values.length>0);
+}
+
+function renderCurrentImages(imgs, containerId, keptId){
+  const box=document.getElementById(containerId); if(!box)return;
+  const kept=Array.isArray(imgs)?[...imgs]:[];
+  const update=()=>{ document.getElementById(keptId).value=JSON.stringify(kept); };
+  box.innerHTML='';
+  kept.forEach((src,i)=>{
+    const fullSrc=src.startsWith('http')?src:'/'+src;
+    const wrap=document.createElement('div');
+    wrap.style.cssText='position:relative;display:inline-block';
+    const img=document.createElement('img');
+    img.src=fullSrc; img.style.cssText='width:72px;height:72px;object-fit:cover;border-radius:8px;border:2px solid '+(i===0?'var(--p)':'var(--br)');
+    img.onerror=()=>{img.src='/images/logo.png'};
+    const btn=document.createElement('button');
+    btn.textContent='✕'; btn.title='Remove image';
+    btn.style.cssText='position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:.65rem;cursor:pointer;line-height:1;padding:0';
+    btn.onclick=()=>{ kept.splice(i,1); update(); renderCurrentImages(kept,containerId,keptId); };
+    if(i===0){ const lbl=document.createElement('div'); lbl.textContent='Main'; lbl.style.cssText='position:absolute;bottom:0;left:0;right:0;background:rgba(30,122,143,.85);color:#fff;font-size:.55rem;text-align:center;border-radius:0 0 6px 6px'; wrap.appendChild(lbl); }
+    wrap.appendChild(img); wrap.appendChild(btn); box.appendChild(wrap);
+  });
+  if(!kept.length) box.innerHTML='<p style="font-size:.78rem;color:var(--gr)">No images — upload new ones below</p>';
+  update();
+}
 function getSpecs(listId){ return [...document.querySelectorAll('#'+listId+' .spec-row')].map(r=>{const i=r.querySelectorAll('input');return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label&&s.value); }
 
 async function submitProd(){
@@ -737,6 +803,7 @@ function resetAdd(){
   ['a-name','a-short','a-price','a-oldp','a-desc','a-fblink','a-metadesc'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-stock').value='0';
   document.getElementById('a-instock').checked=true;
+  document.getElementById('a-variants').innerHTML='';
   document.getElementById('a-cat').value=''; document.getElementById('a-slug').value='';
   document.getElementById('a-badge').value=''; document.getElementById('a-rating').value='5.0';
   document.getElementById('a-sold').value='0'; document.getElementById('a-specs').innerHTML='';
@@ -760,6 +827,13 @@ function openEdit(id){
   document.getElementById('e-instock').checked=p.in_stock!==false;
   document.getElementById('e-metadesc').value=p.meta_desc||'';
   document.getElementById('e-desc').value=p.description||'';
+  // Render existing images with delete buttons
+  const imgs=typeof p.images==='string'?JSON.parse(p.images||'[]'):(p.images||[p.image]).filter(Boolean);
+  renderCurrentImages(imgs,'e-current-imgs','e-kept-images');
+  // Render variants
+  const vContainer=document.getElementById('e-variants'); vContainer.innerHTML='';
+  const variants=typeof p.variants==='string'?JSON.parse(p.variants||'[]'):(p.variants||[]);
+  variants.forEach(v=>addVariantGroup('e-variants',{name:v.name,values:(v.values||[]).join(', ')}));
   // Set category
   setTimeout(()=>{ document.getElementById('e-cat').value=p.category||''; document.getElementById('e-slug').value=p.category_slug||p.categorySlug||''; },50);
   const img=p.image?(p.image.startsWith('http')?p.image:'/'+p.image):'/images/product-fan.jpg';
@@ -792,6 +866,8 @@ async function saveEdit(){
   fd.append('meta_desc',document.getElementById('e-metadesc').value.trim());
   fd.append('description',document.getElementById('e-desc').value.trim());
   fd.append('specs',JSON.stringify(getSpecs('e-specs')));
+  fd.append('variants',JSON.stringify(getVariants('e-variants')));
+  fd.append('keptImages',document.getElementById('e-kept-images').value||'[]');
   const img=document.getElementById('edit-img').files[0]; if(img)fd.append('image',img);
   try{
     const r=await fetch('/api/admin/products/'+id,{method:'PUT',body:fd,credentials:'include'});
