@@ -64,7 +64,7 @@
 /* ── RESET ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#000;color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
 button{cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -166,7 +166,7 @@ ul{list-style:none}
 .mobile-fb-btn:hover{background:#0D65D9;transform:scale(1.01)}
 
 /* ── HERO ── */
-.hero{position:relative;overflow:hidden;background:#000}
+.hero{position:relative;overflow:hidden;background:#000;margin-top:-68px;padding-top:68px}
 /* Gradient mesh orbs */
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 20% 40%,rgba(0,80,200,.45) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 80% 20%,rgba(90,20,180,.3) 0%,transparent 55%),radial-gradient(ellipse 50% 80% at 60% 80%,rgba(0,160,140,.2) 0%,transparent 55%);pointer-events:none}
 .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 85% 60%,rgba(255,100,50,.15) 0%,transparent 50%);pointer-events:none}
