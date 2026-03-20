@@ -25,7 +25,8 @@ const DEFAULT_SETTINGS = {
   fbPage:         'zenocart.bd',
   heroPill:       '',
   offerBadgeMain: '',
-  offerBadgeSub:  ''
+  offerBadgeSub:  '',
+  maintenance:    false
 };
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
@@ -209,6 +210,20 @@ const srv = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers','Content-Type');
   if(req.method==='OPTIONS'){res.writeHead(204);res.end();return;}
   const u=new URL(req.url,`http://localhost:${PORT}`), pn=u.pathname, mt=req.method;
+
+  // ── Maintenance mode intercept ────────────────────────────────────────────
+  const isAdminPath   = pn.startsWith('/admin') || pn.startsWith('/api/admin') || pn.startsWith('/api/auth');
+  const isApiSettings = pn==='/api/settings';
+  const settings      = readJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
+  if(settings.maintenance && !isAdminPath){
+    // Allow settings API so frontend can detect maintenance
+    if(isApiSettings){ return respond(res,200,settings); }
+    // Block all other HTML page requests with maintenance page
+    if(!pn.startsWith('/api') && !pn.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|webp)$/)){
+      const html=`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zenocart — Down for Maintenance</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:#000;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;-webkit-font-smoothing:antialiased}.bg{position:fixed;inset:0;background:radial-gradient(ellipse 80% 70% at 20% 40%,rgba(0,80,200,.4) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 80% 20%,rgba(90,20,180,.25) 0%,transparent 55%),radial-gradient(ellipse 50% 80% at 60% 80%,rgba(0,160,140,.18) 0%,transparent 55%);pointer-events:none}.card{position:relative;z-index:1;text-align:center;padding:52px 40px;background:rgba(255,255,255,.06);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.12);border-radius:28px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15)}.icon{font-size:3.5rem;margin-bottom:20px;animation:float 3s ease-in-out infinite}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}h1{font-size:1.75rem;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.7;margin-bottom:28px}.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.3);border-radius:980px;padding:7px 18px;font-size:.8rem;font-weight:600;color:#FF9F0A;letter-spacing:.04em;text-transform:uppercase}.dot{width:7px;height:7px;background:#FF9F0A;border-radius:50%;animation:pulse 1.5s infinite}@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}</style></head><body><div class="bg"></div><div class="card"><div class="icon">🔧</div><h1>Back Soon</h1><p>We're making some improvements to give you a better experience. Zenocart will be back online shortly.</p><div class="badge"><span class="dot"></span>Down for Maintenance</div></div></body></html>`;
+      res.writeHead(503,{'Content-Type':'text/html'}); return res.end(html);
+    }
+  }
 
   // Public API
   if(pn==='/api/products' && mt==='GET'){
@@ -567,6 +582,15 @@ const srv = http.createServer(async (req, res) => {
   if(pn==='/api/settings' && mt==='GET'){
     return respond(res,200,readJSON(SETTINGS_FILE, DEFAULT_SETTINGS));
   }
+  if(pn==='/api/admin/maintenance' && mt==='PUT'){
+    if(!requireAuth(req,res))return;
+    const b=JSON.parse((await readBody(req)).toString()||'{}');
+    const current=readJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
+    current.maintenance = !!b.maintenance;
+    writeJSON(SETTINGS_FILE, current);
+    return respond(res,200,{maintenance:current.maintenance});
+  }
+
   if(pn==='/api/admin/settings' && mt==='PUT'){
     if(!requireAuth(req,res))return;
     const b=JSON.parse((await readBody(req)).toString()||'{}');

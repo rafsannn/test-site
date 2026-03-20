@@ -198,7 +198,11 @@ tr:hover td{background:var(--bg)}
       <h1 id="pt">Dashboard</h1>
       <div style="display:flex;align-items:center;gap:10px">
         <a href="/" target="_blank" class="store-link">🛍️ View Store</a>
-        <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--bg);border:1px solid var(--br);border-radius:100px;font-size:.75rem;color:var(--gr);font-weight:600"><span style="width:6px;height:6px;background:var(--grn);border-radius:50%;display:inline-block"></span>Live</div>
+        <button id="maintenance-btn" onclick="toggleMaintenance()"
+          style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#e8fff0;border:1.5px solid rgba(22,163,74,.3);border-radius:980px;font-size:.75rem;font-weight:700;color:var(--grn);cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.02em">
+          <span id="maintenance-dot" style="width:7px;height:7px;background:var(--grn);border-radius:50%;display:inline-block;animation:pulse 2s infinite;flex-shrink:0"></span>
+          <span id="maintenance-label">Live</span>
+        </button>
       </div>
     </div>
 
@@ -1254,6 +1258,7 @@ async function loadSettings(){
     document.getElementById('offer-main').value  = d.offerBadgeMain||'';
     document.getElementById('offer-sub').value   = d.offerBadgeSub||'';
     selectNavStyle(d.navStyle||'solid');
+    setMaintenanceUI(!!d.maintenance);
   }catch(e){}
 }
 async function saveSettings(){
@@ -1280,9 +1285,53 @@ function selectNavStyle(val){
   document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
 }
 
+// ── MAINTENANCE TOGGLE ────────────────────────────────────────────────────────
+let maintenanceOn = false;
+
+function setMaintenanceUI(on){
+  maintenanceOn = on;
+  const btn  = document.getElementById('maintenance-btn');
+  const dot  = document.getElementById('maintenance-dot');
+  const lbl  = document.getElementById('maintenance-label');
+  if(!btn) return;
+  if(on){
+    btn.style.background    = '#fff6e8';
+    btn.style.borderColor   = 'rgba(217,119,6,.4)';
+    btn.style.color         = 'var(--org)';
+    dot.style.background    = 'var(--org)';
+    dot.style.animation     = 'none';
+    dot.style.opacity       = '1';
+    lbl.textContent         = 'Maintenance';
+  } else {
+    btn.style.background    = '#e8fff0';
+    btn.style.borderColor   = 'rgba(22,163,74,.3)';
+    btn.style.color         = 'var(--grn)';
+    dot.style.background    = 'var(--grn)';
+    dot.style.animation     = 'pulse 2s infinite';
+    lbl.textContent         = 'Live';
+  }
+}
+
+async function toggleMaintenance(){
+  const newVal = !maintenanceOn;
+  const msg = newVal
+    ? '⚠️ This will take the site offline for all visitors.\n\nEnable maintenance mode?'
+    : '✅ Bring the site back online for all visitors?';
+  if(!confirm(msg)) return;
+  try{
+    const r = await fetch('/api/admin/maintenance',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({maintenance:newVal}),credentials:'include'});
+    if(r.ok){
+      setMaintenanceUI(newVal);
+      toast(newVal ? '🔧 Maintenance mode ON — site is offline for visitors' : '✅ Site is back online!', newVal ? 'info' : 'ok');
+    } else { toast('Failed to update maintenance mode','err'); }
+  }catch(e){ toast('Network error','err'); }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 checkAuth();
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+// Load maintenance state immediately on page load
+fetch('/api/settings',{credentials:'include'}).then(r=>r.json()).then(d=>setMaintenanceUI(!!d.maintenance)).catch(()=>{});
 </script>
 </body>
 </html>
