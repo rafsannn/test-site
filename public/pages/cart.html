@@ -5,40 +5,40 @@
   <title>Cart | Zenocart</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    .whatsapp-field { background: linear-gradient(135deg,#e8fff0,#d4f5e2); border:2px solid #25d366; border-radius:12px; padding:14px 16px; margin-bottom:16px; }
-    .whatsapp-field label { display:flex; align-items:center; gap:8px; font-size:.82rem; font-weight:700; color:#128c4a; margin-bottom:8px; }
-    .whatsapp-field input { width:100%; padding:11px 14px; border:1.5px solid #25d366; border-radius:8px; font-size:16px; outline:none; background:#fff; }
-    .whatsapp-field input:focus { border-color:#128c4a; box-shadow:0 0 0 3px rgba(37,211,102,.15); }
-    .whatsapp-field .hint { font-size:.75rem; color:#128c4a; margin-top:6px; display:flex; align-items:center; gap:4px; }
-    .area-select-wrap { background:var(--primary-ultra); border:1.5px solid var(--primary-light); border-radius:12px; padding:14px 16px; margin-bottom:16px; }
-    .area-select-wrap label { font-size:.82rem; font-weight:700; color:var(--primary-dark); display:block; margin-bottom:8px; }
-    .area-select-wrap select { width:100%; padding:11px 14px; border:1.5px solid var(--primary); border-radius:8px; font-size:16px; outline:none; background:#fff; color:var(--dark); }
-    .delivery-price-row { display:flex; justify-content:space-between; align-items:center; background:#fff; border-radius:8px; padding:10px 14px; margin-top:8px; }
-    .delivery-price-row span { font-size:.85rem; color:var(--dark-mid); }
-    .delivery-price-row strong { font-size:1rem; color:var(--primary-dark); font-weight:700; }
-    .payment-options { margin-bottom:16px; }
-    .payment-options label { font-size:.82rem; font-weight:600; color:var(--dark); display:block; margin-bottom:10px; }
-    .payment-opt { display:flex; align-items:center; gap:10px; padding:12px 14px; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; margin-bottom:8px; transition:var(--t); }
-    .payment-opt:hover { border-color:var(--primary); background:var(--primary-ultra); }
-    .payment-opt input[type=radio] { accent-color:var(--primary); width:18px; height:18px; flex-shrink:0; }
-    .payment-opt.selected { border-color:var(--primary); background:var(--primary-ultra); }
-    .payment-opt .pay-icon { font-size:1.4rem; }
-    .payment-opt .pay-info { flex:1; }
-    .payment-opt .pay-name { font-size:.9rem; font-weight:600; color:var(--dark); }
-    .payment-opt .pay-sub  { font-size:.75rem; color:var(--gray); margin-top:1px; }
-    .required-star { color:var(--danger); }
-    .field-label { font-size:.82rem; font-weight:600; color:var(--dark); display:block; margin-bottom:6px; }
-    .co-input { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:16px; outline:none; transition:var(--t); background:#fff; }
-    .co-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--accent-glow); }
-    .co-textarea { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:8px; font-size:16px; outline:none; resize:vertical; min-height:80px; font-family:'DM Sans',sans-serif; background:#fff; }
-    .co-textarea:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--accent-glow); }
-    .form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    @media(max-width:480px){ .form-row-2 { grid-template-columns:1fr; } }
-    .order-success { display:none; text-align:center; padding:40px 20px; }
-    .order-success .icon { font-size:4rem; margin-bottom:16px; }
-    .order-success h3 { font-size:1.3rem; font-weight:700; color:var(--dark); margin-bottom:8px; }
-    .order-success p { color:var(--gray); margin-bottom:20px; }
-    .order-success .order-id { background:var(--primary-ultra); border:1px solid var(--primary-light); border-radius:10px; padding:12px 20px; display:inline-block; font-weight:700; color:var(--primary-dark); font-size:1.1rem; margin-bottom:20px; }
+    .whatsapp-field{background:linear-gradient(135deg,#e8fff0,#d4f5e2);border:1.5px solid #25d366;border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+    .whatsapp-field label{display:flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;color:#128c4a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+    .whatsapp-field input{width:100%;padding:11px 13px;border:1.5px solid #25d366;border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;font-family:'Outfit',sans-serif}
+    .whatsapp-field input:focus{border-color:#128c4a;box-shadow:0 0 0 2px rgba(37,211,102,.12)}
+    .whatsapp-field .hint{font-size:.72rem;color:#128c4a;margin-top:6px;display:flex;align-items:center;gap:4px}
+    .area-select-wrap{background:var(--primary-ultra);border:1px solid rgba(10,22,40,.15);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+    .area-select-wrap label{font-size:.76rem;font-weight:700;color:var(--primary);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+    .area-select-wrap select{width:100%;padding:11px 13px;border:1px solid rgba(10,22,40,.2);border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;color:var(--dark);font-family:'Outfit',sans-serif}
+    .delivery-price-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:var(--r-sm);padding:10px 13px;margin-top:8px}
+    .delivery-price-row span{font-size:.84rem;color:var(--dark-mid)}
+    .delivery-price-row strong{font-size:.95rem;color:var(--dark);font-weight:700}
+    .payment-options{margin-bottom:14px}
+    .payment-options label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+    .payment-opt{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;margin-bottom:6px;transition:var(--t)}
+    .payment-opt:hover{border-color:var(--dark);background:var(--bg)}
+    .payment-opt input[type=radio]{accent-color:var(--dark);width:16px;height:16px;flex-shrink:0}
+    .payment-opt.selected{border-color:var(--dark);background:var(--bg)}
+    .payment-opt .pay-icon{font-size:1.3rem}
+    .payment-opt .pay-info{flex:1}
+    .payment-opt .pay-name{font-size:.88rem;font-weight:600;color:var(--dark)}
+    .payment-opt .pay-sub{font-size:.73rem;color:var(--gray);margin-top:1px}
+    .required-star{color:var(--danger)}
+    .field-label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+    .co-input{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:16px;outline:none;transition:var(--t);background:#fff;font-family:'Outfit',sans-serif}
+    .co-input:focus{border-color:var(--dark);box-shadow:0 0 0 2px rgba(13,13,13,.06)}
+    .co-textarea{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:16px;outline:none;resize:vertical;min-height:80px;font-family:'Outfit',sans-serif;background:#fff}
+    .co-textarea:focus{border-color:var(--dark);box-shadow:0 0 0 2px rgba(13,13,13,.06)}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:480px){.form-row-2{grid-template-columns:1fr}}
+    .order-success{display:none;text-align:center;padding:40px 20px}
+    .order-success .icon{font-size:3.5rem;margin-bottom:16px}
+    .order-success h3{font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:8px;font-family:'Syne',sans-serif}
+    .order-success p{color:var(--gray);margin-bottom:20px;font-size:.875rem}
+    .order-success .order-id{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 18px;display:inline-block;font-weight:700;color:var(--dark);font-size:1.05rem;margin-bottom:20px}
   </style>
 </head>
 <body>

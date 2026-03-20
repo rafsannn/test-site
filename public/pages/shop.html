@@ -5,48 +5,13 @@
   <title>Shop | Zenocart Online Marketplace</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    /* ── Mobile filter toggle button ── */
-    .filter-toggle-btn {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 16px;
-      background: var(--white);
-      border: 1.5px solid var(--border);
-      border-radius: var(--r);
-      font-size: .875rem;
-      font-weight: 600;
-      color: var(--dark);
-      cursor: pointer;
-      transition: var(--t);
-    }
-    .filter-toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .filter-toggle-btn .badge-count {
-      background: var(--primary);
-      color: #fff;
-      font-size: .7rem;
-      font-weight: 700;
-      padding: 1px 7px;
-      border-radius: 100px;
-      display: none;
-    }
-    .filter-toggle-btn .badge-count.show { display: inline-block; }
-
-    /* Mobile: show toggle, hide sidebar by default */
-    @media(max-width:899px) {
-      .filter-toggle-btn { display: flex; }
-      .shop-sidebar { display: none; }
-      .shop-sidebar.open { display: block; }
-    }
-
-    /* Active filter indicator dot */
-    .filter-active-dot {
-      width: 8px; height: 8px;
-      background: var(--primary);
-      border-radius: 50%;
-      display: none;
-    }
-    .filter-active-dot.show { display: inline-block; }
+    .filter-toggle-btn{display:none;align-items:center;gap:7px;padding:8px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);font-size:.85rem;font-weight:600;color:var(--dark);cursor:pointer;transition:var(--t);font-family:'Outfit',sans-serif}
+    .filter-toggle-btn:hover{border-color:var(--dark);color:var(--dark)}
+    .filter-toggle-btn .badge-count{background:var(--dark);color:#fff;font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:100px;display:none}
+    .filter-toggle-btn .badge-count.show{display:inline-block}
+    @media(max-width:899px){.filter-toggle-btn{display:flex}.shop-sidebar{display:none}.shop-sidebar.open{display:block}}
+    .filter-active-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;display:none}
+    .filter-active-dot.show{display:inline-block}
   </style>
 </head>
 <body>
