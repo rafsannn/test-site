@@ -11,21 +11,25 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif}input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 
 /* LOGIN */
-#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#000 0%,#0a0a1a 100%);position:relative;overflow:hidden}
-.lb{background:rgba(255,255,255,.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:20px;padding:40px;width:100%;max-width:360px;box-shadow:0 24px 64px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.5)}
-.ll{text-align:center;margin-bottom:28px}
-.ll-brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
-.ll-brand img{height:44px;width:44px;object-fit:contain}
-.ll-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.3rem;font-weight:800;color:var(--dk);line-height:1}
-.ll-name span{color:var(--ac)}
-.ll h2{font-size:.95rem;color:var(--dk);margin-bottom:4px;font-weight:600}
-.ll p{font-size:.78rem;color:var(--gr)}
-.fg{margin-bottom:14px}.fg label{display:block;font-size:.75rem;font-weight:600;color:var(--dk);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
-.fg input{width:100%;padding:10px 13px;border:1px solid var(--br);border-radius:var(--r);font-size:.9rem;outline:none;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
-.fg input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,113,227,.15)}
-.le{background:#fff0f0;border:1px solid #fcc;border-radius:var(--r);padding:10px;font-size:.82rem;color:var(--red);margin-bottom:12px;display:none}
-.btn-login{width:100%;padding:12px;background:var(--p);color:#fff;border-radius:980px;font-size:.95rem;font-weight:600;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
-.btn-login:hover{background:var(--pd)}
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#000;position:relative;overflow:hidden}
+#ls::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 20% 40%,rgba(0,80,200,.4) 0%,transparent 60%),radial-gradient(ellipse 60% 60% at 80% 20%,rgba(90,20,180,.25) 0%,transparent 55%),radial-gradient(ellipse 50% 80% at 60% 80%,rgba(0,160,140,.18) 0%,transparent 55%);pointer-events:none}
+#ls::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 40% 40% at 85% 60%,rgba(255,100,50,.12) 0%,transparent 50%);pointer-events:none}
+.lb{position:relative;z-index:1;background:rgba(255,255,255,.07);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:44px 40px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.15);animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.ll{text-align:center;margin-bottom:32px}
+.ll-brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
+.ll-brand img{height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1)}
+.ll-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.03em}
+.ll-name span{color:#0071E3}
+.ll h2{font-size:.95rem;color:rgba(255,255,255,.9);margin-bottom:5px;font-weight:600}
+.ll p{font-size:.8rem;color:rgba(255,255,255,.4)}
+.fg{margin-bottom:14px}.fg label{display:block;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em}
+.fg input{width:100%;padding:11px 14px;border:1px solid rgba(255,255,255,.12);border-radius:12px;font-size:.9rem;outline:none;transition:var(--t);background:rgba(255,255,255,.08);color:#fff;font-family:'Plus Jakarta Sans',sans-serif}
+.fg input::placeholder{color:rgba(255,255,255,.25)}
+.fg input:focus{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);box-shadow:0 0 0 3px rgba(0,113,227,.2)}
+.le{background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.3);border-radius:10px;padding:10px 14px;font-size:.82rem;color:#ff8080;margin-bottom:14px;display:none}
+.btn-login{width:100%;padding:13px;background:var(--p);color:#fff;border-radius:980px;font-size:.92rem;font-weight:700;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;margin-top:4px;letter-spacing:-.01em}
+.btn-login:hover{background:var(--pd);transform:scale(1.01)}
 
 /* LAYOUT */
 #app{display:none;min-height:100vh}
@@ -169,7 +173,7 @@ tr:hover td{background:var(--bg)}
     <div class="fg"><label>Username</label><input type="text" id="lu" value="admin" placeholder="admin"></div>
     <div class="fg"><label>Password</label><input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn-login" onclick="doLogin()">Sign In →</button>
-    <p style="text-align:center;font-size:.72rem;color:var(--gr);margin-top:14px">Default: admin / admin123</p>
+    <p style="text-align:center;font-size:.72rem;color:rgba(255,255,255,.25);margin-top:14px">Default: admin / admin123</p>
   </div>
 </div>
 
