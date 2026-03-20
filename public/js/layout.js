@@ -6,10 +6,6 @@ function injectLayout(root) {
       <div class="navbar-inner">
         <a href="/" class="nav-logo">
           <img src="/images/logo.png" alt="Zenocart" onerror="this.style.display='none'">
-          <div class="nav-logo-text">
-            <span class="nav-logo-name"><span style="color:var(--accent)">ZENO</span>CART</span>
-            <span class="nav-logo-sub">Online Marketplace</span>
-          </div>
         </a>
         <div class="nav-search">
           <span class="nav-search-icon">🔍</span>
