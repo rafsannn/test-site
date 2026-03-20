@@ -10,8 +10,8 @@
     .whatsapp-field input{width:100%;padding:11px 13px;border:1.5px solid #25d366;border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;font-family:'Outfit',sans-serif}
     .whatsapp-field input:focus{border-color:#128c4a;box-shadow:0 0 0 2px rgba(37,211,102,.12)}
     .whatsapp-field .hint{font-size:.72rem;color:#128c4a;margin-top:6px;display:flex;align-items:center;gap:4px}
-    .area-select-wrap{background:var(--primary-ultra);border:1px solid rgba(10,22,40,.15);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
-    .area-select-wrap label{font-size:.76rem;font-weight:700;color:var(--primary);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+    .area-select-wrap{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+    .area-select-wrap label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
     .area-select-wrap select{width:100%;padding:11px 13px;border:1px solid rgba(10,22,40,.2);border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;color:var(--dark);font-family:'Outfit',sans-serif}
     .delivery-price-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:var(--r-sm);padding:10px 13px;margin-top:8px}
     .delivery-price-row span{font-size:.84rem;color:var(--dark-mid)}
@@ -82,9 +82,9 @@
               </div>
 
               <!-- Grand Total -->
-              <div class="summary-line total" id="grand-total-row" style="font-size:1.15rem;padding:14px 0;border-top:2px solid var(--primary);margin-top:4px">
+              <div class="summary-line total" id="grand-total-row" style="font-size:1.1rem;padding:14px 0;border-top:2px solid var(--dark);margin-top:4px">
                 <span>Grand Total</span>
-                <span id="grand-total-display" style="color:var(--primary-dark)">৳0</span>
+                <span id="grand-total-display" style="color:var(--dark)">৳0</span>
               </div>
 
               <!-- Payment Method -->
@@ -198,7 +198,7 @@
             </div>
 
             <!-- Final total -->
-            <div style="background:var(--primary-ultra);border:1.5px solid var(--primary-light);border-radius:12px;padding:14px 16px;margin-bottom:20px">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:18px">
               <div id="final-order-summary" style="font-size:.875rem;color:var(--dark-mid)"></div>
             </div>
 
@@ -273,7 +273,7 @@
       el.innerHTML =
         '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Subtotal ('+getCartCount()+' items)</span><span>'+formatPrice(subtotal)+'</span></div>'+
         '<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Delivery ('+((selectedDelivery?selectedDelivery.area:'Not selected'))+')</span><span>'+formatPrice(delivery)+'</span></div>'+
-        '<div style="display:flex;justify-content:space-between;font-weight:700;font-size:1rem;padding-top:8px;border-top:1px solid var(--primary-light)"><span>Total</span><span style="color:var(--primary-dark)">'+formatPrice(total)+'</span></div>';
+        '<div style="display:flex;justify-content:space-between;font-weight:700;font-size:1rem;padding-top:8px;border-top:1px solid var(--border)"><span>Total</span><span style="color:var(--dark)">'+formatPrice(total)+'</span></div>';
     }
 
     function selectPayment(type, el) {

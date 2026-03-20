@@ -182,7 +182,7 @@
       <div class="dco-success" id="dco-success">
         <div class="ico">🎉</div>
         <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px">Order Placed!</h3>
-        <div style="background:var(--primary-ultra);border:1px solid var(--primary-light);border-radius:8px;padding:10px 18px;display:inline-block;font-weight:700;color:var(--primary-dark);margin-bottom:12px" id="dco-order-id">Order #—</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 18px;display:inline-block;font-weight:700;color:var(--dark);margin-bottom:12px" id="dco-order-id">Order #—</div>
         <p style="color:var(--gray);font-size:.875rem;margin-bottom:20px">We'll contact you on WhatsApp at <strong id="dco-success-wa"></strong> to confirm.</p>
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="document.getElementById('dco-overlay').classList.remove('open');document.body.style.overflow=''">Continue Shopping</button>
@@ -295,7 +295,7 @@
                 const prices = v.prices||{};
                 const hasPrice = prices[val]>0;
                 const dp = hasPrice ? ` data-price="${prices[val]}"` : '';
-                const pTag = hasPrice ? `<span style="font-size:.72rem;color:${i===0?'rgba(255,255,255,.8)':'var(--primary)'};margin-left:4px">৳${prices[val].toLocaleString()}</span>` : '';
+                const pTag = hasPrice ? `<span style="font-size:.72rem;color:${i===0?'rgba(255,255,255,.8)':'var(--gray)'};margin-left:4px">৳${prices[val].toLocaleString()}</span>` : '';
                 return `<button class="variant-btn${i===0?' selected':''}"${dp} onclick="selectVariant(this,'variant-group-${vi}')">${val}${pTag}</button>`;
               }).join('')}
             </div>
