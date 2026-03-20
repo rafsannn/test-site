@@ -451,3 +451,6 @@ ul{list-style:none}
 @media(min-width:600px){#checkout-modal > div{border-radius:var(--r)}}
 
 #wa-float a:hover{transform:scale(1.08);box-shadow:0 8px 32px rgba(37,211,102,.5)!important}
+
+/* Hide footer quick links + categories on mobile */
+@media(max-width:599px){.footer-col{display:none}}
