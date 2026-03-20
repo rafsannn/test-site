@@ -445,9 +445,9 @@ ul{list-style:none}
 .mbb-icon{font-size:1.15rem;line-height:1;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
 .mbb-tab.mbb-active .mbb-icon{transform:scale(1.15)}
 .mbb-label{font-size:.62rem;font-weight:600;letter-spacing:.01em}
-/* Fade in on load */
+/* Fade in on load — on main, NOT body (body transform breaks position:fixed) */
 @keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-body{animation:pageIn .22s ease both}
+main{animation:pageIn .22s ease both}
 
 @media(max-width:767px){body{padding-bottom:88px}}
 @media(max-width:767px){.navbar{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}}
