@@ -13,6 +13,76 @@
   --sh:0 8px 32px rgba(0,0,0,.4);--r:12px;--t:all .2s cubic-bezier(.4,0,.2,1);
   --glass:rgba(255,255,255,.07);--blur:blur(40px) saturate(180%)
 }
+/* ── LIGHT THEME ── */
+body.light-theme{background:#F5F5F7;color:#1D1D1F}
+body.light-theme::before{background:radial-gradient(ellipse 70% 60% at 10% 20%,rgba(0,113,227,.08) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 85% 10%,rgba(90,20,180,.05) 0%,transparent 50%),radial-gradient(ellipse 60% 70% at 70% 90%,rgba(0,160,140,.04) 0%,transparent 50%)}
+body.light-theme .sb{background:rgba(255,255,255,.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:1px solid rgba(0,0,0,.08)}
+body.light-theme .sb-logo{border-bottom:1px solid rgba(0,0,0,.07)}
+body.light-theme .sb-logo img{filter:none}
+body.light-theme .ni{color:rgba(0,0,0,.5)}
+body.light-theme .ni:hover{background:rgba(0,0,0,.05);color:rgba(0,0,0,.85)}
+body.light-theme .ni.active{background:rgba(0,113,227,.1);color:#0071E3}
+body.light-theme .sb-foot{border-top:1px solid rgba(0,0,0,.07)}
+body.light-theme .sb-foot button{background:rgba(0,0,0,.05);color:rgba(0,0,0,.5)}
+body.light-theme .sb-foot button:hover{background:rgba(255,59,48,.08);color:#FF3B30}
+body.light-theme .topbar{background:rgba(255,255,255,.8);border-bottom:1px solid rgba(0,0,0,.08);box-shadow:0 1px 0 rgba(0,0,0,.04)}
+body.light-theme .topbar h1{color:#1D1D1F}
+body.light-theme .store-link{background:rgba(0,113,227,.08);color:#0071E3;border:1px solid rgba(0,113,227,.2)}
+body.light-theme .sc{background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.07);box-shadow:0 2px 12px rgba(0,0,0,.05)}
+body.light-theme .sl{color:#6E6E73}
+body.light-theme .sv{color:#1D1D1F}
+body.light-theme .tw{background:#fff;border:1px solid rgba(0,0,0,.08)}
+body.light-theme thead{background:#F5F5F7}
+body.light-theme th{color:#6E6E73;border-bottom:1px solid rgba(0,0,0,.08)}
+body.light-theme td{color:#1D1D1F;border-bottom:1px solid rgba(0,0,0,.05)}
+body.light-theme tr:hover td{background:#F9F9FB}
+body.light-theme .pi{border:1px solid rgba(0,0,0,.08)}
+body.light-theme .pn{color:#1D1D1F}
+body.light-theme .pn small{color:#6E6E73}
+body.light-theme .cb{background:#EBF3FF;color:#0071E3}
+body.light-theme .bp-hot{background:#fff0f0;color:#FF3B30}
+body.light-theme .bp-new{background:#EBF3FF;color:#0071E3}
+body.light-theme .bp-sale{background:#fff4ec;color:#FF9F0A}
+body.light-theme .bp-none{background:#F5F5F7;color:#6E6E73}
+body.light-theme .be{background:#EBF3FF;color:#0071E3}
+body.light-theme .bd{background:#fff0f0;color:#FF3B30}
+body.light-theme .bv{background:#e8fff0;color:#30D158}
+body.light-theme .sb2 h2{color:#1D1D1F}
+body.light-theme .sf input,.body.light-theme .sf select{background:#fff;border:1px solid rgba(0,0,0,.12);color:#1D1D1F}
+body.light-theme .ov{background:rgba(0,0,0,.4)}
+body.light-theme .mo{background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.1);box-shadow:0 24px 64px rgba(0,0,0,.12)}
+body.light-theme .mh{background:rgba(255,255,255,.95);border-bottom:1px solid rgba(0,0,0,.08)}
+body.light-theme .mh h3{color:#1D1D1F}
+body.light-theme .mc{background:#F5F5F7;color:#1D1D1F}
+body.light-theme .mc:hover{background:#E5E5EA}
+body.light-theme .fg2 label{color:#6E6E73}
+body.light-theme .fg2 input,.body.light-theme .fg2 select,.body.light-theme .fg2 textarea{background:#fff;border:1px solid rgba(0,0,0,.12);color:#1D1D1F}
+body.light-theme .ipb{background:#F5F5F7;border:1.5px dashed rgba(0,0,0,.15)}
+body.light-theme .ipb:hover{background:#EBF3FF;border-color:#0071E3}
+body.light-theme .add-spec{background:#EBF3FF;color:#0071E3;border:1.5px dashed rgba(0,113,227,.3)}
+body.light-theme .spec-row input{background:#fff;border:1px solid rgba(0,0,0,.12);color:#1D1D1F}
+body.light-theme .mf{background:rgba(255,255,255,.95);border-top:1px solid rgba(0,0,0,.08)}
+body.light-theme .fe{background:#fff0f0;border:1px solid #fcc;color:#FF3B30}
+body.light-theme .st-pending{background:#fff6e8;color:#FF9F0A;border:1px solid rgba(255,159,10,.2)}
+body.light-theme .st-confirmed{background:#EBF3FF;color:#0071E3;border:1px solid rgba(0,113,227,.2)}
+body.light-theme .st-shipped{background:#e8f0ff;color:#3366cc;border:1px solid rgba(51,102,204,.2)}
+body.light-theme .st-delivered{background:#e8fff0;color:#30D158;border:1px solid rgba(48,209,88,.2)}
+body.light-theme .st-cancelled{background:#fff0f0;color:#FF3B30;border:1px solid rgba(255,59,48,.2)}
+body.light-theme .setcard{background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 2px 12px rgba(0,0,0,.05)}
+body.light-theme .setcard h3{color:#6E6E73;border-bottom:1px solid rgba(0,0,0,.08)}
+body.light-theme .cfg-ok{background:#e8fff0;color:#30D158;border:1px solid rgba(48,209,88,.2)}
+body.light-theme .cfg-warn{background:#fff6e8;color:#FF9F0A;border:1px solid rgba(255,159,10,.2)}
+body.light-theme .empty-st h3{color:#1D1D1F}
+body.light-theme .empty-st p{color:#6E6E73}
+body.light-theme .toast{background:rgba(255,255,255,.95);color:#1D1D1F;border:1px solid rgba(0,0,0,.1)}
+body.light-theme .toast.ok{background:#30D158;color:#fff}
+body.light-theme .toast.err{background:#FF3B30;color:#fff}
+body.light-theme .toast.info{background:#1D1D1F;color:#fff}
+/* Theme toggle button */
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:980px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);cursor:pointer;transition:var(--t);font-size:.95rem;flex-shrink:0}
+.theme-toggle:hover{background:rgba(255,255,255,.15)}
+body.light-theme .theme-toggle{background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.1)}
+body.light-theme .theme-toggle:hover{background:rgba(0,0,0,.1)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#000;color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 10% 20%,rgba(0,60,180,.35) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 85% 10%,rgba(70,10,160,.22) 0%,transparent 50%),radial-gradient(ellipse 60% 70% at 70% 90%,rgba(0,120,100,.15) 0%,transparent 50%);pointer-events:none;z-index:0}
@@ -206,6 +276,7 @@ tr:hover td{background:rgba(255,255,255,.04)}
     <div class="topbar">
       <h1 id="pt">Dashboard</h1>
       <div style="display:flex;align-items:center;gap:10px">
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle light/dark theme">🌙</button>
         <a href="/" target="_blank" class="store-link">🛍️ View Store</a>
         <button id="maintenance-btn" onclick="toggleMaintenance()"
           style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#e8fff0;border:1.5px solid rgba(22,163,74,.3);border-radius:980px;font-size:.75rem;font-weight:700;color:var(--grn);cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.02em">
@@ -1294,6 +1365,24 @@ function selectNavStyle(val){
   document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
 }
 
+// ── THEME TOGGLE ──────────────────────────────────────────────────────────────
+function applyTheme(theme){
+  const btn = document.getElementById('theme-toggle-btn');
+  if(theme === 'light'){
+    document.body.classList.add('light-theme');
+    if(btn) btn.textContent = '🌙';
+  } else {
+    document.body.classList.remove('light-theme');
+    if(btn) btn.textContent = '☀️';
+  }
+}
+function toggleTheme(){
+  const isLight = document.body.classList.contains('light-theme');
+  const next = isLight ? 'dark' : 'light';
+  localStorage.setItem('zc-admin-theme', next);
+  applyTheme(next);
+}
+
 // ── MAINTENANCE TOGGLE ────────────────────────────────────────────────────────
 let maintenanceOn = false;
 
@@ -1337,6 +1426,8 @@ async function toggleMaintenance(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+// Apply saved theme immediately
+applyTheme(localStorage.getItem('zc-admin-theme') || 'dark');
 checkAuth();
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 // Load maintenance state immediately on page load
