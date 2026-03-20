@@ -46,10 +46,15 @@ function injectLayout(root) {
       <a href="/pages/cart.html" class="nav-link">🛒 Cart</a>
       <a href="https://facebook.com/zenocart.bd" target="_blank" class="nav-link" style="color:#1877f2">📘 Facebook</a>
     </div>
-  </nav>
+  </nav>`;
+
+  const overlayHTML = `
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <div class="drawer" id="wishlist-drawer">
-    <div class="drawer-header"><h3>❤️ My Wishlist</h3><button class="drawer-close" id="drawer-close-btn">✕</button></div>
+    <div class="drawer-header">
+      <h3>❤️ My Wishlist</h3>
+      <button class="drawer-close" id="drawer-close-btn">✕</button>
+    </div>
     <div class="drawer-body" id="wishlist-drawer-body"></div>
   </div>
   <div class="toast-container" id="toast-container"></div>
@@ -85,8 +90,10 @@ function injectLayout(root) {
           </div>
         </div>
         <div class="footer-col"><h4>Quick Links</h4><ul>
-          <li><a href="/">Home</a></li><li><a href="/pages/shop.html">Shop All</a></li>
-          <li><a href="/pages/cart.html">Cart</a></li><li><a href="https://facebook.com/zenocart.bd" target="_blank">Facebook</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/pages/shop.html">Shop All</a></li>
+          <li><a href="/pages/cart.html">Cart</a></li>
+          <li><a href="https://facebook.com/zenocart.bd" target="_blank">Facebook</a></li>
         </ul></div>
         <div class="footer-col"><h4>Categories</h4><ul id="footer-cats">
           <li><a href="/pages/shop.html">All Products</a></li>
@@ -108,8 +115,14 @@ function injectLayout(root) {
     </div>
   </footer>`;
 
+  // Inject nav
   const navTarget = document.getElementById('nav-placeholder');
   if (navTarget) navTarget.outerHTML = navHTML;
+
+  // Inject drawer/overlay/toast/bottom-bar directly into body (NOT inside nav)
+  document.body.insertAdjacentHTML('beforeend', overlayHTML);
+
+  // Inject footer
   const footerTarget = document.getElementById('footer-placeholder');
   if (footerTarget) footerTarget.outerHTML = footerHTML;
 
