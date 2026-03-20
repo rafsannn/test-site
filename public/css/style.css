@@ -437,7 +437,7 @@ ul{list-style:none}
 .empty-wishlist p{color:var(--text-3);font-size:.85rem}
 
 /* ── MOBILE BOTTOM BAR — iOS liquid glass ── */
-.mobile-bottom-bar{display:flex;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(20,20,24,.6);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-xl);padding:6px;gap:2px;width:calc(100% - 32px);max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1)}
+.mobile-bottom-bar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(20,20,24,.6);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border-top:1px solid rgba(255,255,255,.1);padding:6px 12px;padding-bottom:calc(6px + env(safe-area-inset-bottom));gap:2px;box-shadow:0 -4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08)}
 @media(min-width:768px){.mobile-bottom-bar{display:none}}
 .mbb-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:9px 4px;border-radius:var(--r);font-size:.65rem;font-weight:600;min-height:52px;transition:all .2s cubic-bezier(.4,0,.2,1);text-decoration:none;font-family:'Plus Jakarta Sans',sans-serif;border:none;cursor:pointer;color:rgba(255,255,255,.45);background:transparent;position:relative;letter-spacing:.01em}
 .mbb-tab:hover{color:rgba(255,255,255,.75)}
