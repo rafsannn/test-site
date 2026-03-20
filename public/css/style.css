@@ -362,8 +362,8 @@ ul{list-style:none}
 .product-detail-actions .btn-primary{flex:1;min-width:150px}
 .product-detail-actions .btn-outline{width:50px;height:50px;padding:0;font-size:1.3rem;flex-shrink:0}
 .product-detail-meta{padding-top:18px;border-top:1px solid var(--border)}
-.product-main-image{border-radius:var(--r);overflow:hidden;background:var(--bg)}
-.product-main-image img{width:100%;height:auto;max-height:460px;object-fit:contain;display:block}
+.product-main-image{border-radius:var(--r);overflow:hidden;background:var(--bg);height:100%;min-height:320px}
+.product-main-image img{width:100%;height:100%;object-fit:cover;display:block}
 
 /* ── Product page Order Now / Add to Cart buttons ── */
 .product-order-now-btn{
