@@ -1,4 +1,4 @@
-// ZENOCART - Shared Layout (server version — all paths absolute)
+// ZENOCART - Shared Layout
 function injectLayout(root) {
   const navHTML = `
   <nav class="navbar">
@@ -37,7 +37,7 @@ function injectLayout(root) {
     </div>
     <div class="mobile-menu" id="mobile-menu">
       <div class="mobile-search" style="position:relative">
-        <span class="mobile-search-icon" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gray)">🔍</span>
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--gray)">🔍</span>
         <input type="text" id="mobile-search-input" placeholder="Search products...">
         <div class="search-results-dropdown" id="mobile-search-dropdown"></div>
       </div>
@@ -45,10 +45,6 @@ function injectLayout(root) {
       <a href="/pages/shop.html" class="nav-link">🛍️ Shop</a>
       <a href="/pages/cart.html" class="nav-link">🛒 Cart</a>
       <a href="https://facebook.com/zenocart.bd" target="_blank" class="nav-link" style="color:#1877f2">📘 Facebook</a>
-      <button class="mobile-fb-btn" onclick="window.open('https://facebook.com/zenocart.bd','_blank')">
-        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-        Order on Facebook
-      </button>
     </div>
   </nav>
   <div class="drawer-overlay" id="drawer-overlay"></div>
@@ -57,16 +53,17 @@ function injectLayout(root) {
     <div class="drawer-body" id="wishlist-drawer-body"></div>
   </div>
   <div class="toast-container" id="toast-container"></div>
-  <!-- Mobile bottom action bar -->
   <div class="mobile-bottom-bar" id="mobile-bottom-bar">
     <a href="/pages/cart.html" style="background:var(--primary-ultra);color:var(--primary)">
       🛒 <span>Cart</span><span class="cart-count hidden" style="position:static;width:auto;height:auto;border-radius:100px;padding:0 6px;font-size:.7rem;border:none;background:var(--danger);color:#fff;margin-left:2px" id="mobile-cart-count"></span>
     </a>
-    <a href="https://facebook.com/zenocart.bd" target="_blank" style="background:#1877f2;color:#fff">
-      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-      <span>Order on FB</span>
+    <button onclick="document.getElementById('wishlist-nav-btn').click()" style="background:var(--bg);color:var(--dark);border:none">
+      🤍 <span>Wishlist</span>
+    </button>
+    <a href="/pages/shop.html" style="background:var(--primary);color:#fff">
+      🛍️ <span>Shop</span>
     </a>
-  </div>`
+  </div>`;
 
   const footerHTML = `
   <footer class="footer">
@@ -91,12 +88,8 @@ function injectLayout(root) {
           <li><a href="/">Home</a></li><li><a href="/pages/shop.html">Shop All</a></li>
           <li><a href="/pages/cart.html">Cart</a></li><li><a href="https://facebook.com/zenocart.bd" target="_blank">Facebook</a></li>
         </ul></div>
-        <div class="footer-col"><h4>Categories</h4><ul>
-          <li><a href="/pages/shop.html?cat=fans">Mini Fans</a></li>
-          <li><a href="/pages/shop.html?cat=powerbanks">Power Banks</a></li>
-          <li><a href="/pages/shop.html?cat=watches">Watches</a></li>
-          <li><a href="/pages/shop.html?cat=headphones">Headphones</a></li>
-          <li><a href="/pages/shop.html?cat=lamps">LED Lamps</a></li>
+        <div class="footer-col"><h4>Categories</h4><ul id="footer-cats">
+          <li><a href="/pages/shop.html">All Products</a></li>
         </ul></div>
         <div class="footer-col"><h4>Stay Updated</h4>
           <p style="font-size:.85rem;color:rgba(255,255,255,.6);margin-bottom:16px">Follow us on Facebook for latest deals.</p>
@@ -119,4 +112,11 @@ function injectLayout(root) {
   if (navTarget) navTarget.outerHTML = navHTML;
   const footerTarget = document.getElementById('footer-placeholder');
   if (footerTarget) footerTarget.outerHTML = footerHTML;
+
+  // Load categories into footer dynamically
+  fetch('/api/categories').then(r=>r.json()).then(cats=>{
+    const ul = document.getElementById('footer-cats');
+    if(!ul||!cats.length) return;
+    ul.innerHTML = cats.filter(c=>c.active).map(c=>`<li><a href="/pages/shop.html?cat=${c.slug}">${c.icon} ${c.name}</a></li>`).join('');
+  }).catch(()=>{});
 }
