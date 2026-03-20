@@ -249,9 +249,12 @@ tr:hover td{background:var(--bg)}
           <div class="fe" id="add-err"></div>
           <div style="background:var(--wh);border:1px solid var(--br);border-radius:var(--r);padding:24px">
             <div style="margin-bottom:18px">
-              <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Image</label>
-              <div class="ipb" onclick="document.getElementById('add-img').click()" id="add-img-box"><div style="text-align:center;color:var(--gr)"><div style="font-size:1.8rem;margin-bottom:6px">🖼️</div><p style="font-size:.78rem">Click to upload image</p></div></div>
-              <input type="file" id="add-img" accept="image/*" style="display:none" onchange="prevImg(this,'add-img-box')">
+              <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Images <span style="font-weight:400;color:var(--gr);font-size:.72rem">(first image = main, select multiple)</span></label>
+              <div class="ipb" onclick="document.getElementById('add-img').click()" id="add-img-box" style="height:auto;min-height:100px;flex-direction:column;gap:8px;padding:12px">
+                <div style="text-align:center;color:var(--gr)"><div style="font-size:1.8rem;margin-bottom:4px">🖼️</div><p style="font-size:.78rem">Click to upload (select multiple)</p></div>
+              </div>
+              <input type="file" id="add-img" accept="image/*" multiple style="display:none" onchange="prevImgs(this,'add-img-box')">
+              <div id="add-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
             </div>
             <div class="fr"><div class="fg2"><label>Product Name *</label><input type="text" id="a-name" placeholder="Full product name"></div><div class="fg2"><label>Short Name *</label><input type="text" id="a-short" placeholder="Brief name for cards"></div></div>
             <div class="fr">
@@ -476,9 +479,12 @@ tr:hover td{background:var(--bg)}
       <div class="fe" id="edit-err"></div>
       <input type="hidden" id="edit-id">
       <div style="margin-bottom:16px">
-        <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Image</label>
-        <div class="ipb" onclick="document.getElementById('edit-img').click()" id="edit-img-box"><div style="text-align:center;color:var(--gr)"><div style="font-size:1.8rem">🖼️</div><p style="font-size:.78rem">Click to change</p></div></div>
-        <input type="file" id="edit-img" accept="image/*" style="display:none" onchange="prevImg(this,'edit-img-box')">
+        <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Images <span style="font-weight:400;color:var(--gr);font-size:.72rem">(first = main, select multiple to replace all)</span></label>
+        <div class="ipb" onclick="document.getElementById('edit-img').click()" id="edit-img-box" style="height:auto;min-height:90px;flex-direction:column;gap:6px;padding:10px">
+          <div style="text-align:center;color:var(--gr)"><div style="font-size:1.5rem">🖼️</div><p style="font-size:.75rem">Click to change images</p></div>
+        </div>
+        <input type="file" id="edit-img" accept="image/*" multiple style="display:none" onchange="prevImgs(this,'edit-img-box')">
+        <div id="edit-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
       </div>
       <div class="fr"><div class="fg2"><label>Name *</label><input type="text" id="e-name"></div><div class="fg2"><label>Short Name</label><input type="text" id="e-short"></div></div>
       <div class="fr">
@@ -677,6 +683,25 @@ function renderProds(list){
 // ── ADD PRODUCT ───────────────────────────────────────────────────────────────
 function syncSlug(sel,targetId){ const m={};allCats.forEach(c=>{m[c.name]=c.slug;m[c.icon+' '+c.name]=c.slug;}); document.getElementById(targetId).value=m[sel.value]||sel.value.toLowerCase().replace(/\s+/g,'-'); }
 function prevImg(input,boxId){ const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ document.getElementById(boxId).innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">'; }; r.readAsDataURL(f); }
+
+function prevImgs(input, boxId){
+  const files = [...input.files]; if(!files.length)return;
+  const box = document.getElementById(boxId);
+  // Show first image in the box
+  const r0=new FileReader(); r0.onload=e=>{ box.innerHTML='<img src="'+e.target.result+'" style="max-height:100px;object-fit:cover;border-radius:6px"><p style="font-size:.72rem;color:var(--p);margin-top:4px">'+files.length+' image(s) selected</p>'; }; r0.readAsDataURL(files[0]);
+  // Show all thumbnails in preview strip
+  const previewId = boxId.replace('-box','-preview');
+  const preview = document.getElementById(previewId); if(!preview)return;
+  preview.innerHTML='';
+  files.forEach((file,i)=>{
+    const r=new FileReader(); r.onload=e=>{
+      const wrap=document.createElement('div'); wrap.style.cssText='position:relative;display:inline-block';
+      const img=document.createElement('img'); img.src=e.target.result; img.style.cssText='width:64px;height:64px;object-fit:cover;border-radius:6px;border:2px solid '+(i===0?'var(--p)':'var(--br)');
+      if(i===0){const lbl=document.createElement('div');lbl.textContent='Main';lbl.style.cssText='position:absolute;bottom:0;left:0;right:0;background:rgba(30,122,143,.85);color:#fff;font-size:.6rem;text-align:center;border-radius:0 0 4px 4px';wrap.appendChild(lbl);}
+      wrap.appendChild(img); preview.appendChild(wrap);
+    }; r.readAsDataURL(file);
+  });
+}
 function addSpec(listId,label='',value=''){ const l=document.getElementById(listId); const d=document.createElement('div'); d.className='spec-row'; d.innerHTML='<input type="text" placeholder="Label" value="'+label+'"><input type="text" placeholder="Value" value="'+value+'"><button onclick="this.parentElement.remove()" style="background:#fff0f0;color:var(--red);border:none;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.9rem">✕</button>'; l.appendChild(d); }
 function getSpecs(listId){ return [...document.querySelectorAll('#'+listId+' .spec-row')].map(r=>{const i=r.querySelectorAll('input');return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label&&s.value); }
 

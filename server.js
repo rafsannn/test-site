@@ -88,19 +88,24 @@ async function uploadImage(buf, fileName) {
   return 'images/' + fname;
 }
 
-// ── Multipart parser ──────────────────────────────────────────────────────────
+// ── Multipart parser (supports multiple files) ───────────────────────────────
 function parseMultipart(buf, boundary) {
   const fields={}; let fileBuffer=null, fileName='';
+  const files=[]; // all uploaded files
   for (const part of buf.toString('binary').split('--'+boundary)) {
     if (!part.includes('Content-Disposition')) continue;
     const [hdrs,...rest] = part.split('\r\n\r\n');
     const body = rest.join('\r\n\r\n').replace(/\r\n$/,'');
     const nm = hdrs.match(/name="([^"]+)"/), fm = hdrs.match(/filename="([^"]+)"/);
     if (!nm) continue;
-    if (fm) { fileName=fm[1]; fileBuffer=Buffer.from(body,'binary'); }
+    if (fm) {
+      const fb = Buffer.from(body,'binary');
+      files.push({name:fm[1], data:fb});
+      if(!fileBuffer){ fileBuffer=fb; fileName=fm[1]; } // first file = main
+    }
     else fields[nm[1]]=body;
   }
-  return {fields,fileBuffer,fileName};
+  return {fields, fileBuffer, fileName, files};
 }
 
 // ── HTTP helpers ──────────────────────────────────────────────────────────────
@@ -240,10 +245,19 @@ const srv = http.createServer(async (req, res) => {
     const ct=req.headers['content-type']||''; const bm=ct.match(/boundary=(.+)/);
     if(!bm)return respond(res,400,{error:'Expected multipart'});
     const {fields,fileBuffer,fileName}=parseMultipart(await readBody(req),bm[1]);
-    let img=fields.existingImage||'images/product-fan.jpg';
-    if(fileBuffer&&fileName&&fileBuffer.length>100){ try{img=await uploadImage(fileBuffer,fileName);}catch(e){console.error('Upload error:',e.message);} }
+    let img=fields.existingImage||'';
+    const allImgs=[];
+    if(files&&files.length>0){
+      for(const f of files){
+        if(f.data&&f.data.length>100){
+          try{ const url=await uploadImage(f.data,f.name); allImgs.push(url); if(!img)img=url; }
+          catch(e){ console.error('Upload error:',e.message); }
+        }
+      }
+    }
     try{
       const p=buildProduct(fields,img); p.created_at=new Date().toISOString();
+      if(allImgs.length>1) p.images=allImgs;
       return respond(res,201,await createProduct(p));
     }catch(e){console.error(e);return respond(res,500,{error:e.message});}
   }
@@ -256,9 +270,20 @@ const srv = http.createServer(async (req, res) => {
     else{fields=JSON.parse((await readBody(req)).toString()||'{}');}
     const existing=await getProduct(id); if(!existing)return respond(res,404,{error:'Not found'});
     let img=existing.image;
-    if(fileBuffer&&fileName&&fileBuffer.length>100){try{img=await uploadImage(fileBuffer,fileName);}catch(e){console.error('Upload error:',e.message);}}
-    try{return respond(res,200,await updateProduct(id,buildProduct(fields,img,existing))||existing);}
-    catch(e){console.error(e);return respond(res,500,{error:e.message});}
+    const updImgs=[];
+    if(files&&files.length>0){
+      for(const f of files){
+        if(f.data&&f.data.length>100){
+          try{ const url=await uploadImage(f.data,f.name); updImgs.push(url); if(updImgs.length===1)img=url; }
+          catch(e){ console.error('Upload error:',e.message); }
+        }
+      }
+    }
+    try{
+      const updated=buildProduct(fields,img,existing);
+      if(updImgs.length>1) updated.images=updImgs;
+      return respond(res,200,await updateProduct(id,updated)||existing);
+    }catch(e){console.error(e);return respond(res,500,{error:e.message});}
   }
 
   if(pn.match(/^\/api\/admin\/products\/\d+$/) && mt==='DELETE'){

@@ -79,10 +79,12 @@
         <div class="breadcrumb"><a href="/">Home</a> <span>›</span> <a href="/pages/shop.html">Shop</a> <span>›</span> <span id="breadcrumb-name">Product</span></div>
         <div class="product-detail-layout">
           <div class="product-detail-images">
+            <!-- Left thumbnail strip (hidden if 1 image) -->
+            <div class="product-thumb-col" id="thumb-col" style="display:none"></div>
+            <!-- Main image -->
             <div class="product-main-image">
               <img id="main-img" src="" alt="Product" onerror="this.src='/images/logo.png'">
             </div>
-            <div class="product-thumb-row" id="thumb-row"></div>
           </div>
           <div class="product-detail-info">
             <div class="product-badge-row" id="detail-badges"></div>
@@ -244,16 +246,20 @@
       mainImg.src   = imgSrc;
       mainImg.onerror = () => { mainImg.src='/images/logo.png'; };
 
-      const thumbRow = document.getElementById('thumb-row');
+      const thumbCol = document.getElementById('thumb-col');
       const imgs = (typeof product.images==='string'?JSON.parse(product.images||'[]'):(product.images||[product.image])).filter(Boolean);
-      imgs.forEach((src,i) => {
-        const fullSrc = src.startsWith('http') ? src : '/' + src;
-        const img = document.createElement('img');
-        img.src=fullSrc; img.alt=product.name+' '+(i+1); img.className='product-thumb'+(i===0?' active':'');
-        img.onerror=()=>{ img.src='/images/logo.png'; };
-        img.onclick=()=>{ mainImg.src=fullSrc; document.querySelectorAll('.product-thumb').forEach(t=>t.classList.remove('active')); img.classList.add('active'); };
-        thumbRow.appendChild(img);
-      });
+      // Only show thumbnail strip if more than 1 image
+      if(imgs.length > 1){
+        thumbCol.style.display = 'flex';
+        imgs.forEach((src,i) => {
+          const fullSrc = src.startsWith('http') ? src : '/' + src;
+          const img = document.createElement('img');
+          img.src=fullSrc; img.alt=product.name+' '+(i+1); img.className='product-thumb'+(i===0?' active':'');
+          img.onerror=()=>{ img.src='/images/logo.png'; };
+          img.onclick=()=>{ mainImg.src=fullSrc; document.querySelectorAll('.product-thumb').forEach(t=>t.classList.remove('active')); img.classList.add('active'); };
+          thumbCol.appendChild(img);
+        });
+      }
 
       // Badges + info
       const badgesEl = document.getElementById('detail-badges');
