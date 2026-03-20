@@ -58,13 +58,13 @@ function injectLayout(root) {
   </div>
   <div class="toast-container" id="toast-container"></div>
   <div class="mobile-bottom-bar" id="mobile-bottom-bar">
-    <a href="/pages/cart.html" style="background:var(--accent-light);color:var(--accent)">
+    <a href="/pages/cart.html" class="active-tab">
       🛒 <span>Cart</span><span class="cart-count hidden" style="position:static;width:auto;height:auto;border-radius:100px;padding:0 6px;font-size:.7rem;border:none;background:var(--accent);color:#fff;margin-left:2px" id="mobile-cart-count"></span>
     </a>
-    <button onclick="document.getElementById('wishlist-nav-btn').click()" style="background:var(--bg);color:var(--dark);border:none">
+    <button onclick="document.getElementById('wishlist-nav-btn').click()">
       🤍 <span>Wishlist</span>
     </button>
-    <a href="/pages/shop.html" style="background:var(--accent);color:#fff">
+    <a href="/pages/shop.html">
       🛍️ <span>Shop</span>
     </a>
   </div>`;
