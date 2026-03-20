@@ -215,7 +215,8 @@ const srv = http.createServer(async (req, res) => {
   const isAdminPath   = pn.startsWith('/admin') || pn.startsWith('/api/admin') || pn.startsWith('/api/auth');
   const isApiSettings = pn==='/api/settings';
   const settings      = readJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
-  if(settings.maintenance && !isAdminPath){
+  const previewBypass = u.searchParams.get('preview') === 'zenocart_admin';
+  if(settings.maintenance && !isAdminPath && !previewBypass){
     // Allow settings API so frontend can detect maintenance
     if(isApiSettings){ return respond(res,200,settings); }
     // Block all other HTML page requests with maintenance page
