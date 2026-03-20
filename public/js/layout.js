@@ -58,15 +58,19 @@ function injectLayout(root) {
   </div>
   <div class="toast-container" id="toast-container"></div>
   <div class="mobile-bottom-bar" id="mobile-bottom-bar">
-    <a href="/pages/cart.html" class="active-tab">
-      🛒 <span>Cart</span><span class="cart-count hidden" style="position:static;width:auto;height:auto;border-radius:100px;padding:0 6px;font-size:.7rem;border:none;background:var(--accent);color:#fff;margin-left:2px" id="mobile-cart-count"></span>
+    <a href="/" class="mbb-tab" data-page="home">
+      <span class="mbb-icon">🏠</span><span class="mbb-label">Home</span>
     </a>
-    <button onclick="document.getElementById('wishlist-nav-btn').click()">
-      🤍 <span>Wishlist</span>
+    <a href="/pages/shop.html" class="mbb-tab" data-page="shop">
+      <span class="mbb-icon">🛍️</span><span class="mbb-label">Shop</span>
+    </a>
+    <a href="/pages/cart.html" class="mbb-tab" data-page="cart">
+      <span class="mbb-icon">🛒</span><span class="mbb-label">Cart</span>
+      <span class="cart-count hidden" id="mobile-cart-count" style="position:absolute;top:6px;right:calc(50% - 22px);width:16px;height:16px;border-radius:50%;background:var(--accent);color:#fff;font-size:.58rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid transparent"></span>
+    </a>
+    <button class="mbb-tab" data-page="wishlist" onclick="document.getElementById('wishlist-nav-btn').click()">
+      <span class="mbb-icon">🤍</span><span class="mbb-label">Wishlist</span>
     </button>
-    <a href="/pages/shop.html">
-      🛍️ <span>Shop</span>
-    </a>
   </div>`;
 
   const footerHTML = `
@@ -121,4 +125,27 @@ function injectLayout(root) {
     if(!ul||!cats.length) return;
     ul.innerHTML = cats.filter(c=>c.active).map(c=>`<li><a href="/pages/shop.html?cat=${c.slug}">${c.icon} ${c.name}</a></li>`).join('');
   }).catch(()=>{});
+
+  // ── Active tab detection ──
+  const path = window.location.pathname;
+  let activePage = 'home';
+  if(path.includes('shop')) activePage = 'shop';
+  else if(path.includes('cart')) activePage = 'cart';
+
+  document.querySelectorAll('.mbb-tab').forEach(tab => {
+    if(tab.dataset.page === activePage) tab.classList.add('mbb-active');
+  });
+
+  // ── Page transition: fade-out on nav click ──
+  document.querySelectorAll('.mbb-tab[href]').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      const dest = this.getAttribute('href');
+      if(dest && dest !== window.location.pathname) {
+        e.preventDefault();
+        document.body.style.transition = 'opacity .18s ease';
+        document.body.style.opacity = '0';
+        setTimeout(() => { window.location.href = dest; }, 180);
+      }
+    });
+  });
 }
