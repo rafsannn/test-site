@@ -62,13 +62,13 @@ function injectLayout(root) {
   </div>
   <div class="toast-container" id="toast-container"></div>
   <div class="mobile-bottom-bar" id="mobile-bottom-bar">
-    <a href="/pages/cart.html" style="background:var(--primary-ultra);color:var(--primary)">
+    <a href="/pages/cart.html" style="background:var(--accent-light);color:var(--accent)">
       🛒 <span>Cart</span><span class="cart-count hidden" style="position:static;width:auto;height:auto;border-radius:100px;padding:0 6px;font-size:.7rem;border:none;background:var(--accent);color:#fff;margin-left:2px" id="mobile-cart-count"></span>
     </a>
     <button onclick="document.getElementById('wishlist-nav-btn').click()" style="background:var(--bg);color:var(--dark);border:none">
       🤍 <span>Wishlist</span>
     </button>
-    <a href="/pages/shop.html" style="background:var(--dark);color:#fff">
+    <a href="/pages/shop.html" style="background:var(--accent);color:#fff">
       🛍️ <span>Shop</span>
     </a>
   </div>`;
@@ -81,7 +81,7 @@ function injectLayout(root) {
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
             <img src="/images/logo.png" alt="Zenocart" style="height:38px;width:auto;filter:brightness(0) invert(1)">
             <div>
-              <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;line-height:1.1;letter-spacing:.01em"><span style="color:var(--accent)">ZENO</span>CART</div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;line-height:1.1;letter-spacing:.01em"><span style="color:var(--accent)">ZENO</span>CART</div>
               <div style="font-size:.6rem;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">Online Marketplace</div>
             </div>
           </div>
@@ -103,7 +103,7 @@ function injectLayout(root) {
         </ul></div>
         <div class="footer-col"><h4>Stay Updated</h4>
           <p style="font-size:.84rem;color:rgba(255,255,255,.4);margin-bottom:14px;line-height:1.6">Follow us on Facebook for the latest deals and new arrivals.</p>
-          <a href="https://facebook.com/zenocart.bd" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:#1877F2;color:#fff;border-radius:var(--r);font-size:.85rem;font-weight:600;font-family:'Outfit',sans-serif;transition:var(--t)" onmouseover="this.style.background='#0D65D9'" onmouseout="this.style.background='#1877F2'">
+          <a href="https://facebook.com/zenocart.bd" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:#1877F2;color:#fff;border-radius:var(--r);font-size:.85rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;transition:var(--t)" onmouseover="this.style.background='#0D65D9'" onmouseout="this.style.background='#1877F2'">
             <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             Visit Facebook Page
           </a>
