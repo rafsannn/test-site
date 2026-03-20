@@ -120,12 +120,16 @@ function injectLayout(root) {
   const footerTarget = document.getElementById('footer-placeholder');
   if (footerTarget) footerTarget.outerHTML = footerHTML;
 
-  // ── Navbar: solid dark at top → glass on scroll (all pages) ──
+  // ── Navbar style from settings ──
   const navbar = document.querySelector('.navbar');
   if(navbar){
-    const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 40);
-    window.addEventListener('scroll', onScroll, {passive:true});
-    onScroll();
+    fetch('/api/settings').then(r=>r.json()).then(cfg=>{
+      if((cfg.navStyle||'solid') === 'glass'){
+        const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 40);
+        window.addEventListener('scroll', onScroll, {passive:true});
+        onScroll();
+      }
+    }).catch(()=>{});
   }
 
   fetch('/api/categories').then(r=>r.json()).then(cats=>{

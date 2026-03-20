@@ -450,6 +450,27 @@ tr:hover td{background:var(--bg)}
             <button class="btn btn-p btn-sm" onclick="saveSettings()">💾 Save Settings</button>
           </div>
           <div class="setcard">
+            <h3>🎨 Navbar Style</h3>
+            <p style="font-size:.82rem;color:var(--gr);margin-bottom:14px;line-height:1.6">Choose how the navbar looks when you scroll down the page.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--br);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-solid" onclick="selectNavStyle('solid')">
+                <input type="radio" name="navStyle" value="solid" style="accent-color:var(--p);width:16px;height:16px">
+                <div>
+                  <div style="font-size:.88rem;font-weight:600;color:var(--dk)">🌑 Solid Dark</div>
+                  <div style="font-size:.75rem;color:var(--gr)">Always stays solid dark — no change on scroll</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--br);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-glass" onclick="selectNavStyle('glass')">
+                <input type="radio" name="navStyle" value="glass" style="accent-color:var(--p);width:16px;height:16px">
+                <div>
+                  <div style="font-size:.88rem;font-weight:600;color:var(--dk)">✨ Scroll to Glass</div>
+                  <div style="font-size:.75rem;color:var(--gr)">Solid dark at top, transitions to liquid glass on scroll</div>
+                </div>
+              </label>
+            </div>
+            <button class="btn btn-p btn-sm" onclick="saveSettings()">💾 Save Style</button>
+          </div>
+          <div class="setcard">
             <h3>🗄️ Storage Mode</h3>
             <div style="display:flex;flex-direction:column;gap:8px">
               <div class="cfg-badge cfg-ok">✅ Local JSON — Backup &amp; Restore enabled</div>
@@ -1232,6 +1253,7 @@ async function loadSettings(){
     document.getElementById('hero-pill').value   = d.heroPill||'';
     document.getElementById('offer-main').value  = d.offerBadgeMain||'';
     document.getElementById('offer-sub').value   = d.offerBadgeSub||'';
+    selectNavStyle(d.navStyle||'solid');
   }catch(e){}
 }
 async function saveSettings(){
@@ -1240,13 +1262,22 @@ async function saveSettings(){
     fbPage:         document.getElementById('fb-page').value.trim(),
     heroPill:       document.getElementById('hero-pill').value.trim(),
     offerBadgeMain: document.getElementById('offer-main').value.trim(),
-    offerBadgeSub:  document.getElementById('offer-sub').value.trim()
+    offerBadgeSub:  document.getElementById('offer-sub').value.trim(),
+    navStyle:       document.querySelector('input[name="navStyle"]:checked')?.value || 'solid'
   };
   try{
     const r=await fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),credentials:'include'});
     if(r.ok){toast('Settings saved! Refresh store to see changes.','ok');}
     else toast('Failed to save settings','err');
   }catch(e){toast('Network error','err');}
+}
+
+function selectNavStyle(val){
+  document.querySelectorAll('#nav-opt-solid,#nav-opt-glass').forEach(el=>{
+    el.style.borderColor = el.id === 'nav-opt-'+val ? 'var(--p)' : 'var(--br)';
+    el.style.background  = el.id === 'nav-opt-'+val ? 'var(--pu)' : '';
+  });
+  document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
