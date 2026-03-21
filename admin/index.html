@@ -6,19 +6,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --p:#0071E3;--pd:#0051A3;--pl:#4DA3F0;--pu:#EBF3FF;--ac:#0071E3;
-  --dk:#1D1D1F;--dm:#3D3D3F;--gr:#6E6E73;--gl:#C7C7CC;
-  --br:rgba(0,0,0,.08);--bg:#F5F5F7;--wh:#fff;
+  --p:#0071E3;--pd:#0051A3;--pl:#4DA3F0;--pu:rgba(255,255,255,.25);--ac:#0071E3;
+  --dk:#1a2a4a;--dm:#2a3a5a;--gr:#4a6090;--gl:#8aaad0;
+  --br:rgba(255,255,255,.22);--bg:rgba(255,255,255,.12);--wh:rgba(255,255,255,.18);
   --red:#FF3B30;--grn:#30D158;--org:#FF9F0A;
-  --sh:0 4px 20px rgba(0,0,0,.08);--r:12px;--t:all .2s cubic-bezier(.4,0,.2,1);
-  --glass:rgba(255,255,255,.85);--blur:blur(24px) saturate(180%)
+  --sh:0 8px 32px rgba(0,60,160,.15),0 2px 8px rgba(0,60,160,.08);
+  --sh-glass:0 8px 32px rgba(0,40,120,.18),inset 0 1px 0 rgba(255,255,255,.5);
+  --r:14px;--t:all .2s cubic-bezier(.4,0,.2,1);
+  --glass:rgba(255,255,255,.18);--blur:blur(32px) saturate(200%)
 }
-/* ── LIGHT THEME ── */
-body.light-theme{background:#F5F5F7;color:#1D1D1F}
-body.light-theme::before{background:radial-gradient(ellipse 70% 60% at 10% 20%,rgba(0,113,227,.08) 0%,transparent 55%),radial-gradient(ellipse 50% 50% at 85% 10%,rgba(90,20,180,.05) 0%,transparent 50%),radial-gradient(ellipse 60% 70% at 70% 90%,rgba(0,160,140,.04) 0%,transparent 50%)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#F5F5F7;color:#1D1D1F;min-height:100vh;-webkit-font-smoothing:antialiased;position:relative}
-body::before{display:none}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0a1628;color:var(--dk);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 100% 80% at 20% 10%,#1a5fb4 0%,transparent 50%),radial-gradient(ellipse 80% 80% at 80% 90%,#0d3b8a 0%,transparent 45%),radial-gradient(ellipse 60% 60% at 60% 40%,#1e4fc0 0%,transparent 40%),linear-gradient(135deg,#0a1e4a 0%,#0d2a6b 50%,#0a1840 100%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 40% 40% at 85% 15%,rgba(100,180,255,.15) 0%,transparent 50%),radial-gradient(ellipse 30% 30% at 15% 80%,rgba(60,120,255,.1) 0%,transparent 50%);pointer-events:none;z-index:0}
 #app,#ls{position:relative;z-index:1}
 a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif}input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 
@@ -45,53 +45,53 @@ a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;font-fami
 
 /* LAYOUT */
 #app{display:none;min-height:100vh}
-.sb{width:228px;background:linear-gradient(160deg,rgba(235,243,255,.95) 0%,rgba(220,234,255,.92) 100%);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-right:1px solid rgba(0,113,227,.12);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto;box-shadow:2px 0 20px rgba(0,113,227,.08)}
-.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(0,113,227,.1);display:flex;align-items:center;justify-content:center}
-.sb-logo img{height:28px;width:auto;max-width:140px;object-fit:contain}
+.sb{width:228px;background:rgba(255,255,255,.12);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border-right:1px solid rgba(255,255,255,.2);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto;box-shadow:2px 0 24px rgba(0,0,0,.2),inset 1px 0 0 rgba(255,255,255,.3)}
+.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
+.sb-logo img{height:28px;width:auto;max-width:140px;object-fit:contain;filter:brightness(0) invert(1)}
 .sb-nav{flex:1;padding:10px 8px}
-.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:.83rem;color:rgba(0,40,100,.55);transition:var(--t);cursor:pointer;border-radius:10px;margin-bottom:2px}
-.ni:hover{background:rgba(0,113,227,.08);color:rgba(0,40,100,.9)}
-.ni.active{background:rgba(0,113,227,.14);color:#0051A3;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 1px 4px rgba(0,113,227,.1)}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:.83rem;color:rgba(255,255,255,.7);transition:var(--t);cursor:pointer;border-radius:10px;margin-bottom:2px}
+.ni:hover{background:rgba(255,255,255,.12);color:#fff}
+.ni.active{background:rgba(255,255,255,.2);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 2px 8px rgba(0,0,0,.15)}
 .ni .ic{font-size:.95rem;width:20px;text-align:center}
-.sb-foot{padding:10px 8px;border-top:1px solid rgba(0,113,227,.1)}
-.sb-foot button{width:100%;padding:9px 12px;background:rgba(0,113,227,.06);color:rgba(0,40,100,.55);border-radius:10px;font-size:.78rem;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;text-align:left}
-.sb-foot button:hover{background:rgba(255,59,48,.08);color:#FF3B30}
+.sb-foot{padding:10px 8px;border-top:1px solid rgba(255,255,255,.12)}
+.sb-foot button{width:100%;padding:9px 12px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border-radius:10px;font-size:.78rem;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;text-align:left}
+.sb-foot button:hover{background:rgba(255,59,48,.2);color:#ff8080}
 
 .main{margin-left:228px;min-height:100vh}
-.topbar{background:rgba(255,255,255,.85);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--br);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 rgba(0,0,0,.04)}
-.topbar h1{font-size:1rem;font-weight:700;color:#1D1D1F;letter-spacing:-.02em}
-.store-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:var(--pu);color:var(--p);border-radius:980px;font-size:.78rem;font-weight:600;transition:var(--t)}
-.store-link:hover{background:var(--p);color:#fff}
+.topbar{background:rgba(255,255,255,.14);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%);border-bottom:1px solid rgba(255,255,255,.18);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 rgba(255,255,255,.1),0 4px 20px rgba(0,0,0,.1)}
+.topbar h1{font-size:1rem;font-weight:700;color:#fff;letter-spacing:-.02em}
+.store-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:980px;font-size:.78rem;font-weight:600;transition:var(--t);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.store-link:hover{background:rgba(255,255,255,.25);color:#fff}
 
-.content{padding:24px}
+.content{padding:24px;min-height:calc(100vh - 60px)}
 
 /* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 @media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-.sc{background:#fff;border-radius:var(--r);padding:14px 16px;border:1px solid var(--br);display:flex;align-items:center;gap:12px;box-shadow:var(--sh)}
+.sc{background:rgba(255,255,255,.14);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:var(--r);padding:14px 16px;border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;gap:12px;box-shadow:var(--sh-glass)}
 .si{width:40px;height:40px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.sl{font-size:.72rem;color:var(--gr);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
-.sv{font-size:1.4rem;font-weight:700;color:var(--dk);line-height:1}
+.sl{font-size:.72rem;color:rgba(255,255,255,.6);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.sv{font-size:1.4rem;font-weight:700;color:#fff;line-height:1}
 
 /* TABLE */
-.tw{background:#fff;border-radius:var(--r);border:1px solid var(--br);overflow:hidden}
+.tw{background:rgba(255,255,255,.12);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:var(--r);border:1px solid rgba(255,255,255,.22);overflow:hidden;box-shadow:var(--sh-glass)}
 table{width:100%;border-collapse:collapse}
-thead{background:var(--bg)}
-th{padding:10px 14px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gr);text-align:left;border-bottom:1px solid var(--br)}
-td{padding:11px 14px;font-size:.84rem;color:var(--dk);border-bottom:1px solid var(--br);vertical-align:middle}
+thead{background:rgba(255,255,255,.08)}
+th{padding:10px 14px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55);text-align:left;border-bottom:1px solid rgba(255,255,255,.12)}
+td{padding:11px 14px;font-size:.84rem;color:rgba(255,255,255,.9);border-bottom:1px solid rgba(255,255,255,.08);vertical-align:middle}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--bg)}
-.pi{width:44px;height:44px;border-radius:var(--r);object-fit:cover;border:1px solid var(--br)}
-.pn{font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dk)}
-.pn small{display:block;font-weight:400;color:var(--gr);font-size:.73rem;margin-top:1px;white-space:normal}
-.cb{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:100px;font-size:.7rem;font-weight:600;background:var(--pu);color:var(--p)}
+tr:hover td{background:rgba(255,255,255,.07)}
+.pi{width:44px;height:44px;border-radius:var(--r);object-fit:cover;border:1px solid rgba(255,255,255,.2)}
+.pn{font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
+.pn small{display:block;font-weight:400;color:rgba(255,255,255,.5);font-size:.73rem;margin-top:1px;white-space:normal}
+.cb{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:100px;font-size:.7rem;font-weight:600;background:rgba(255,255,255,.2);color:#fff;backdrop-filter:blur(8px)}
 .bp{display:inline-block;padding:2px 8px;border-radius:100px;font-size:.67rem;font-weight:700}
-.bp-hot{background:#fff0f0;color:var(--red)}.bp-new{background:var(--pu);color:var(--p)}.bp-sale{background:#fff4ec;color:var(--org)}.bp-none{background:var(--bg);color:var(--gr)}
+.bp-hot{background:rgba(255,59,48,.18);color:#ff8080}.bp-new{background:rgba(100,160,255,.2);color:#90caff}.bp-sale{background:rgba(255,159,10,.18);color:#ffc060}.bp-none{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
 .ab{display:flex;gap:4px}
 .be,.bd,.bv{width:28px;height:28px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:var(--t)}
-.be{background:var(--pu);color:var(--p)}.be:hover{background:var(--p);color:#fff}
-.bd{background:#fff0f0;color:var(--red)}.bd:hover{background:var(--red);color:#fff}
-.bv{background:#e8fff0;color:var(--grn)}.bv:hover{background:var(--grn);color:#fff}
+.be{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.25)}.be:hover{background:var(--p);color:#fff;border-color:var(--p)}
+.bd{background:rgba(255,59,48,.15);color:#ff8080;border:1px solid rgba(255,59,48,.25)}.bd:hover{background:var(--red);color:#fff}
+.bv{background:rgba(48,209,88,.15);color:#5be878;border:1px solid rgba(48,209,88,.25)}.bv:hover{background:var(--grn);color:#fff}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:var(--r);font-size:.83rem;font-weight:600;transition:var(--t);cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif}
 .btn-p{background:var(--p);color:#fff;border-radius:980px}.btn-p:hover{background:var(--pd);transform:translateY(-1px)}
 .btn-o{background:transparent;color:var(--p);border:1.5px solid var(--p);border-radius:980px}.btn-o:hover{background:var(--p);color:#fff}
@@ -101,67 +101,67 @@ tr:hover td{background:var(--bg)}
 
 /* SECTION BAR */
 .sb2{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
-.sb2 h2{font-size:.95rem;font-weight:700;color:var(--dk)}
+.sb2 h2{font-size:.95rem;font-weight:700;color:#fff}
 .sf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.sf input,.sf select{padding:8px 11px;border:1px solid var(--br);border-radius:var(--r);font-size:.82rem;outline:none;background:#fff;color:var(--dk);transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
-.sf input:focus,.sf select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,113,227,.12)}
+.sf input,.sf select{padding:8px 11px;border:1px solid rgba(255,255,255,.22);border-radius:var(--r);font-size:.82rem;outline:none;background:rgba(255,255,255,.14);color:#fff;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.sf input:focus,.sf select:focus{border-color:rgba(255,255,255,.5);box-shadow:0 0 0 3px rgba(255,255,255,.1)}
 .sf input{min-width:190px}
 
 /* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.ov{position:fixed;inset:0;background:rgba(0,20,60,.5);backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
 .ov.open{display:flex}
-.mo{background:#fff;border-radius:18px;border:1px solid var(--br);width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15)}
-.mh{padding:16px 22px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10}
-.mh h3{font-size:.95rem;font-weight:700;color:var(--dk)}
-.mc{width:30px;height:30px;background:var(--bg);border-radius:50%;font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:var(--t);color:var(--dk)}
-.mc:hover{background:var(--br)}
+.mo{background:rgba(255,255,255,.16);backdrop-filter:blur(48px) saturate(200%);-webkit-backdrop-filter:blur(48px) saturate(200%);border-radius:20px;border:1px solid rgba(255,255,255,.28);width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.4)}
+.mh{padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(255,255,255,.1);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);z-index:10}
+.mh h3{font-size:.95rem;font-weight:700;color:#fff}
+.mc{width:30px;height:30px;background:rgba(255,255,255,.12);border-radius:50%;font-size:.88rem;display:flex;align-items:center;justify-content:center;transition:var(--t);color:rgba(255,255,255,.8)}
+.mc:hover{background:rgba(255,255,255,.22)}
 .mb{padding:18px 22px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .fr.full{grid-template-columns:1fr}
 .fg2{display:flex;flex-direction:column;gap:4px}
-.fg2 label{font-size:.73rem;font-weight:600;color:var(--dk);text-transform:uppercase;letter-spacing:.05em}
-.fg2 input,.fg2 select,.fg2 textarea{padding:9px 11px;border:1px solid var(--br);border-radius:var(--r);font-size:.875rem;outline:none;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:var(--dk)}
-.fg2 input:focus,.fg2 select:focus,.fg2 textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(0,113,227,.1)}
+.fg2 label{font-size:.73rem;font-weight:600;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.06em}
+.fg2 input,.fg2 select,.fg2 textarea{padding:9px 11px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);font-size:.875rem;outline:none;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;background:rgba(255,255,255,.1);color:#fff}
+.fg2 input:focus,.fg2 select:focus,.fg2 textarea:focus{border-color:rgba(255,255,255,.5);box-shadow:0 0 0 3px rgba(255,255,255,.12);background:rgba(255,255,255,.15)}
 .fg2 textarea{resize:vertical;min-height:72px}
-.ipb{width:100%;height:110px;border:1.5px dashed var(--br);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--t);overflow:hidden;background:var(--bg)}
-.ipb:hover{border-color:var(--p);background:var(--pu)}
+.ipb{width:100%;height:110px;border:1.5px dashed rgba(255,255,255,.2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--t);overflow:hidden;background:rgba(255,255,255,.06)}
+.ipb:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.12)}
 .ipb img{width:100%;height:100%;object-fit:cover}
 .spec-row{display:grid;grid-template-columns:1fr 1fr auto;gap:7px;align-items:center;margin-bottom:5px}
-.spec-row input{padding:7px 10px;border:1px solid var(--br);border-radius:var(--r);font-size:.8rem;outline:none;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:var(--dk)}
-.spec-row input:focus{border-color:var(--p)}
-.add-spec{background:var(--pu);color:var(--p);border:1.5px dashed rgba(0,113,227,.3);border-radius:var(--r);padding:7px;font-size:.78rem;font-weight:600;width:100%;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
-.add-spec:hover{background:var(--p);color:#fff;border-color:var(--p)}
-.mf{padding:12px 22px;border-top:1px solid var(--br);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#fff}
-.fe{background:#fff0f0;border:1px solid #fcc;border-radius:var(--r);padding:9px 12px;font-size:.82rem;color:var(--red);margin-bottom:12px;display:none}
+.spec-row input{padding:7px 10px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);font-size:.8rem;outline:none;font-family:'Plus Jakarta Sans',sans-serif;background:rgba(255,255,255,.1);color:#fff}
+.spec-row input:focus{border-color:rgba(255,255,255,.4)}
+.add-spec{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border:1.5px dashed rgba(255,255,255,.22);border-radius:var(--r);padding:7px;font-size:.78rem;font-weight:600;width:100%;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
+.add-spec:hover{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.4)}
+.mf{padding:12px 22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:rgba(255,255,255,.08);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px)}
+.fe{background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.3);border-radius:var(--r);padding:9px 12px;font-size:.82rem;color:#ff8080;margin-bottom:12px;display:none}
 
 /* TOAST */
 .tw2{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{padding:10px 16px;border-radius:var(--r);color:#fff;font-size:.82rem;font-weight:500;box-shadow:var(--sh);animation:sIn .25s ease;display:flex;align-items:center;gap:8px;min-width:200px;font-family:'Plus Jakarta Sans',sans-serif}
-.toast.ok{background:var(--grn)}.toast.err{background:var(--red)}.toast.info{background:#1D1D1F}
+.toast{padding:10px 16px;border-radius:var(--r);color:#fff;font-size:.82rem;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.3);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);animation:sIn .25s ease;display:flex;align-items:center;gap:8px;min-width:200px;font-family:'Plus Jakarta Sans',sans-serif}
+.toast.ok{background:var(--grn)}.toast.err{background:var(--red)}.toast.info{background:rgba(20,30,60,.85)}
 @keyframes sIn{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:translateX(0)}}
 @keyframes sOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(32px)}}
 
 /* STATUS BADGES */
 .st{display:inline-block;padding:2px 9px;border-radius:100px;font-size:.7rem;font-weight:700}
-.st-pending{background:#fff6e8;color:var(--org)}
-.st-confirmed{background:var(--pu);color:var(--p)}
-.st-shipped{background:#e8f0ff;color:#3366cc}
-.st-delivered{background:#e8fff0;color:var(--grn)}
-.st-cancelled{background:#fff0f0;color:var(--red)}
+.st-pending{background:rgba(255,159,10,.2);color:#ffc060;border:1px solid rgba(255,159,10,.3)}
+.st-confirmed{background:rgba(100,160,255,.2);color:#90caff;border:1px solid rgba(100,160,255,.3)}
+.st-shipped{background:rgba(130,160,255,.2);color:#a0b8ff;border:1px solid rgba(130,160,255,.3)}
+.st-delivered{background:rgba(48,209,88,.18);color:#5be878;border:1px solid rgba(48,209,88,.3)}
+.st-cancelled{background:rgba(255,59,48,.18);color:#ff8080;border:1px solid rgba(255,59,48,.3)}
 
 /* EMPTY */
 .empty-st{text-align:center;padding:48px 20px}
 .empty-st .ic{font-size:2.8rem;margin-bottom:12px}
-.empty-st h3{font-size:.95rem;font-weight:600;margin-bottom:6px;color:var(--dk)}
-.empty-st p{color:var(--gr);font-size:.83rem}
+.empty-st h3{font-size:.95rem;font-weight:600;margin-bottom:6px;color:rgba(255,255,255,.9)}
+.empty-st p{color:rgba(255,255,255,.5);font-size:.83rem}
 
 /* SETTINGS CARD */
-.setcard{background:#fff;border-radius:var(--r);border:1px solid var(--br);padding:20px;max-width:460px;box-shadow:var(--sh)}
-.setcard h3{font-size:.82rem;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--br);text-transform:uppercase;letter-spacing:.08em;color:var(--gr)}
+.setcard{background:rgba(255,255,255,.12);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:var(--r);border:1px solid rgba(255,255,255,.22);padding:20px;max-width:460px;box-shadow:var(--sh-glass)}
+.setcard h3{font-size:.82rem;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12);text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5)}
 
 /* CONFIG BADGE */
 .cfg-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:.77rem;font-weight:600}
-.cfg-ok{background:#e8fff0;color:var(--grn)}.cfg-warn{background:#fff6e8;color:var(--org)}
+.cfg-ok{background:rgba(48,209,88,.15);color:#5be878;border:1px solid rgba(48,209,88,.25)}.cfg-warn{background:rgba(255,159,10,.15);color:#ffc060;border:1px solid rgba(255,159,10,.25)}
 
 @media(max-width:768px){.sb{transform:translateX(-100%)}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}}
 </style>
@@ -211,7 +211,7 @@ tr:hover td{background:var(--bg)}
       <div style="display:flex;align-items:center;gap:10px">
         <a href="/" target="_blank" class="store-link">🛍️ View Store</a>
         <button id="maintenance-btn" onclick="toggleMaintenance()"
-          style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:#e8fff0;border:1.5px solid rgba(22,163,74,.3);border-radius:980px;font-size:.75rem;font-weight:700;color:var(--grn);cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.02em">
+          style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(48,209,88,.18);border:1px solid rgba(48,209,88,.3);backdrop-filter:blur(12px);border-radius:980px;font-size:.75rem;font-weight:700;color:#5be878;cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.02em">
           <span id="maintenance-dot" style="width:7px;height:7px;background:var(--grn);border-radius:50%;display:inline-block;animation:pulse 2s infinite;flex-shrink:0"></span>
           <span id="maintenance-label">Live</span>
         </button>
@@ -234,7 +234,7 @@ tr:hover td{background:var(--bg)}
           <div class="sc"><div class="si" style="background:#eceef5">🏆</div><div><div class="sl">Best Seller</div><div class="sv" id="s-best" style="font-size:.82rem;line-height:1.25">—</div></div></div>
         </div>
         <!-- Low stock alerts -->
-        <div id="low-stock-bar" style="display:none;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.25);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;font-size:.83rem;color:#b45309">
+        <div id="low-stock-bar" style="display:none;background:rgba(255,159,10,.15);border:1px solid rgba(255,159,10,.3);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;font-size:.83rem;color:#ffc060">
           <strong>⚠️ Low Stock Alert:</strong> <span id="low-stock-list"></span>
         </div>
         <div class="sb2"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders')">View All →</button></div>
@@ -267,7 +267,7 @@ tr:hover td{background:var(--bg)}
             <div style="margin-bottom:18px">
               <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Images <span style="font-weight:400;color:var(--gr);font-size:.72rem">(first image = main, select multiple)</span></label>
               <div class="ipb" onclick="document.getElementById('add-img').click()" id="add-img-box" style="height:auto;min-height:100px;flex-direction:column;gap:8px;padding:12px">
-                <div style="text-align:center;color:var(--gr)"><div style="font-size:1.8rem;margin-bottom:4px">🖼️</div><p style="font-size:.78rem">Click to upload (select multiple)</p></div>
+                <div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:1.8rem;margin-bottom:4px">🖼️</div><p style="font-size:.78rem">Click to upload (select multiple)</p></div>
               </div>
               <input type="file" id="add-img" accept="image/*" multiple style="display:none" onchange="prevImgs(this,'add-img-box')">
               <div id="add-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
@@ -350,7 +350,7 @@ tr:hover td{background:var(--bg)}
       <!-- DELIVERY & COD -->
       <div id="tab-delivery" style="display:none">
         <div class="sb2"><h2>Delivery Areas &amp; COD Prices</h2><button class="btn btn-p btn-sm" onclick="openDelModal()">➕ Add Area</button></div>
-        <div style="background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:.85rem;color:var(--dm)">
+        <div style="background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:.85rem;color:rgba(255,255,255,.7)">
           💡 <strong>How it works:</strong> When a customer places an order, they select their delivery area. The COD charge for that area is automatically added to their order total.
         </div>
         <div class="tw"><table>
@@ -364,14 +364,14 @@ tr:hover td{background:var(--bg)}
         <div style="max-width:640px;display:flex;flex-direction:column;gap:20px">
 
           <!-- BACKUP CARD -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid var(--br);overflow:hidden;box-shadow:var(--sh)">
+          <div style="background:rgba(255,255,255,.1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:var(--r);border:1px solid rgba(255,255,255,.2);overflow:hidden;box-shadow:var(--sh-glass)">
             <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
               <div style="width:38px;height:38px;background:#e8fff0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬇️</div>
-              <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Create Backup</div><div style="font-size:.78rem;color:var(--gr)">Download everything as a ZIP file</div></div>
+              <div><div style="font-weight:700;font-size:.95rem;color:rgba(255,255,255,.9)">Create Backup</div><div style="font-size:.78rem;color:rgba(255,255,255,.5)">Download everything as a ZIP file</div></div>
             </div>
             <div style="padding:20px">
-              <div id="backup-preview" style="background:var(--bg);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:var(--dm);line-height:1.8">
-                <div style="font-weight:600;margin-bottom:8px;color:var(--dk)">📦 What gets backed up:</div>
+              <div id="backup-preview" style="background:rgba(255,255,255,.06);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:rgba(255,255,255,.75);line-height:1.8">
+                <div style="font-weight:600;margin-bottom:8px;color:rgba(255,255,255,.9)">📦 What gets backed up:</div>
                 <div>• <span id="bp-products">Loading...</span></div>
                 <div>• <span id="bp-categories">Loading...</span></div>
                 <div>• <span id="bp-delivery">Loading...</span></div>
@@ -381,16 +381,16 @@ tr:hover td{background:var(--bg)}
                 <button class="btn btn-p" onclick="downloadBackup()" id="backup-btn" style="gap:8px;font-size:.9rem">
                   <span>⬇️</span> Download Backup ZIP
                 </button>
-                <span style="font-size:.78rem;color:var(--gr)" id="last-backup-time"></span>
+                <span style="font-size:.78rem;color:rgba(255,255,255,.5)" id="last-backup-time"></span>
               </div>
             </div>
           </div>
 
           <!-- RESTORE CARD -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid var(--br);overflow:hidden;box-shadow:var(--sh)">
+          <div style="background:rgba(255,255,255,.1);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:var(--r);border:1px solid rgba(255,255,255,.2);overflow:hidden;box-shadow:var(--sh-glass)">
             <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
               <div style="width:38px;height:38px;background:#fff6e8;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬆️</div>
-              <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Restore from Backup</div><div style="font-size:.78rem;color:var(--gr)">Upload a backup ZIP to restore your data</div></div>
+              <div><div style="font-weight:700;font-size:.95rem;color:rgba(255,255,255,.9)">Restore from Backup</div><div style="font-size:.78rem;color:rgba(255,255,255,.5)">Upload a backup ZIP to restore your data</div></div>
             </div>
             <div style="padding:20px">
               <div style="background:#fff6e8;border:1.5px solid #f5c87a;border-radius:9px;padding:12px 14px;margin-bottom:16px;font-size:.82rem;color:#7a5200;display:flex;gap:8px">
@@ -402,29 +402,29 @@ tr:hover td{background:var(--bg)}
               <div id="restore-drop" onclick="document.getElementById('restore-file').click()"
                 style="border:2.5px dashed var(--br);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:var(--t);margin-bottom:14px"
                 ondragover="event.preventDefault();this.style.borderColor='var(--p)';this.style.background='var(--pu)'"
-                ondragleave="this.style.borderColor='rgba(0,0,0,.15)';this.style.background='var(--bg)'"
+                ondragleave="this.style.borderColor='rgba(255,255,255,.2)';this.style.background='rgba(255,255,255,.05)'"
                 ondrop="event.preventDefault();this.style.borderColor='var(--br)';this.style.background='';handleRestoreDrop(event)">
                 <div style="font-size:2.5rem;margin-bottom:10px">📂</div>
                 <div style="font-weight:600;font-size:.9rem;color:var(--dk);margin-bottom:4px">Click to select or drag & drop</div>
-                <div style="font-size:.78rem;color:var(--gr)">Accepts .zip or .json backup files</div>
+                <div style="font-size:.78rem;color:rgba(255,255,255,.5)">Accepts .zip or .json backup files</div>
               </div>
               <input type="file" id="restore-file" accept=".zip,.json" style="display:none" onchange="previewRestore(this)">
 
               <!-- File preview -->
-              <div id="restore-preview" style="display:none;background:var(--bg);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:.85rem">
+              <div id="restore-preview" style="display:none;background:rgba(255,255,255,.08);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:.85rem">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
                   <span style="font-size:1.2rem">📄</span>
-                  <strong id="restore-filename" style="color:var(--dk)"></strong>
-                  <button onclick="clearRestoreFile()" style="margin-left:auto;background:#fff0f0;color:var(--red);border:none;padding:3px 8px;border-radius:5px;font-size:.75rem;cursor:pointer">✕ Clear</button>
+                  <strong id="restore-filename" style="color:rgba(255,255,255,.9)"></strong>
+                  <button onclick="clearRestoreFile()" style="margin-left:auto;background:rgba(255,59,48,.2);color:#ff8080;border:none;padding:3px 8px;border-radius:5px;font-size:.75rem;cursor:pointer">✕ Clear</button>
                 </div>
                 <div id="restore-file-info" style="color:var(--gr);font-size:.82rem;margin-top:4px"></div>
               </div>
 
-              <div id="restore-err" style="background:#fff0f0;border:1px solid rgba(255,59,48,.2);border-radius:8px;padding:9px 12px;font-size:.83rem;color:var(--red);margin-bottom:12px;display:none"></div>
-              <div id="restore-success" style="background:#e8fff0;border:1px solid rgba(48,209,88,.2);border-radius:8px;padding:12px 14px;font-size:.85rem;color:#166534;margin-bottom:12px;display:none"></div>
+              <div id="restore-err" style="background:rgba(255,59,48,.15);border:1px solid rgba(255,59,48,.3);border-radius:8px;padding:9px 12px;font-size:.83rem;color:#ff8080;margin-bottom:12px;display:none"></div>
+              <div id="restore-success" style="background:rgba(48,209,88,.12);border:1px solid rgba(48,209,88,.25);border-radius:8px;padding:12px 14px;font-size:.85rem;color:#5be878;margin-bottom:12px;display:none"></div>
 
               <button class="btn btn-full" id="restore-btn" onclick="doRestore()" disabled
-                style="background:var(--bg);color:var(--gr);border:1px solid var(--br);opacity:.6;font-size:.88rem;gap:8px">
+                style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);opacity:.6;font-size:.88rem;gap:8px">
                 <span>⬆️</span> Restore from Backup
               </button>
             </div>
@@ -444,9 +444,9 @@ tr:hover td{background:var(--bg)}
             </div>
             <div class="fg2" style="margin-bottom:18px">
               <label>Facebook Page Username</label>
-              <div style="display:flex;align-items:center;border:1px solid var(--br);border-radius:8px;overflow:hidden;background:#fff">
+              <div style="display:flex;align-items:center;border:1px solid var(--br);border-radius:8px;overflow:hidden;background:rgba(255,255,255,.1)">
                 <span style="padding:9px 10px;background:rgba(255,255,255,.05);color:var(--gr);font-size:.82rem;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap">facebook.com/</span>
-                <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1;background:transparent;color:var(--dk)">
+                <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1;background:transparent;color:rgba(255,255,255,.9)">
               </div>
             </div>
             <div style="border-top:1px solid var(--br);margin:18px 0 16px"></div>
@@ -469,18 +469,18 @@ tr:hover td{background:var(--bg)}
             <h3>🎨 Navbar Style</h3>
             <p style="font-size:.82rem;color:var(--gr);margin-bottom:14px;line-height:1.6">Choose how the navbar looks when you scroll down the page.</p>
             <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-solid" onclick="selectNavStyle('solid')">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);cursor:pointer;transition:var(--t);background:rgba(255,255,255,.07)" id="nav-opt-solid" onclick="selectNavStyle('solid')">
                 <input type="radio" name="navStyle" value="solid" style="accent-color:#0071E3;width:16px;height:16px">
                 <div>
-                  <div style="font-size:.88rem;font-weight:600;color:var(--dk)">🌑 Solid Dark</div>
-                  <div style="font-size:.75rem;color:var(--gr)">Always stays solid dark — no change on scroll</div>
+                  <div style="font-size:.88rem;font-weight:600;color:rgba(255,255,255,.9)">🌑 Solid Dark</div>
+                  <div style="font-size:.75rem;color:rgba(255,255,255,.5)">Always stays solid dark — no change on scroll</div>
                 </div>
               </label>
-              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-glass" onclick="selectNavStyle('glass')">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid rgba(255,255,255,.18);border-radius:var(--r);cursor:pointer;transition:var(--t);background:rgba(255,255,255,.07)" id="nav-opt-glass" onclick="selectNavStyle('glass')">
                 <input type="radio" name="navStyle" value="glass" style="accent-color:#0071E3;width:16px;height:16px">
                 <div>
-                  <div style="font-size:.88rem;font-weight:600;color:var(--dk)">✨ Scroll to Glass</div>
-                  <div style="font-size:.75rem;color:var(--gr)">Solid dark at top, transitions to liquid glass on scroll</div>
+                  <div style="font-size:.88rem;font-weight:600;color:rgba(255,255,255,.9)">✨ Scroll to Glass</div>
+                  <div style="font-size:.75rem;color:rgba(255,255,255,.5)">Solid dark at top, transitions to liquid glass on scroll</div>
                 </div>
               </label>
             </div>
@@ -524,7 +524,7 @@ tr:hover td{background:var(--bg)}
       <div style="margin-bottom:16px">
         <label style="font-size:.78rem;font-weight:600;color:var(--dk);display:block;margin-bottom:6px">Product Images <span style="font-weight:400;color:var(--gr);font-size:.72rem">(first = main, select multiple to replace all)</span></label>
         <div class="ipb" onclick="document.getElementById('edit-img').click()" id="edit-img-box" style="height:auto;min-height:90px;flex-direction:column;gap:6px;padding:10px">
-          <div style="text-align:center;color:var(--gr)"><div style="font-size:1.5rem">🖼️</div><p style="font-size:.75rem">Click to change images</p></div>
+          <div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:1.5rem">🖼️</div><p style="font-size:.75rem">Click to change images</p></div>
         </div>
         <input type="file" id="edit-img" accept="image/*" multiple style="display:none" onchange="prevImgs(this,'edit-img-box')">
         <div id="edit-img-preview" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
@@ -588,7 +588,7 @@ tr:hover td{background:var(--bg)}
       <div class="fe" id="cat-err"></div>
       <input type="hidden" id="cat-id">
       <div class="fr"><div class="fg2"><label>Category Name *</label><input type="text" id="cat-name" placeholder="e.g. Smart Watches"></div><div class="fg2"><label>Icon (emoji)</label><input type="text" id="cat-icon" placeholder="⌚" maxlength="4"></div></div>
-      <div class="fr full"><div class="fg2"><label>Slug * <span style="font-size:.72rem;color:var(--gr)">(URL-friendly, no spaces)</span></label><input type="text" id="cat-slug" placeholder="e.g. smart-watches"></div></div>
+      <div class="fr full"><div class="fg2"><label>Slug * <span style="font-size:.72rem;color:rgba(255,255,255,.5)">(URL-friendly, no spaces)</span></label><input type="text" id="cat-slug" placeholder="e.g. smart-watches"></div></div>
       <div class="fr full"><div class="fg2"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="cat-active" checked style="width:16px;height:16px;accent-color:#0071E3"> Active (visible on store)</label></div></div>
     </div>
     <div class="mf"><button class="btn btn-o" onclick="closeModal('cat-ov')">Cancel</button><button class="btn btn-p" onclick="saveCat()">💾 Save</button></div>
@@ -614,7 +614,7 @@ tr:hover td{background:var(--bg)}
 <div class="ov" id="del-confirm-ov">
   <div class="mo" style="max-width:360px">
     <div class="mh"><h3>🗑️ Confirm Delete</h3><button class="mc" onclick="closeModal('del-confirm-ov')">✕</button></div>
-    <div class="mb"><p style="color:var(--dk)">Delete <strong id="del-target-name"></strong>? This cannot be undone.</p></div>
+    <div class="mb"><p style="color:rgba(255,255,255,.9)">Delete <strong id="del-target-name"></strong>? This cannot be undone.</p></div>
     <div class="mf"><button class="btn btn-o" onclick="closeModal('del-confirm-ov')">Cancel</button><button class="btn btn-danger" onclick="confirmDel()">Delete</button></div>
   </div>
 </div>
@@ -695,7 +695,7 @@ function renderDashboard(){
 
   const tbody=document.getElementById('dash-orders-tbody');
   const recent=[...allOrders].slice(0,8);
-  tbody.innerHTML=recent.length ? recent.map(o=>orderRow(o,true)).join('') : '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gr)">No orders yet</td></tr>';
+  tbody.innerHTML=recent.length ? recent.map(o=>orderRow(o,true)).join('') : '<tr><td colspan="8" style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">No orders yet</td></tr>';
 }
 
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
@@ -777,7 +777,7 @@ function addVariantGroup(listId, existing={name:'',values:[],prices:{}}){
       <input type="text" placeholder="Options separated by commas (e.g. S, M, L, XL)" value="${existingVals.join(', ')}"
         style="width:100%;padding:7px 10px;border:1.5px solid var(--br);border-radius:6px;font-size:.82rem;outline:none;margin-bottom:4px"
         class="variant-values" oninput="updateVariantPriceRows(this)">
-      <div style="font-size:.7rem;color:var(--gr)">Separate each option with a comma</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.5)">Separate each option with a comma</div>
     </div>
     <div class="variant-price-rows" style="margin-top:8px"></div>`;
   l.appendChild(d);
@@ -802,7 +802,7 @@ function updateVariantPriceRows(input, existingPrices={}){
   priceRows.innerHTML = '<div style="font-size:.72rem;font-weight:600;color:var(--gr);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Price per option (leave blank = use base price)</div>' +
     values.map(v=>`
       <div class="vpr" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span class="vpr-label" style="min-width:80px;font-size:.82rem;font-weight:600;color:var(--dk)">${v}</span>
+        <span class="vpr-label" style="min-width:80px;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.9)">${v}</span>
         <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:6px;overflow:hidden;flex:1">
           <span style="padding:6px 8px;background:#fff;color:var(--gr);font-size:.8rem;border-right:1px solid var(--br)">৳</span>
           <input type="number" class="vpr-price" placeholder="Base price" value="${merged[v]||''}" min="0"
@@ -844,7 +844,7 @@ function renderCurrentImages(imgs, containerId, keptId){
     if(i===0){ const lbl=document.createElement('div'); lbl.textContent='Main'; lbl.style.cssText='position:absolute;bottom:0;left:0;right:0;background:rgba(30,122,143,.85);color:#fff;font-size:.55rem;text-align:center;border-radius:0 0 6px 6px'; wrap.appendChild(lbl); }
     wrap.appendChild(img); wrap.appendChild(btn); box.appendChild(wrap);
   });
-  if(!kept.length) box.innerHTML='<p style="font-size:.78rem;color:var(--gr)">No images — upload new ones below</p>';
+  if(!kept.length) box.innerHTML='<p style="font-size:.78rem;color:rgba(255,255,255,.5)">No images — upload new ones below</p>';
   update();
 }
 function getSpecs(listId){ return [...document.querySelectorAll('#'+listId+' .spec-row')].map(r=>{const i=r.querySelectorAll('input');return{label:i[0].value.trim(),value:i[1].value.trim()};}).filter(s=>s.label&&s.value); }
@@ -885,7 +885,7 @@ function resetAdd(){
   document.getElementById('a-cat').value=''; document.getElementById('a-slug').value='';
   document.getElementById('a-badge').value=''; document.getElementById('a-rating').value='5.0';
   document.getElementById('a-sold').value='0'; document.getElementById('a-specs').innerHTML='';
-  document.getElementById('add-img-box').innerHTML='<div style="text-align:center;color:var(--gr)"><div style="font-size:1.8rem;margin-bottom:6px">🖼️</div><p style="font-size:.78rem">Click to upload image</p></div>';
+  document.getElementById('add-img-box').innerHTML='<div style="text-align:center;color:rgba(255,255,255,.5)"><div style="font-size:1.8rem;margin-bottom:6px">🖼️</div><p style="font-size:.78rem">Click to upload image</p></div>';
   document.getElementById('add-img').value=''; document.getElementById('add-err').style.display='none';
 }
 
@@ -980,8 +980,8 @@ function orderRow(o,compact){
   const stClass=(sc[o.status]||'').split(' ')[0];
   const dt=new Date(o.created_at).toLocaleDateString('en-BD',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
   const pm={'cod':'💵 COD','bkash':'📱 bKash','facebook':'📘 FB'}[o.payment]||o.payment||'—';
-  if(compact) return '<tr><td>#'+o.id+'</td><td><strong>'+o.name+'</strong><br><small style="color:var(--gr)">'+o.phone+'</small></td><td><a href="https://wa.me/880'+((o.whatsapp||'').replace(/^0/,''))+'" target="_blank" style="color:#25d366;font-weight:600">'+o.whatsapp+'</a></td><td style="font-size:.8rem">'+o.area+'</td><td><strong>৳'+(o.total||0).toLocaleString()+'</strong></td><td style="font-size:.78rem">'+pm+'</td><td><span class="st '+stClass+'">'+stText.split(' ').slice(1).join(' ')+'</span></td><td><div class="ab"><button class="bv" onclick="viewOrder('+o.id+')" title="View">👁️</button><select onchange="updateOrderStatus('+o.id+',this.value)" style="font-size:.72rem;padding:3px 6px;border:1px solid var(--br);border-radius:6px;background:rgba(255,255,255,.07)" title="Change status"><option value="">Change...</option><option value="pending">⏳ Pending</option><option value="confirmed">✅ Confirmed</option><option value="shipped">🚚 Shipped</option><option value="delivered">🎉 Delivered</option><option value="cancelled">❌ Cancelled</option></select></div></td></tr>';
-  return '<tr><td>#'+o.id+'</td><td><strong>'+o.name+'</strong><br><small style="color:var(--gr)">'+o.phone+'</small></td><td><a href="https://wa.me/880'+((o.whatsapp||'').replace(/^0/,''))+'" target="_blank" style="color:#25d366;font-weight:600">'+o.whatsapp+'</a></td><td style="font-size:.8rem">'+o.area+'</td><td><strong>৳'+(o.total||0).toLocaleString()+'</strong><br><small style="color:var(--gl);font-size:.72rem">Delivery: ৳'+(o.delivery_charge||0)+'</small></td><td style="font-size:.78rem">'+pm+'</td><td style="font-size:.78rem;color:var(--gr)">'+dt+'</td><td><span class="st '+stClass+'">'+stText.split(' ').slice(1).join(' ')+'</span></td><td><div class="ab"><button class="bv" onclick="viewOrder('+o.id+')" title="View">👁️</button><select onchange="updateOrderStatus('+o.id+',this.value)" style="font-size:.72rem;padding:3px 6px;border:1px solid var(--br);border-radius:6px;background:rgba(255,255,255,.07)"><option value="">Status...</option><option value="pending">⏳ Pending</option><option value="confirmed">✅ Confirmed</option><option value="shipped">🚚 Shipped</option><option value="delivered">🎉 Delivered</option><option value="cancelled">❌ Cancelled</option></select><button class="bd" onclick="openDelConfirm('+o.id+',\'Order #'+o.id+'\',\'order\')" title="Delete">🗑️</button></div></td></tr>';
+  if(compact) return '<tr><td>#'+o.id+'</td><td><strong>'+o.name+'</strong><br><small style="color:rgba(255,255,255,.5)">'+o.phone+'</small></td><td><a href="https://wa.me/880'+((o.whatsapp||'').replace(/^0/,''))+'" target="_blank" style="color:#25d366;font-weight:600">'+o.whatsapp+'</a></td><td style="font-size:.8rem">'+o.area+'</td><td><strong>৳'+(o.total||0).toLocaleString()+'</strong></td><td style="font-size:.78rem">'+pm+'</td><td><span class="st '+stClass+'">'+stText.split(' ').slice(1).join(' ')+'</span></td><td><div class="ab"><button class="bv" onclick="viewOrder('+o.id+')" title="View">👁️</button><select onchange="updateOrderStatus('+o.id+',this.value)" style="font-size:.72rem;padding:3px 6px;border:1px solid var(--br);border-radius:6px;background:rgba(255,255,255,.07)" title="Change status"><option value="">Change...</option><option value="pending">⏳ Pending</option><option value="confirmed">✅ Confirmed</option><option value="shipped">🚚 Shipped</option><option value="delivered">🎉 Delivered</option><option value="cancelled">❌ Cancelled</option></select></div></td></tr>';
+  return '<tr><td>#'+o.id+'</td><td><strong>'+o.name+'</strong><br><small style="color:rgba(255,255,255,.5)">'+o.phone+'</small></td><td><a href="https://wa.me/880'+((o.whatsapp||'').replace(/^0/,''))+'" target="_blank" style="color:#25d366;font-weight:600">'+o.whatsapp+'</a></td><td style="font-size:.8rem">'+o.area+'</td><td><strong>৳'+(o.total||0).toLocaleString()+'</strong><br><small style="color:var(--gl);font-size:.72rem">Delivery: ৳'+(o.delivery_charge||0)+'</small></td><td style="font-size:.78rem">'+pm+'</td><td style="font-size:.78rem;color:rgba(255,255,255,.5)">'+dt+'</td><td><span class="st '+stClass+'">'+stText.split(' ').slice(1).join(' ')+'</span></td><td><div class="ab"><button class="bv" onclick="viewOrder('+o.id+')" title="View">👁️</button><select onchange="updateOrderStatus('+o.id+',this.value)" style="font-size:.72rem;padding:3px 6px;border:1px solid var(--br);border-radius:6px;background:rgba(255,255,255,.07)"><option value="">Status...</option><option value="pending">⏳ Pending</option><option value="confirmed">✅ Confirmed</option><option value="shipped">🚚 Shipped</option><option value="delivered">🎉 Delivered</option><option value="cancelled">❌ Cancelled</option></select><button class="bd" onclick="openDelConfirm('+o.id+',\'Order #'+o.id+'\',\'order\')" title="Delete">🗑️</button></div></td></tr>';
 }
 
 function viewOrder(id){
@@ -1041,7 +1041,7 @@ async function updateOrderStatus(id,status){
 // ── CATEGORIES ────────────────────────────────────────────────────────────────
 function renderCats(){
   const tbody=document.getElementById('cat-tbody');
-  if(!allCats.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--gr)">No categories yet</td></tr>';return;}
+  if(!allCats.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">No categories yet</td></tr>';return;}
   tbody.innerHTML=allCats.map(c=>'<tr><td style="font-size:1.5rem">'+c.icon+'</td><td><strong>'+c.name+'</strong></td><td><code style="background:var(--bg);padding:2px 8px;border-radius:4px;font-size:.8rem">'+c.slug+'</code></td><td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600;background:'+(c.active?'#e8fff0':'#fff0f0')+';color:'+(c.active?'var(--grn)':'var(--red)')+'">'+( c.active?'✅ Active':'❌ Inactive')+'</span></td><td><div class="ab"><button class="be" onclick="openCatModal('+c.id+')" title="Edit">✏️</button><button class="bd" onclick="openDelConfirm('+c.id+',\''+c.name+'\',\'cat\')" title="Delete">🗑️</button></div></td></tr>').join('');
 }
 
@@ -1076,7 +1076,7 @@ async function saveCat(){
 // ── DELIVERY ──────────────────────────────────────────────────────────────────
 function renderDel(){
   const tbody=document.getElementById('del-tbody');
-  if(!allDel.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--gr)">No delivery areas yet</td></tr>';return;}
+  if(!allDel.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:32px;color:rgba(255,255,255,.5)">No delivery areas yet</td></tr>';return;}
   tbody.innerHTML=allDel.map(d=>'<tr><td><strong>'+d.area+'</strong></td><td><strong style="font-size:1.05rem;color:var(--pd)">৳'+d.price+'</strong></td><td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600;background:'+(d.active?'#e8fff0':'#fff0f0')+';color:'+(d.active?'var(--grn)':'var(--red)')+'">'+( d.active?'✅ Active':'❌ Inactive')+'</span></td><td><div class="ab"><button class="be" onclick="openDelModal('+d.id+')" title="Edit">✏️</button><button class="bd" onclick="openDelConfirm('+d.id+',\''+d.area+'\',\'del\')" title="Delete">🗑️</button></div></td></tr>').join('');
 }
 
