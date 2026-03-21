@@ -67,6 +67,11 @@
           <div>
             <div class="cart-summary">
               <h3>📋 Order Summary</h3>
+              <!-- Free Delivery Progress Bar -->
+              <div class="free-delivery-bar" id="free-delivery-bar" style="display:none">
+                <div class="fd-text"><span id="fd-msg">Loading...</span></div>
+                <div class="fd-track"><div class="fd-fill" id="fd-fill" style="width:0%"></div></div>
+              </div>
               <div id="cart-summary-body"></div>
 
               <!-- Delivery Area -->
@@ -227,6 +232,32 @@
     let deliveryAreas = [];
     let selectedPayment = 'cod';
     let selectedDelivery = null;
+    let freeDeliveryThreshold = 0;
+
+    // Load settings for free delivery threshold
+    fetch('/api/settings').then(r=>r.json()).then(cfg=>{
+      freeDeliveryThreshold = parseInt(cfg.freeDeliveryThreshold) || 0;
+      updateFreeDeliveryBar();
+    }).catch(()=>{});
+
+    function updateFreeDeliveryBar(){
+      const bar = document.getElementById('free-delivery-bar');
+      if(!freeDeliveryThreshold || !bar){ if(bar) bar.style.display='none'; return; }
+      const subtotal = getCartTotal();
+      const msg = document.getElementById('fd-msg');
+      const fill = document.getElementById('fd-fill');
+      bar.style.display = 'block';
+      if(subtotal >= freeDeliveryThreshold){
+        bar.classList.add('fd-complete');
+        msg.innerHTML = '🎉 You\'ve unlocked <span>Free Delivery!</span>';
+        fill.style.width = '100%';
+      } else {
+        bar.classList.remove('fd-complete');
+        const remaining = freeDeliveryThreshold - subtotal;
+        msg.innerHTML = 'Add <span>' + formatPrice(remaining) + '</span> more for Free Delivery';
+        fill.style.width = Math.round((subtotal / freeDeliveryThreshold) * 100) + '%';
+      }
+    }
 
     // Load delivery areas
     fetch('/api/delivery').then(r=>r.json()).then(data=>{
@@ -242,6 +273,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       renderCart();
+      updateFreeDeliveryBar();
     });
 
     function updateDeliveryCharge() {

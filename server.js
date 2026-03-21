@@ -20,13 +20,14 @@ const LOCAL_PRODUCTS  = path.join(DATADIR, 'products.json');
 const USERS_FILE      = path.join(DATADIR, 'users.json');
 const SETTINGS_FILE   = path.join(DATADIR, 'settings.json');
 const DEFAULT_SETTINGS = {
-  whatsapp:       '',
-  storeName:      'Zenocart',
-  fbPage:         'zenocart.bd',
-  heroPill:       '',
-  offerBadgeMain: '',
-  offerBadgeSub:  '',
-  maintenance:    false
+  whatsapp:               '',
+  storeName:              'Zenocart',
+  fbPage:                 'zenocart.bd',
+  heroPill:               '',
+  offerBadgeMain:         '',
+  offerBadgeSub:          '',
+  maintenance:            false,
+  freeDeliveryThreshold:  1000
 };
 
 // ── Sessions ──────────────────────────────────────────────────────────────────
