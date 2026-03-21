@@ -45,16 +45,16 @@ a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;font-fami
 
 /* LAYOUT */
 #app{display:none;min-height:100vh}
-.sb{width:228px;background:#fff;border-right:1px solid rgba(0,0,0,.08);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto;box-shadow:2px 0 12px rgba(0,0,0,.06)}
-.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center}
-.sb-logo img{height:28px;width:auto;max-width:140px;object-fit:contain;filter:brightness(0) invert(1)}
+.sb{width:228px;background:linear-gradient(160deg,rgba(235,243,255,.95) 0%,rgba(220,234,255,.92) 100%);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-right:1px solid rgba(0,113,227,.12);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto;box-shadow:2px 0 20px rgba(0,113,227,.08)}
+.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(0,113,227,.1);display:flex;align-items:center;justify-content:center}
+.sb-logo img{height:28px;width:auto;max-width:140px;object-fit:contain}
 .sb-nav{flex:1;padding:10px 8px}
-.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:.83rem;color:rgba(0,0,0,.5);transition:var(--t);cursor:pointer;border-radius:10px;margin-bottom:2px}
-.ni:hover{background:rgba(0,0,0,.05);color:rgba(0,0,0,.85)}
-.ni.active{background:rgba(0,113,227,.1);color:#0071E3;box-shadow:none}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;font-size:.83rem;color:rgba(0,40,100,.55);transition:var(--t);cursor:pointer;border-radius:10px;margin-bottom:2px}
+.ni:hover{background:rgba(0,113,227,.08);color:rgba(0,40,100,.9)}
+.ni.active{background:rgba(0,113,227,.14);color:#0051A3;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 1px 4px rgba(0,113,227,.1)}
 .ni .ic{font-size:.95rem;width:20px;text-align:center}
-.sb-foot{padding:10px 8px;border-top:1px solid rgba(0,0,0,.07)}
-.sb-foot button{width:100%;padding:9px 12px;background:rgba(0,0,0,.04);color:rgba(0,0,0,.5);border-radius:10px;font-size:.78rem;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;text-align:left}
+.sb-foot{padding:10px 8px;border-top:1px solid rgba(0,113,227,.1)}
+.sb-foot button{width:100%;padding:9px 12px;background:rgba(0,113,227,.06);color:rgba(0,40,100,.55);border-radius:10px;font-size:.78rem;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;text-align:left}
 .sb-foot button:hover{background:rgba(255,59,48,.08);color:#FF3B30}
 
 .main{margin-left:228px;min-height:100vh}
