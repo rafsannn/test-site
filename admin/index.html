@@ -30,7 +30,7 @@ a{text-decoration:none;color:inherit}button{cursor:pointer;border:none;font-fami
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .ll{text-align:center;margin-bottom:32px}
 .ll-brand{display:flex;align-items:center;justify-content:center;margin-bottom:18px}
-.ll-brand img{height:44px;width:auto;max-width:240px;object-fit:contain;filter:brightness(0) invert(1)}
+.ll-brand img{height:44px;width:auto;max-width:240px;object-fit:contain}
 .ll-name{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;line-height:1;letter-spacing:-.03em}
 .ll-name span{color:#0071E3}
 .ll h2{font-size:.95rem;color:rgba(255,255,255,.9);margin-bottom:5px;font-weight:600}
@@ -173,7 +173,7 @@ tr:hover td{background:var(--bg)}
   <div class="lb">
     <div class="ll">
       <div class="ll-brand">
-        <img src="/images/admin-logo.png" alt="Zenocart" onerror="this.style.display='none'" style="height:48px;width:auto;filter:brightness(0) invert(1)">
+        <img src="/images/admin-logo-white.png" alt="Zenocart" onerror="this.style.display='none'" style="height:48px;width:auto;max-width:240px;object-fit:contain">
       </div>
       <h2>Admin Panel</h2>
       <p>Sign in to manage your store</p>
@@ -234,7 +234,7 @@ tr:hover td{background:var(--bg)}
           <div class="sc"><div class="si" style="background:#eceef5">🏆</div><div><div class="sl">Best Seller</div><div class="sv" id="s-best" style="font-size:.82rem;line-height:1.25">—</div></div></div>
         </div>
         <!-- Low stock alerts -->
-        <div id="low-stock-bar" style="display:none;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.25);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;font-size:.83rem;color:rgba(255,255,255,.8)">
+        <div id="low-stock-bar" style="display:none;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.25);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;font-size:.83rem;color:#b45309">
           <strong>⚠️ Low Stock Alert:</strong> <span id="low-stock-list"></span>
         </div>
         <div class="sb2"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders')">View All →</button></div>
@@ -350,7 +350,7 @@ tr:hover td{background:var(--bg)}
       <!-- DELIVERY & COD -->
       <div id="tab-delivery" style="display:none">
         <div class="sb2"><h2>Delivery Areas &amp; COD Prices</h2><button class="btn btn-p btn-sm" onclick="openDelModal()">➕ Add Area</button></div>
-        <div style="background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:.85rem;color:rgba(255,255,255,.7)">
+        <div style="background:var(--bg);border:1px solid var(--br);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:.85rem;color:var(--dm)">
           💡 <strong>How it works:</strong> When a customer places an order, they select their delivery area. The COD charge for that area is automatically added to their order total.
         </div>
         <div class="tw"><table>
@@ -364,13 +364,13 @@ tr:hover td{background:var(--bg)}
         <div style="max-width:640px;display:flex;flex-direction:column;gap:20px">
 
           <!-- BACKUP CARD -->
-          <div style="background:rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--r);border:1px solid rgba(255,255,255,.1);overflow:hidden">
+          <div style="background:#fff;border-radius:var(--r);border:1px solid var(--br);overflow:hidden;box-shadow:var(--sh)">
             <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
               <div style="width:38px;height:38px;background:#e8fff0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬇️</div>
               <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Create Backup</div><div style="font-size:.78rem;color:var(--gr)">Download everything as a ZIP file</div></div>
             </div>
             <div style="padding:20px">
-              <div id="backup-preview" style="background:rgba(255,255,255,.05);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:rgba(255,255,255,.65);line-height:1.8">
+              <div id="backup-preview" style="background:var(--bg);border-radius:9px;padding:14px;margin-bottom:16px;font-size:.85rem;color:var(--dm);line-height:1.8">
                 <div style="font-weight:600;margin-bottom:8px;color:var(--dk)">📦 What gets backed up:</div>
                 <div>• <span id="bp-products">Loading...</span></div>
                 <div>• <span id="bp-categories">Loading...</span></div>
@@ -387,7 +387,7 @@ tr:hover td{background:var(--bg)}
           </div>
 
           <!-- RESTORE CARD -->
-          <div style="background:rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--r);border:1px solid rgba(255,255,255,.1);overflow:hidden">
+          <div style="background:#fff;border-radius:var(--r);border:1px solid var(--br);overflow:hidden;box-shadow:var(--sh)">
             <div style="padding:16px 20px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px">
               <div style="width:38px;height:38px;background:#fff6e8;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">⬆️</div>
               <div><div style="font-weight:700;font-size:.95rem;color:var(--dk)">Restore from Backup</div><div style="font-size:.78rem;color:var(--gr)">Upload a backup ZIP to restore your data</div></div>
@@ -402,7 +402,7 @@ tr:hover td{background:var(--bg)}
               <div id="restore-drop" onclick="document.getElementById('restore-file').click()"
                 style="border:2.5px dashed var(--br);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:var(--t);margin-bottom:14px"
                 ondragover="event.preventDefault();this.style.borderColor='var(--p)';this.style.background='var(--pu)'"
-                ondragleave="this.style.borderColor='rgba(255,255,255,.15)';this.style.background='rgba(255,255,255,.03)'"
+                ondragleave="this.style.borderColor='rgba(0,0,0,.15)';this.style.background='var(--bg)'"
                 ondrop="event.preventDefault();this.style.borderColor='var(--br)';this.style.background='';handleRestoreDrop(event)">
                 <div style="font-size:2.5rem;margin-bottom:10px">📂</div>
                 <div style="font-weight:600;font-size:.9rem;color:var(--dk);margin-bottom:4px">Click to select or drag & drop</div>
@@ -411,20 +411,20 @@ tr:hover td{background:var(--bg)}
               <input type="file" id="restore-file" accept=".zip,.json" style="display:none" onchange="previewRestore(this)">
 
               <!-- File preview -->
-              <div id="restore-preview" style="display:none;background:rgba(255,255,255,.06);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:.85rem">
+              <div id="restore-preview" style="display:none;background:var(--bg);border-radius:9px;padding:12px 14px;margin-bottom:14px;font-size:.85rem">
                 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
                   <span style="font-size:1.2rem">📄</span>
                   <strong id="restore-filename" style="color:var(--dk)"></strong>
-                  <button onclick="clearRestoreFile()" style="margin-left:auto;background:rgba(255,59,48,.15);color:#ff8080;border:none;padding:3px 8px;border-radius:5px;font-size:.75rem;cursor:pointer">✕ Clear</button>
+                  <button onclick="clearRestoreFile()" style="margin-left:auto;background:#fff0f0;color:var(--red);border:none;padding:3px 8px;border-radius:5px;font-size:.75rem;cursor:pointer">✕ Clear</button>
                 </div>
-                <div id="restore-file-info" style="color:var(--gr)"></div>
+                <div id="restore-file-info" style="color:var(--gr);font-size:.82rem;margin-top:4px"></div>
               </div>
 
-              <div id="restore-err" style="background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.3);border-radius:8px;padding:9px 12px;font-size:.83rem;color:#ff8080;margin-bottom:12px;display:none"></div>
-              <div id="restore-success" style="background:rgba(48,209,88,.1);border:1px solid rgba(48,209,88,.25);border-radius:8px;padding:12px 14px;font-size:.85rem;color:#30D158;margin-bottom:12px;display:none"></div>
+              <div id="restore-err" style="background:#fff0f0;border:1px solid rgba(255,59,48,.2);border-radius:8px;padding:9px 12px;font-size:.83rem;color:var(--red);margin-bottom:12px;display:none"></div>
+              <div id="restore-success" style="background:#e8fff0;border:1px solid rgba(48,209,88,.2);border-radius:8px;padding:12px 14px;font-size:.85rem;color:#166534;margin-bottom:12px;display:none"></div>
 
               <button class="btn btn-full" id="restore-btn" onclick="doRestore()" disabled
-                style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12);opacity:.5;font-size:.88rem;gap:8px">
+                style="background:var(--bg);color:var(--gr);border:1px solid var(--br);opacity:.6;font-size:.88rem;gap:8px">
                 <span>⬆️</span> Restore from Backup
               </button>
             </div>
@@ -444,9 +444,9 @@ tr:hover td{background:var(--bg)}
             </div>
             <div class="fg2" style="margin-bottom:18px">
               <label>Facebook Page Username</label>
-              <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:8px;overflow:hidden">
+              <div style="display:flex;align-items:center;border:1px solid var(--br);border-radius:8px;overflow:hidden;background:#fff">
                 <span style="padding:9px 10px;background:rgba(255,255,255,.05);color:var(--gr);font-size:.82rem;border-right:1px solid rgba(255,255,255,.1);white-space:nowrap">facebook.com/</span>
-                <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1;background:transparent;color:#fff">
+                <input type="text" id="fb-page" placeholder="zenocart.bd" style="border:none;outline:none;padding:9px 12px;font-size:.875rem;flex:1;background:transparent;color:var(--dk)">
               </div>
             </div>
             <div style="border-top:1px solid var(--br);margin:18px 0 16px"></div>
@@ -469,14 +469,14 @@ tr:hover td{background:var(--bg)}
             <h3>🎨 Navbar Style</h3>
             <p style="font-size:.82rem;color:var(--gr);margin-bottom:14px;line-height:1.6">Choose how the navbar looks when you scroll down the page.</p>
             <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--br);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-solid" onclick="selectNavStyle('solid')">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-solid" onclick="selectNavStyle('solid')">
                 <input type="radio" name="navStyle" value="solid" style="accent-color:#0071E3;width:16px;height:16px">
                 <div>
                   <div style="font-size:.88rem;font-weight:600;color:var(--dk)">🌑 Solid Dark</div>
                   <div style="font-size:.75rem;color:var(--gr)">Always stays solid dark — no change on scroll</div>
                 </div>
               </label>
-              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--br);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-glass" onclick="selectNavStyle('glass')">
+              <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.1);border-radius:var(--r);cursor:pointer;transition:var(--t)" id="nav-opt-glass" onclick="selectNavStyle('glass')">
                 <input type="radio" name="navStyle" value="glass" style="accent-color:#0071E3;width:16px;height:16px">
                 <div>
                   <div style="font-size:.88rem;font-weight:600;color:var(--dk)">✨ Scroll to Glass</div>
@@ -1291,7 +1291,7 @@ async function saveSettings(){
 
 function selectNavStyle(val){
   document.querySelectorAll('#nav-opt-solid,#nav-opt-glass').forEach(el=>{
-    el.style.borderColor = el.id === 'nav-opt-'+val ? 'var(--p)' : 'var(--br)';
+    el.style.borderColor = el.id === 'nav-opt-'+val ? 'var(--p)' : 'rgba(0,0,0,.08)';
     el.style.background  = el.id === 'nav-opt-'+val ? 'var(--pu)' : '';
   });
   document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
