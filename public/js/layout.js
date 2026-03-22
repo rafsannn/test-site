@@ -147,17 +147,4 @@ function injectLayout(root) {
   document.querySelectorAll('.mbb-tab').forEach(tab => {
     if(tab.dataset.page === activePage) tab.classList.add('mbb-active');
   });
-
-  // ── Page transition: fade-out on nav click ──
-  document.querySelectorAll('.mbb-tab[href]').forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      const dest = this.getAttribute('href');
-      if(dest && dest !== window.location.pathname) {
-        e.preventDefault();
-        document.body.style.transition = 'opacity .18s ease';
-        document.body.style.opacity = '0';
-        setTimeout(() => { window.location.href = dest; }, 180);
-      }
-    });
-  });
 }
