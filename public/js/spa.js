@@ -61,68 +61,16 @@ const SPA = (() => {
     return result;
   }
 
-  // ── Script transformer: brace-matching DOMContentLoaded extractor ──────────
-  // Finds document.addEventListener('DOMContentLoaded', callback) and replaces
-  // it with an immediately invoked version — handles code before AND after it.
-  function transformScript(raw) {
-    let code = raw.replace(/injectLayout\([^)]*\);?\s*/g, '');
-
-    // Patterns to find the DOMContentLoaded call opener
-    const openers = [
-      { re: /document\.addEventListener\(\s*['"]DOMContentLoaded['"]\s*,\s*async\s*\(\s*\)\s*=>\s*\{/, async: true  },
-      { re: /document\.addEventListener\(\s*['"]DOMContentLoaded['"]\s*,\s*\(\s*\)\s*=>\s*\{/,       async: true  },
-      { re: /document\.addEventListener\(\s*['"]DOMContentLoaded['"]\s*,\s*function\s*\(\s*\)\s*\{/, async: false },
-    ];
-
-    for (const { re, async: isAsync } of openers) {
-      const m = re.exec(code);
-      if (!m) continue;
-
-      // m[0] ends with '{' — find the matching closing brace
-      const openBrace = m.index + m[0].length - 1;
-      let depth = 1, i = openBrace + 1;
-      while (i < code.length && depth > 0) {
-        const ch = code[i];
-        if      (ch === '{') depth++;
-        else if (ch === '}') depth--;
-        // skip strings to avoid counting braces inside them
-        else if (ch === '"' || ch === "'" || ch === '`') {
-          const q = ch; i++;
-          while (i < code.length && code[i] !== q) {
-            if (code[i] === '\\') i++; // skip escaped char
-            i++;
-          }
-        }
-        i++;
-      }
-      // i is now right after the closing '}', skip optional ');'
-      const afterClose = code.slice(i).replace(/^\s*\);\s*/, '');
-      const body       = code.slice(openBrace + 1, i - 1);
-      const before     = code.slice(0, m.index);
-
-      code = before
-        + `(${isAsync ? 'async ' : ''}() => {\n${body}\n})();\n`
-        + afterClose;
-      break; // only one DOMContentLoaded per page script
-    }
-
-    return code;
-  }
-
   // ── Run page scripts by injecting real <script> tags ─────────────────────
-  // This is the ONLY reliable way to put functions on window so that
-  // inline HTML handlers (onchange="filterProducts()") can find them.
+  // Pages now use (async () => { ... })(); directly — no transformation needed.
+  // Script tag injection puts everything on window so inline handlers work.
   function runScripts(scripts) {
     scripts.forEach(raw => {
-      try {
-        const code = transformScript(raw);
-        const el   = document.createElement('script');
-        el.textContent = code;
-        document.head.appendChild(el);
-        el.remove(); // clean up after execution
-      } catch(e) {
-        console.warn('[SPA] script error:', e.message, e);
-      }
+      const code = raw.replace(/injectLayout\([^)]*\);?\s*/g, '');
+      const el   = document.createElement('script');
+      el.textContent = code;
+      document.head.appendChild(el);
+      el.remove();
     });
   }
 

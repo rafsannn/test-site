@@ -272,10 +272,10 @@
       });
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    (async () => {
       renderCart();
       updateFreeDeliveryBar();
-    });
+    })();
 
     function updateDeliveryCharge() {
       const sel = document.getElementById('co-area');

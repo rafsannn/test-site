@@ -225,7 +225,7 @@
     let qty = 1;
     let selectedRating = 0;
 
-    document.addEventListener('DOMContentLoaded', async () => {
+    (async () => {
       const product = await loadProduct(productId);
       if (!product) { document.getElementById('product-content').style.display='none'; document.getElementById('not-found').style.display='block'; return; }
 
@@ -339,7 +339,7 @@
       const all = await loadProducts();
       const related = all.filter(p=>p.id!==product.id && (p.category_slug||p.categorySlug)===(product.category_slug||product.categorySlug)).slice(0,4);
       document.getElementById('related-grid').innerHTML = related.length ? related.map(p=>renderProductCard(p,'/')).join('') : '<p style="color:var(--gray);padding:20px">No related products found.</p>';
-    });
+    })();
 
     // ── Variant selection ─────────────────────────────────────────────────────
     let basePrice = 0;
