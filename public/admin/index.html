@@ -238,29 +238,6 @@ tr:hover td{background:#F5F5F7}
         <div class="sb2" style="margin-top:8px"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders')">View All →</button></div>
         <div class="tw"><table><thead><tr><th>#</th><th>Customer</th><th>WhatsApp</th><th>Area</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
 
-        <!-- ANALYTICS -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px">
-          <!-- Orders last 7 days -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid rgba(0,0,0,.06);padding:18px;box-shadow:var(--sh)">
-            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gr);margin-bottom:14px">📅 Orders — Last 7 Days</div>
-            <canvas id="chart-weekly" height="120"></canvas>
-          </div>
-          <!-- Revenue by category -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid rgba(0,0,0,.06);padding:18px;box-shadow:var(--sh)">
-            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gr);margin-bottom:14px">🏷️ Revenue by Category</div>
-            <canvas id="chart-category" height="120"></canvas>
-          </div>
-          <!-- Avg order value + status breakdown -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid rgba(0,0,0,.06);padding:18px;box-shadow:var(--sh)">
-            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gr);margin-bottom:14px">📊 Order Status Breakdown</div>
-            <canvas id="chart-status" height="120"></canvas>
-          </div>
-          <!-- Avg order value -->
-          <div style="background:#fff;border-radius:var(--r);border:1px solid rgba(0,0,0,.06);padding:18px;box-shadow:var(--sh)">
-            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gr);margin-bottom:6px">💡 Key Insights</div>
-            <div id="analytics-insights" style="display:flex;flex-direction:column;gap:10px;margin-top:10px"></div>
-          </div>
-        </div>
 
         <!-- ANALYTICS ROW -->
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px">
@@ -763,15 +740,6 @@ function renderDashboard(){
   const recent=[...allOrders].slice(0,8);
   tbody.innerHTML=recent.length ? recent.map(o=>orderRow(o,true)).join('') : '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gr)">No orders yet</td></tr>';
 
-  // Load Chart.js then render analytics
-  if(typeof Chart !== 'undefined'){
-    renderAnalytics();
-  } else {
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
-    s.onload=renderAnalytics;
-    document.head.appendChild(s);
-  }
 }
 
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
@@ -1373,80 +1341,6 @@ function selectNavStyle(val){
     el.style.background  = el.id === 'nav-opt-'+val ? 'var(--pu)' : '';
   });
   document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
-}
-
-// ── ANALYTICS CHARTS ─────────────────────────────────────────────────────────
-let chartWeekly, chartCategory, chartStatus;
-
-function renderAnalytics(){
-  if(typeof Chart === 'undefined') return;
-
-  const BLUE='#0071E3', BLUE2='#4DA3F0', GREEN='#30D158', ORG='#FF9F0A', RED='#FF3B30';
-  const baseFont = {family:"'Plus Jakarta Sans',sans-serif", size:11};
-
-  // ── Weekly orders (last 7 days) ──
-  const days=[]; const dayCounts=[]; const dayRevs=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date(); d.setDate(d.getDate()-i);
-    const key=d.toISOString().slice(0,10);
-    days.push(d.toLocaleDateString('en-BD',{weekday:'short',day:'numeric'}));
-    const dayOrders=allOrders.filter(o=>o.created_at&&o.created_at.startsWith(key)&&o.status!=='cancelled');
-    dayCounts.push(dayOrders.length);
-    dayRevs.push(dayOrders.reduce((s,o)=>s+(o.total||0),0));
-  }
-  if(chartWeekly) chartWeekly.destroy();
-  chartWeekly = new Chart(document.getElementById('chart-weekly'),{
-    type:'bar',
-    data:{labels:days,datasets:[{label:'Orders',data:dayCounts,backgroundColor:BLUE+'33',borderColor:BLUE,borderWidth:2,borderRadius:6}]},
-    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} orders`}}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:baseFont},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:baseFont},grid:{display:false}}}}
-  });
-
-  // ── Revenue by category ──
-  const catMap={};
-  allOrders.filter(o=>o.status!=='cancelled').forEach(o=>{
-    (o.items||[]).forEach(i=>{
-      const prod=allProds.find(p=>p.id===i.id);
-      const cat=(prod?.category)||'Other';
-      catMap[cat]=(catMap[cat]||0)+(i.price*i.qty);
-    });
-  });
-  const catEntries=Object.entries(catMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const palette=[BLUE,BLUE2,GREEN,ORG,RED,'#8e44ad'];
-  if(chartCategory) chartCategory.destroy();
-  chartCategory = new Chart(document.getElementById('chart-category'),{
-    type:'doughnut',
-    data:{labels:catEntries.map(e=>e[0]),datasets:[{data:catEntries.map(e=>e[1]),backgroundColor:palette,borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,plugins:{legend:{position:'right',labels:{font:baseFont,boxWidth:12}},tooltip:{callbacks:{label:c=>`৳${c.parsed.toLocaleString()}`}}}}
-  });
-
-  // ── Status breakdown ──
-  const statuses=['pending','confirmed','shipped','delivered','cancelled'];
-  const statLabels=['Pending','Confirmed','Shipped','Delivered','Cancelled'];
-  const statColors=[ORG,BLUE,BLUE2,GREEN,RED];
-  const statCounts=statuses.map(s=>allOrders.filter(o=>o.status===s).length);
-  if(chartStatus) chartStatus.destroy();
-  chartStatus = new Chart(document.getElementById('chart-status'),{
-    type:'bar',
-    data:{labels:statLabels,datasets:[{data:statCounts,backgroundColor:statColors.map(c=>c+'33'),borderColor:statColors,borderWidth:2,borderRadius:6}]},
-    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} orders`}}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:baseFont},grid:{color:'rgba(0,0,0,.04)'}},x:{ticks:{font:baseFont},grid:{display:false}}}}
-  });
-
-  // ── Key insights ──
-  const validOrders=allOrders.filter(o=>o.status!=='cancelled'&&o.total>0);
-  const avgOrder=validOrders.length?Math.round(validOrders.reduce((s,o)=>s+(o.total||0),0)/validOrders.length):0;
-  const topDay=Object.entries(dayCounts.reduce((m,c,i)=>{m[days[i]]=c;return m},{})).sort((a,b)=>b[1]-a[1])[0];
-  const repeatCustomers=Object.entries(allOrders.reduce((m,o)=>{m[o.phone]=(m[o.phone]||0)+1;return m},{})).filter(e=>e[1]>1).length;
-  const completionRate=allOrders.length?Math.round(allOrders.filter(o=>o.status==='delivered').length/allOrders.length*100):0;
-
-  document.getElementById('analytics-insights').innerHTML=[
-    {icon:'💰',label:'Avg order value',val:'৳'+avgOrder.toLocaleString()},
-    {icon:'📅',label:'Busiest day',val:topDay?topDay[0]+' ('+topDay[1]+' orders)':'—'},
-    {icon:'🔄',label:'Repeat customers',val:repeatCustomers+' customers'},
-    {icon:'✅',label:'Completion rate',val:completionRate+'%'},
-  ].map(i=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:8px">
-    <span style="font-size:.82rem;color:var(--gr)">${i.icon} ${i.label}</span>
-    <span style="font-size:.88rem;font-weight:700;color:var(--dk)">${i.val}</span>
-  </div>`).join('');
 }
 
 // ── MAINTENANCE TOGGLE ────────────────────────────────────────────────────────
