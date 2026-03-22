@@ -161,7 +161,37 @@ tr:hover td{background:#F5F5F7}
 .cfg-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:.77rem;font-weight:600}
 .cfg-ok{background:#e8fff0;color:var(--grn)}.cfg-warn{background:#fff6e8;color:var(--org)}
 
-@media(max-width:768px){.sb{transform:translateX(-100%)}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}}
+/* ── MOBILE ── */
+.mob-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:var(--bg);border:1px solid var(--br);border-radius:9px;cursor:pointer;flex-shrink:0}
+.mob-menu-btn span{display:block;width:16px;height:1.5px;background:var(--dk);border-radius:2px;transition:var(--t)}
+.mob-menu-btn span+span{margin-top:4px}
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;backdrop-filter:blur(2px)}
+#sb-overlay.open{display:block}
+@media(max-width:768px){
+  .mob-menu-btn{display:flex}
+  .sb{transform:translateX(-100%);transition:transform .28s cubic-bezier(.32,.72,0,1);z-index:200}
+  .sb.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .topbar{padding:0 14px;gap:10px}
+  .topbar h1{font-size:.92rem}
+  .store-link span{display:none}
+  .store-link{padding:6px 10px}
+  .content{padding:14px}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .sv{font-size:1.15rem}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:560px}
+  .fr{grid-template-columns:1fr}
+  .mo{border-radius:20px 20px 0 0;max-width:100%;max-height:90vh;position:fixed;bottom:0;left:0;right:0;margin:0}
+  .ov{align-items:flex-end;padding:0}
+  .setcard{max-width:100%}
+  .sb2{flex-direction:column;align-items:flex-start;gap:8px}
+  .sf{width:100%}
+  .sf input{min-width:0;flex:1}
+  .pn{max-width:120px}
+  .sc{padding:12px}
+  .si{width:34px;height:34px;font-size:.95rem}
+}
 </style>
 </head>
 <body>
@@ -185,28 +215,32 @@ tr:hover td{background:#F5F5F7}
 </div>
 
 <!-- APP -->
+<div id="sb-overlay" onclick="toggleSidebar()"></div>
 <div id="app">
   <aside class="sb">
     <div class="sb-logo">
       <img src="/images/admin-logo.png" alt="Zenocart" onerror="this.src='/images/logo.png'" style="height:26px;width:auto;max-width:150px;object-fit:contain">
     </div>
     <nav class="sb-nav">
-      <div class="ni active" onclick="showTab('dashboard')"><span class="ic">📊</span> Dashboard</div>
-      <div class="ni" onclick="showTab('products')"><span class="ic">📦</span> Products</div>
-      <div class="ni" onclick="showTab('add')"><span class="ic">➕</span> Add Product</div>
-      <div class="ni" onclick="showTab('orders')"><span class="ic">🧾</span> Orders</div>
-      <div class="ni" onclick="showTab('categories')"><span class="ic">🏷️</span> Categories</div>
-      <div class="ni" onclick="showTab('delivery')"><span class="ic">🚚</span> Delivery &amp; COD</div>
-      <div class="ni" onclick="showTab('backup')"><span class="ic">💾</span> Backup &amp; Restore</div>
-      <div class="ni" onclick="showTab('settings')"><span class="ic">⚙️</span> Settings</div>
+      <div class="ni active" onclick="showTab('dashboard');closeSidebar()"><span class="ic">📊</span> Dashboard</div>
+      <div class="ni" onclick="showTab('products');closeSidebar()"><span class="ic">📦</span> Products</div>
+      <div class="ni" onclick="showTab('add');closeSidebar()"><span class="ic">➕</span> Add Product</div>
+      <div class="ni" onclick="showTab('orders');closeSidebar()"><span class="ic">🧾</span> Orders</div>
+      <div class="ni" onclick="showTab('categories');closeSidebar()"><span class="ic">🏷️</span> Categories</div>
+      <div class="ni" onclick="showTab('delivery');closeSidebar()"><span class="ic">🚚</span> Delivery &amp; COD</div>
+      <div class="ni" onclick="showTab('backup');closeSidebar()"><span class="ic">💾</span> Backup &amp; Restore</div>
+      <div class="ni" onclick="showTab('settings');closeSidebar()"><span class="ic">⚙️</span> Settings</div>
     </nav>
     <div class="sb-foot"><button onclick="doLogout()">🚪 Sign Out</button></div>
   </aside>
 
   <div class="main">
     <div class="topbar">
-      <h1 id="pt">Dashboard</h1>
       <div style="display:flex;align-items:center;gap:10px">
+        <button class="mob-menu-btn" onclick="toggleSidebar()" aria-label="Menu"><span></span><span></span><span></span></button>
+        <h1 id="pt">Dashboard</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
         <a href="/" target="_blank" class="store-link">🛍️ View Store</a>
         <button id="maintenance-btn" onclick="toggleMaintenance()"
           style="display:flex;align-items:center;gap:7px;padding:6px 14px;background:rgba(48,209,88,.18);border:1px solid rgba(48,209,88,.3);backdrop-filter:blur(12px);border-radius:980px;font-size:.75rem;font-weight:700;color:#5be878;cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.02em">
@@ -235,7 +269,7 @@ tr:hover td{background:#F5F5F7}
         <div id="low-stock-bar" style="display:none;background:#fff8ec;border:1px solid rgba(255,159,10,.3);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;font-size:.83rem;color:#b45309">
           <strong>⚠️ Low Stock Alert:</strong> <span id="low-stock-list"></span>
         </div>
-        <div class="sb2" style="margin-top:8px"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders')">View All →</button></div>
+        <div class="sb2" style="margin-top:8px"><h2>Recent Orders</h2><button class="btn btn-sm btn-p" onclick="showTab('orders');closeSidebar()">View All →</button></div>
         <div class="tw"><table><thead><tr><th>#</th><th>Customer</th><th>WhatsApp</th><th>Area</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
 
 
@@ -287,7 +321,7 @@ tr:hover td{background:#F5F5F7}
           <div class="sf">
             <input type="text" id="sq" placeholder="🔍 Search..." oninput="filterProds()">
             <select id="scat" onchange="filterProds()"><option value="">All Categories</option></select>
-            <button class="btn btn-p btn-sm" onclick="showTab('add')">➕ Add Product</button>
+            <button class="btn btn-p btn-sm" onclick="showTab('add');closeSidebar()">➕ Add Product</button>
           </div>
         </div>
         <div class="tw"><table>
@@ -1341,6 +1375,22 @@ function selectNavStyle(val){
     el.style.background  = el.id === 'nav-opt-'+val ? 'var(--pu)' : '';
   });
   document.querySelector(`input[name="navStyle"][value="${val}"]`).checked = true;
+}
+
+// ── SIDEBAR TOGGLE (mobile) ───────────────────────────────────────────────────
+function toggleSidebar(){
+  const sb  = document.querySelector('.sb');
+  const ov  = document.getElementById('sb-overlay');
+  const open = sb.classList.toggle('open');
+  ov.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeSidebar(){
+  const sb = document.querySelector('.sb');
+  if(!sb.classList.contains('open')) return;
+  sb.classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ── MAINTENANCE TOGGLE ────────────────────────────────────────────────────────
