@@ -165,20 +165,25 @@ const SPA = (() => {
     view.appendChild(entering);  // z-index:2, relative, on top
     window.scrollTo({ top: 0, behavior: 'instant' });
 
+    // Cleanup after animation
     setTimeout(() => {
       view.style.height   = '';
       view.style.overflow = '';
-      view.innerHTML      = '';
-      entering.className  = 'spa-page';
+
+      // Remove only the exiting page — don't touch entering
+      if (exiting.parentNode) exiting.remove();
+
+      // Strip animation classes from entering
+      entering.className = 'spa-page';
       entering.style.cssText = '';
-      view.appendChild(entering);
 
       // Reset dynamic containers so re-running scripts starts fresh
+      const SK = '<div class="product-card-skeleton"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-cat skeleton"></div><div class="sk-name skeleton"></div><div class="sk-name2 skeleton"></div><div class="sk-stars skeleton"></div><div class="sk-price skeleton"></div></div></div>';
       const resets = {
-        'featured-grid':      '<div class="product-card-skeleton"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-cat skeleton"></div><div class="sk-name skeleton"></div><div class="sk-name2 skeleton"></div><div class="sk-stars skeleton"></div><div class="sk-price skeleton"></div></div></div>'.repeat(4),
+        'featured-grid':      SK.repeat(4),
         'hot-deals-grid':     '',
         'home-categories':    '',
-        'shop-grid':          '<div class="product-card-skeleton"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-cat skeleton"></div><div class="sk-name skeleton"></div><div class="sk-name2 skeleton"></div><div class="sk-stars skeleton"></div><div class="sk-price skeleton"></div></div></div>'.repeat(6),
+        'shop-grid':          SK.repeat(6),
         'sidebar-categories': '',
       };
       Object.entries(resets).forEach(([id, html]) => {
