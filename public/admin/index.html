@@ -161,36 +161,58 @@ tr:hover td{background:#F5F5F7}
 .cfg-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:.77rem;font-weight:600}
 .cfg-ok{background:#e8fff0;color:var(--grn)}.cfg-warn{background:#fff6e8;color:var(--org)}
 
+/* ── STATS GRID VARIANTS ── */
+.stats-grid-4{grid-template-columns:repeat(4,1fr)}
+.stats-grid-3{grid-template-columns:repeat(3,1fr)}
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
 /* ── MOBILE ── */
 .mob-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:var(--bg);border:1px solid var(--br);border-radius:9px;cursor:pointer;flex-shrink:0}
-.mob-menu-btn span{display:block;width:16px;height:1.5px;background:var(--dk);border-radius:2px;transition:var(--t)}
+.mob-menu-btn span{display:block;width:16px;height:1.5px;background:var(--dk);border-radius:2px}
 .mob-menu-btn span+span{margin-top:4px}
 #sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;backdrop-filter:blur(2px)}
 #sb-overlay.open{display:block}
+
 @media(max-width:768px){
   .mob-menu-btn{display:flex}
   .sb{transform:translateX(-100%);transition:transform .28s cubic-bezier(.32,.72,0,1);z-index:200}
   .sb.open{transform:translateX(0)}
   .main{margin-left:0}
-  .topbar{padding:0 14px;gap:10px}
-  .topbar h1{font-size:.92rem}
-  .store-link span{display:none}
-  .store-link{padding:6px 10px}
-  .content{padding:14px}
-  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
-  .sv{font-size:1.15rem}
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:560px}
-  .fr{grid-template-columns:1fr}
-  .mo{border-radius:20px 20px 0 0;max-width:100%;max-height:90vh;position:fixed;bottom:0;left:0;right:0;margin:0}
+  .topbar{padding:0 14px;gap:8px}
+  .topbar h1{font-size:.9rem}
+  .content{padding:12px}
+
+  /* Stats: 2-col on mobile regardless of variant */
+  .stats-grid,.stats-grid-4,.stats-grid-3{grid-template-columns:1fr 1fr !important;gap:10px}
+  .analytics-grid{grid-template-columns:1fr !important;gap:10px}
+
+  /* Stat cards */
+  .sc{padding:11px 12px;gap:10px}
+  .si{width:32px;height:32px;font-size:.88rem;flex-shrink:0}
+  .sl{font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sv{font-size:1.05rem !important}
+
+  /* Tables: scroll horizontally */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
+  table{min-width:520px;font-size:.78rem}
+  th,td{padding:8px 10px}
+
+  /* Modals: bottom sheet */
+  .mo{border-radius:20px 20px 0 0;max-width:100%;max-height:88vh;position:fixed;bottom:0;left:0;right:0}
   .ov{align-items:flex-end;padding:0}
+
+  /* Forms */
+  .fr{grid-template-columns:1fr}
   .setcard{max-width:100%}
   .sb2{flex-direction:column;align-items:flex-start;gap:8px}
-  .sf{width:100%}
+  .sf{flex-wrap:wrap;width:100%}
   .sf input{min-width:0;flex:1}
-  .pn{max-width:120px}
-  .sc{padding:12px}
-  .si{width:34px;height:34px;font-size:.95rem}
+
+  /* Product name */
+  .pn{max-width:110px}
+
+  /* Section bar buttons */
+  .sb2 .btn{font-size:.75rem;padding:6px 10px}
 }
 </style>
 </head>
@@ -254,13 +276,13 @@ tr:hover td{background:#F5F5F7}
 
       <!-- DASHBOARD -->
       <div id="tab-dashboard">
-        <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stats-grid stats-grid-4">
           <div class="sc"><div class="si" style="background:var(--pu)">📦</div><div><div class="sl">Products</div><div class="sv" id="s-prod">—</div></div></div>
           <div class="sc"><div class="si" style="background:#e8fff0">🧾</div><div><div class="sl">Total Orders</div><div class="sv" id="s-ord">—</div></div></div>
           <div class="sc"><div class="si" style="background:#fff6e8">⏳</div><div><div class="sl">Pending</div><div class="sv" id="s-pend">—</div></div></div>
           <div class="sc"><div class="si" style="background:#e8fff0">✅</div><div><div class="sl">Delivered</div><div class="sv" id="s-del">—</div></div></div>
         </div>
-        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-top:0">
+        <div class="stats-grid stats-grid-3" style="margin-top:0">
           <div class="sc"><div class="si" style="background:#f0ece8">💰</div><div><div class="sl">Total Revenue</div><div class="sv" id="s-rev" style="font-size:1.05rem">—</div></div></div>
           <div class="sc"><div class="si" style="background:#fff4ec">📈</div><div><div class="sl">This Month</div><div class="sv" id="s-month" style="font-size:1.05rem">—</div></div></div>
           <div class="sc"><div class="si" style="background:#eceef5">🏆</div><div><div class="sl">Best Seller</div><div class="sv" id="s-best" style="font-size:.82rem;line-height:1.25">—</div></div></div>
@@ -274,7 +296,7 @@ tr:hover td{background:#F5F5F7}
 
 
         <!-- ANALYTICS ROW -->
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px">
+        <div class="analytics-grid" style="margin-top:20px">
           <!-- Orders last 7 days -->
           <div class="sc" style="flex-direction:column;align-items:stretch;gap:10px">
             <div style="display:flex;align-items:center;justify-content:space-between">
