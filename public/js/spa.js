@@ -109,13 +109,15 @@ const SPA = (() => {
     return code;
   }
 
-  // ── Run page scripts ───────────────────────────────────────────────────────
+  // ── Run page scripts in global scope ──────────────────────────────────────
+  // Must use indirect eval (0,eval) so functions land on window and inline
+  // HTML handlers like onchange="filterProducts()" can find them.
   function runScripts(scripts) {
     scripts.forEach(raw => {
       try {
         const code = transformScript(raw);
-        // eslint-disable-next-line no-new-func
-        new Function(code)();
+        // eslint-disable-next-line no-eval
+        (0, eval)(code);
       } catch(e) {
         console.warn('[SPA] script error:', e.message, e);
       }
