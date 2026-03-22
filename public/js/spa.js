@@ -18,14 +18,16 @@ const SPA = (() => {
 
   // ── CSS ────────────────────────────────────────────────────────────────────
   document.head.insertAdjacentHTML('beforeend', `<style>
-    #spa-view { position:relative; overflow:hidden; isolation:isolate; }
-    .spa-page { width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; transform:translate3d(0,0,0); }
-    .spa-e-right { animation:spaInR  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; z-index:2; position:relative; }
-    .spa-e-left  { animation:spaInL  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; z-index:2; position:relative; }
-    .spa-e-deep  { animation:spaInD  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; z-index:2; position:relative; }
-    .spa-x-left  { animation:spaOutL ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; position:absolute;top:0;left:0;width:100%;z-index:1;pointer-events:none; }
-    .spa-x-right { animation:spaOutR ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; position:absolute;top:0;left:0;width:100%;z-index:1;pointer-events:none; }
-    .spa-x-deep  { animation:spaOutD ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; position:absolute;top:0;left:0;width:100%;z-index:1;pointer-events:none; }
+    #spa-view { position:relative; overflow:hidden; }
+    .spa-page { width:100%; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+    /* During transition both pages are absolute inside the locked container */
+    .spa-transitioning { position:absolute; top:0; left:0; width:100%; }
+    .spa-e-right { animation:spaInR  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
+    .spa-e-left  { animation:spaInL  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
+    .spa-e-deep  { animation:spaInD  ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
+    .spa-x-left  { animation:spaOutL ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
+    .spa-x-right { animation:spaOutR ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
+    .spa-x-deep  { animation:spaOutD ${DUR}ms cubic-bezier(.25,.46,.45,.94) both; }
     @keyframes spaInR  { from{transform:translate3d(100%,0,0)}   to{transform:translate3d(0,0,0)} }
     @keyframes spaInL  { from{transform:translate3d(-100%,0,0)}  to{transform:translate3d(0,0,0)} }
     @keyframes spaInD  { from{transform:translate3d(32px,0,0);opacity:0} to{transform:translate3d(0,0,0);opacity:1} }
@@ -156,26 +158,32 @@ const SPA = (() => {
       exiting.classList.add('spa-x-left');  entering.classList.add('spa-e-right');
     }
 
-    // Lock height to prevent collapse while exiting is absolute
-    view.style.height   = view.offsetHeight + 'px';
+    // Lock height to the current page's height
+    const lockedH = view.offsetHeight;
+    view.style.height   = lockedH + 'px';
     view.style.overflow = 'hidden';
 
+    // Both pages are absolutely positioned during the transition
+    exiting.classList.add('spa-transitioning');
+    entering.classList.add('spa-transitioning');
+    exiting.style.zIndex  = '1';
+    entering.style.zIndex = '2';   // entering always on top
+
     view.innerHTML = '';
-    view.appendChild(exiting);   // z-index:1, absolute
-    view.appendChild(entering);  // z-index:2, relative, on top
+    view.appendChild(exiting);
+    view.appendChild(entering);
     window.scrollTo({ top: 0, behavior: 'instant' });
 
     // Cleanup after animation
     setTimeout(() => {
       view.style.height   = '';
       view.style.overflow = '';
+      view.innerHTML      = '';
 
-      // Remove only the exiting page — don't touch entering
-      if (exiting.parentNode) exiting.remove();
-
-      // Strip animation classes from entering
+      // Return entering to normal flow
       entering.className = 'spa-page';
       entering.style.cssText = '';
+      view.appendChild(entering);
 
       // Reset dynamic containers so re-running scripts starts fresh
       const SK = '<div class="product-card-skeleton"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-cat skeleton"></div><div class="sk-name skeleton"></div><div class="sk-name2 skeleton"></div><div class="sk-stars skeleton"></div><div class="sk-price skeleton"></div></div></div>';
