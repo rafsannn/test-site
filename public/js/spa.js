@@ -109,15 +109,17 @@ const SPA = (() => {
     return code;
   }
 
-  // ── Run page scripts in global scope ──────────────────────────────────────
-  // Must use indirect eval (0,eval) so functions land on window and inline
-  // HTML handlers like onchange="filterProducts()" can find them.
+  // ── Run page scripts by injecting real <script> tags ─────────────────────
+  // This is the ONLY reliable way to put functions on window so that
+  // inline HTML handlers (onchange="filterProducts()") can find them.
   function runScripts(scripts) {
     scripts.forEach(raw => {
       try {
         const code = transformScript(raw);
-        // eslint-disable-next-line no-eval
-        (0, eval)(code);
+        const el   = document.createElement('script');
+        el.textContent = code;
+        document.head.appendChild(el);
+        el.remove(); // clean up after execution
       } catch(e) {
         console.warn('[SPA] script error:', e.message, e);
       }
