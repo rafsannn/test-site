@@ -230,10 +230,10 @@
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
-    let deliveryAreas = [];
-    let selectedPayment = 'cod';
-    let selectedDelivery = null;
-    let freeDeliveryThreshold = 0;
+    var deliveryAreas = [];
+    var selectedPayment = 'cod';
+    var selectedDelivery = null;
+    var freeDeliveryThreshold = 0;
 
     // Load settings for free delivery threshold
     fetch('/api/settings').then(r=>r.json()).then(cfg=>{

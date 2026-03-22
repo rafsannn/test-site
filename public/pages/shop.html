@@ -100,9 +100,9 @@
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
-    let allLoaded = [];
-    let activeCategory = 'all';
-    const urlParams = new URLSearchParams(window.location.search);
+    var allLoaded = [];
+    var activeCategory = 'all';
+    var urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cat')) activeCategory = urlParams.get('cat');
 
     function toggleFilters() {

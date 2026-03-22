@@ -220,10 +220,10 @@
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
-    const urlParams  = new URLSearchParams(window.location.search);
-    const productId  = parseInt(urlParams.get('id'));
-    let qty = 1;
-    let selectedRating = 0;
+    var urlParams  = new URLSearchParams(window.location.search);
+    var productId  = parseInt(urlParams.get('id'));
+    var qty = 1;
+    var selectedRating = 0;
 
     (async () => {
       const product = await loadProduct(productId);
@@ -342,7 +342,7 @@
     })();
 
     // ── Variant selection ─────────────────────────────────────────────────────
-    let basePrice = 0;
+    var basePrice = 0;
     function selectVariant(btn, groupId){
       btn.closest('.variant-options').querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('selected'));
       btn.classList.add('selected');
@@ -412,7 +412,7 @@
     }
 
     // ── Direct Checkout ────────────────────────────────────────────────────────
-    let dcoProduct=null, dcoQty=1, dcoAreas=[];
+    var dcoProduct=null, dcoQty=1, dcoAreas=[];
     fetch('/api/delivery').then(r=>r.json()).then(data=>{ dcoAreas=data; const sel=document.getElementById('dco-area'); data.forEach(d=>{ const o=document.createElement('option'); o.value=d.id; o.textContent=d.area+' — ৳'+d.price; sel.appendChild(o); }); });
 
     function openDirectCheckout(product,qty){ dcoProduct=product; dcoQty=qty||1; const imgSrc=product.image?(product.image.startsWith('http')?product.image:'/'+product.image):'/images/logo.png'; document.getElementById('dco-img').src=imgSrc; document.getElementById('dco-pname').textContent=product.name; document.getElementById('dco-qty').textContent=dcoQty; dcoUpdateTotal(); document.getElementById('dco-form').style.display='block'; document.getElementById('dco-success').style.display='none'; document.getElementById('dco-err').style.display='none'; document.getElementById('dco-submit-btn').disabled=false; document.getElementById('dco-submit-btn').textContent='✅ Confirm Order'; document.getElementById('dco-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
