@@ -167,12 +167,25 @@ const SPA = (() => {
     }, DUR + 30);
   }
 
-  // ── Bottom nav ─────────────────────────────────────────────────────────────
+  // ── Bottom nav + desktop nav active state ─────────────────────────────────
   function updateBottomNav(url) {
-    const tab = getTab(url.split('?')[0]);
+    const path = url.split('?')[0];
+    const tab  = getTab(path);
+
+    // Mobile bottom bar
     document.querySelectorAll('.mbb-tab').forEach(el =>
       el.classList.toggle('mbb-active', el.dataset.page === tab)
     );
+
+    // Desktop nav links
+    document.querySelectorAll('.nav-link').forEach(el => {
+      const href = el.getAttribute('href') || '';
+      const hpath = href.split('?')[0];
+      const isActive =
+        (hpath === '/' && path === '/') ||
+        (hpath !== '/' && path.startsWith(hpath) && hpath.length > 1);
+      el.classList.toggle('active', isActive);
+    });
   }
 
   // ── Link interception ──────────────────────────────────────────────────────

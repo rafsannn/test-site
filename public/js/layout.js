@@ -144,6 +144,16 @@ function injectLayout(root) {
   if(path.includes('shop')) activePage = 'shop';
   else if(path.includes('cart')) activePage = 'cart';
 
+  // Desktop nav links
+  document.querySelectorAll('.nav-link').forEach(el => {
+    const href = (el.getAttribute('href') || '').split('?')[0];
+    const isActive =
+      (href === '/' && (path === '/' || path === '/index.html')) ||
+      (href !== '/' && path.includes(href) && href.length > 1);
+    el.classList.toggle('active', isActive);
+  });
+
+  // Mobile bottom bar
   document.querySelectorAll('.mbb-tab').forEach(tab => {
     if(tab.dataset.page === activePage) tab.classList.add('mbb-active');
   });
