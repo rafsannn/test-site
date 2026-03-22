@@ -46,6 +46,8 @@ function normaliseProduct(p) {
 }
 
 async function loadProducts(params = {}) {
+  // Return cached data instantly if no specific params requested
+  if (PRODUCTS.length && !params.category && !params.q && !params.sort) return PRODUCTS;
   try {
     const qs = new URLSearchParams();
     if (params.category) qs.set('category', params.category);
