@@ -164,7 +164,6 @@ tr:hover td{background:#F5F5F7}
 /* ── STATS GRID VARIANTS ── */
 .stats-grid-4{grid-template-columns:repeat(4,1fr)}
 .stats-grid-3{grid-template-columns:repeat(3,1fr)}
-.analytics-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 
 /* ── MOBILE ── */
 .mob-menu-btn{display:none;align-items:center;justify-content:center;width:36px;height:36px;background:var(--bg);border:1px solid var(--br);border-radius:9px;cursor:pointer;flex-shrink:0;gap:0;flex-direction:column;padding:10px 8px}
@@ -184,7 +183,6 @@ tr:hover td{background:#F5F5F7}
 
   /* Stats: 2-col on mobile regardless of variant */
   .stats-grid,.stats-grid-4,.stats-grid-3{grid-template-columns:1fr 1fr !important;gap:10px}
-  .analytics-grid{grid-template-columns:1fr !important;gap:10px}
 
   /* Stat cards */
   .sc{padding:11px 12px;gap:10px}
@@ -295,45 +293,6 @@ tr:hover td{background:#F5F5F7}
         <div class="tw"><table><thead><tr><th>#</th><th>Customer</th><th>WhatsApp</th><th>Area</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dash-orders-tbody"></tbody></table></div>
 
 
-        <!-- ANALYTICS ROW -->
-        <div class="analytics-grid" style="margin-top:20px">
-          <!-- Orders last 7 days -->
-          <div class="sc" style="flex-direction:column;align-items:stretch;gap:10px">
-            <div style="display:flex;align-items:center;justify-content:space-between">
-              <div><div class="sl">Orders — Last 7 Days</div><div class="sv" id="a-week-total" style="font-size:1.1rem">—</div></div>
-              <div style="font-size:1.4rem">📅</div>
-            </div>
-            <div style="display:flex;align-items:flex-end;gap:4px;height:44px" id="a-week-bars"></div>
-            <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--gr)" id="a-week-labels"></div>
-          </div>
-          <!-- Revenue by category -->
-          <div class="sc" style="flex-direction:column;align-items:stretch;gap:8px">
-            <div><div class="sl">Top Categories</div><div class="sv" style="font-size:.85rem;margin-top:2px">by revenue</div></div>
-            <div id="a-cat-list" style="display:flex;flex-direction:column;gap:6px;margin-top:4px"></div>
-          </div>
-          <!-- Key metrics -->
-          <div class="sc" style="flex-direction:column;align-items:stretch;gap:10px">
-            <div><div class="sl">Key Metrics</div></div>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px">
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-                <span style="color:var(--gr)">Avg Order Value</span>
-                <strong id="a-aov" style="color:var(--dk)">—</strong>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-                <span style="color:var(--gr)">Completion Rate</span>
-                <strong id="a-completion" style="color:var(--dk)">—</strong>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-                <span style="color:var(--gr)">Best Day</span>
-                <strong id="a-best-day" style="color:var(--dk)">—</strong>
-              </div>
-              <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem">
-                <span style="color:var(--gr)">Orders Today</span>
-                <strong id="a-today" style="color:var(--dk)">—</strong>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- PRODUCTS -->
