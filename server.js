@@ -266,6 +266,18 @@ const srv = http.createServer(async (req, res) => {
     writeJSON(USERS_FILE,users); return respond(res,200,{ok:true});
   }
 
+  // ── Standalone image upload (for variant images etc.) ─────────────────────
+  if(pn==='/api/admin/upload' && mt==='POST'){
+    if(!requireAuth(req,res))return;
+    const ct=req.headers['content-type']||''; const bm=ct.match(/boundary=(.+)/);
+    if(!bm)return respond(res,400,{error:'Expected multipart'});
+    const parsed=parseMultipart(await readBody(req),bm[1]);
+    const {fileBuffer,fileName}=parsed;
+    if(!fileBuffer||!fileBuffer.length)return respond(res,400,{error:'No image file'});
+    const path=await uploadImage(fileBuffer,fileName||'upload.jpg');
+    return respond(res,200,{path});
+  }
+
   // Admin CRUD
   if(pn==='/api/admin/products' && mt==='POST'){
     if(!requireAuth(req,res))return;
