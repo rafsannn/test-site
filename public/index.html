@@ -117,7 +117,6 @@
 
   <script src="/js/products.js"></script>
   <script src="/js/layout.js"></script>
-  <script src="/js/spa.js"></script>
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
@@ -138,7 +137,7 @@
       }
     }).catch(()=>{});
 
-    (async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const catGrid = document.getElementById('home-categories');
       CATEGORIES.forEach(cat => {
         const pill = document.createElement('div');
@@ -163,7 +162,7 @@
       } else {
         document.getElementById('hot-section').style.display = 'none';
       }
-    })();
+    });
   </script>
 
   <!-- WhatsApp Float -->

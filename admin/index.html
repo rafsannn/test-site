@@ -844,45 +844,86 @@ function addVariantGroup(listId, existing={name:'',values:[],prices:{}}){
   l.appendChild(d);
   // Render price rows for existing values
   const input = d.querySelector('.variant-values');
-  updateVariantPriceRows(input, existingPrices);
+  updateVariantPriceRows(input, existingPrices, existing.images||{});
 }
 
-function updateVariantPriceRows(input, existingPrices={}){
+function updateVariantPriceRows(input, existingPrices={}, existingImages={}){
   const wrap = input.closest('.variant-group-wrap');
   const priceRows = wrap.querySelector('.variant-price-rows');
   const values = input.value.split(',').map(v=>v.trim()).filter(Boolean);
   if(!values.length){ priceRows.innerHTML=''; return; }
-  // Save current prices before re-render
-  const currentPrices = {};
+  // Save current prices & images before re-render
+  const currentPrices = {}, currentImages = {};
   priceRows.querySelectorAll('.vpr').forEach(row=>{
     const lbl=row.querySelector('.vpr-label')?.textContent;
     const val=row.querySelector('.vpr-price')?.value;
+    const img=row.querySelector('.vpr-img-val')?.value;
     if(lbl&&val) currentPrices[lbl]=val;
+    if(lbl&&img) currentImages[lbl]=img;
   });
-  const merged = {...currentPrices, ...existingPrices};
-  priceRows.innerHTML = '<div style="font-size:.72rem;font-weight:600;color:var(--gr);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Price per option (leave blank = use base price)</div>' +
+  const mergedP = {...currentPrices, ...existingPrices};
+  const mergedI = {...currentImages, ...existingImages};
+  priceRows.innerHTML = '<div style="font-size:.72rem;font-weight:600;color:var(--gr);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Price & image per option</div>' +
     values.map(v=>`
-      <div class="vpr" style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <span class="vpr-label" style="min-width:80px;font-size:.82rem;font-weight:600;color:var(--dk)">${v}</span>
-        <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:6px;overflow:hidden;flex:1">
-          <span style="padding:6px 8px;background:#fff;color:var(--gr);font-size:.8rem;border-right:1px solid var(--br)">৳</span>
-          <input type="number" class="vpr-price" placeholder="Base price" value="${merged[v]||''}" min="0"
-            style="border:none;outline:none;padding:6px 8px;font-size:.82rem;width:100%">
+      <div class="vpr" style="background:#fff;border:1px solid var(--br);border-radius:8px;padding:10px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span class="vpr-label" style="min-width:80px;font-size:.82rem;font-weight:700;color:var(--dk)">${v}</span>
+          <div style="display:flex;align-items:center;border:1.5px solid var(--br);border-radius:6px;overflow:hidden;flex:1">
+            <span style="padding:6px 8px;background:var(--bg);color:var(--gr);font-size:.8rem;border-right:1px solid var(--br)">৳</span>
+            <input type="number" class="vpr-price" placeholder="Base price" value="${mergedP[v]||''}" min="0"
+              style="border:none;outline:none;padding:6px 8px;font-size:.82rem;width:100%">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="position:relative;width:44px;height:44px;border-radius:6px;overflow:hidden;background:var(--bg);border:1.5px solid var(--br);flex-shrink:0;cursor:pointer" onclick="this.nextElementSibling.click()">
+            ${mergedI[v] ? `<img src="/${mergedI[v]}" style="width:100%;height:100%;object-fit:cover">` : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">🖼️</div>'}
+          </div>
+          <input type="file" accept="image/*" style="display:none" onchange="uploadVariantImage(this,'${v.replace(/'/g,"\\'")}')">
+          <input type="hidden" class="vpr-img-val" value="${mergedI[v]||''}">
+          <div style="flex:1">
+            <div style="font-size:.72rem;color:var(--gr)">Optional: image for <strong>${v}</strong></div>
+            <div style="font-size:.68rem;color:var(--gl)">Shows when customer selects this option</div>
+          </div>
+          ${mergedI[v] ? `<button onclick="clearVariantImage(this)" style="background:#fff0f0;color:var(--red);border:none;padding:3px 7px;border-radius:4px;font-size:.7rem;cursor:pointer">✕</button>` : ''}
         </div>
       </div>`).join('');
+}
+
+async function uploadVariantImage(input, variantValue){
+  const file = input.files[0]; if(!file) return;
+  const vpr = input.closest('.vpr');
+  const preview = vpr.querySelector('div[style*="position:relative"]');
+  const hidden  = vpr.querySelector('.vpr-img-val');
+  preview.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--gr)">⏳</div>';
+  try{
+    const fd = new FormData(); fd.append('image', file);
+    const r  = await fetch('/api/admin/upload', {method:'POST', body:fd, credentials:'include'});
+    const d  = await r.json();
+    if(d.path){ hidden.value=d.path; preview.innerHTML=`<img src="/${d.path}" style="width:100%;height:100%;object-fit:cover">`; toast('Image uploaded','ok'); }
+    else { toast('Upload failed','err'); preview.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">🖼️</div>'; }
+  }catch(e){ toast('Upload error','err'); }
+}
+
+function clearVariantImage(btn){
+  const vpr = btn.closest('.vpr');
+  vpr.querySelector('.vpr-img-val').value='';
+  vpr.querySelector('div[style*="position:relative"]').innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem">🖼️</div>';
+  btn.remove();
 }
 
 function getVariants(listId){
   return [...document.querySelectorAll('#'+listId+' .variant-group-wrap')].map(d=>{
     const name = d.querySelector('.variant-name')?.value?.trim()||'';
     const values = (d.querySelector('.variant-values')?.value||'').split(',').map(v=>v.trim()).filter(Boolean);
-    const prices = {};
+    const prices = {}, images = {};
     d.querySelectorAll('.vpr').forEach(row=>{
       const lbl=row.querySelector('.vpr-label')?.textContent?.trim();
       const val=row.querySelector('.vpr-price')?.value?.trim();
+      const img=row.querySelector('.vpr-img-val')?.value?.trim();
       if(lbl&&val) prices[lbl]=parseFloat(val);
+      if(lbl&&img) images[lbl]=img;
     });
-    return {name, values, prices};
+    return {name, values, prices, images};
   }).filter(v=>v.name&&v.values.length>0);
 }
 

@@ -216,7 +216,6 @@
   <div id="footer-placeholder"></div>
   <script src="/js/products.js"></script>
   <script src="/js/layout.js"></script>
-  <script src="/js/spa.js"></script>
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
@@ -225,7 +224,7 @@
     var qty = 1;
     var selectedRating = 0;
 
-    (async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const product = await loadProduct(productId);
       if (!product) { document.getElementById('product-content').style.display='none'; document.getElementById('not-found').style.display='block'; return; }
 
@@ -294,15 +293,18 @@
             <div class="variant-options">
               ${(v.values||[]).map((val,i)=>{
                 const prices = v.prices||{};
+                const images = v.images||{};
                 const hasPrice = prices[val]>0;
                 const dp = hasPrice ? ` data-price="${prices[val]}"` : '';
+                const di = images[val] ? ` data-image="${images[val]}"` : '';
                 const pTag = hasPrice ? `<span style="font-size:.72rem;color:${i===0?'rgba(255,255,255,.8)':'var(--gray)'};margin-left:4px">৳${prices[val].toLocaleString()}</span>` : '';
-                return `<button class="variant-btn${i===0?' selected':''}"${dp} onclick="selectVariant(this,'variant-group-${vi}')">${val}${pTag}</button>`;
+                return `<button class="variant-btn${i===0?' selected':''}"${dp}${di} onclick="selectVariant(this,'variant-group-${vi}')">${val}${pTag}</button>`;
               }).join('')}
             </div>
           </div>`).join('');
-        // Set initial price from first variant option if it has a price
+        // Set initial price + image from first selected variant
         updatePriceFromVariants();
+        swapVariantImage();
       }
 
       // Qty controls
@@ -339,7 +341,7 @@
       const all = await loadProducts();
       const related = all.filter(p=>p.id!==product.id && (p.category_slug||p.categorySlug)===(product.category_slug||product.categorySlug)).slice(0,4);
       document.getElementById('related-grid').innerHTML = related.length ? related.map(p=>renderProductCard(p,'/')).join('') : '<p style="color:var(--gray);padding:20px">No related products found.</p>';
-    })();
+    });
 
     // ── Variant selection ─────────────────────────────────────────────────────
     var basePrice = 0;
@@ -347,6 +349,26 @@
       btn.closest('.variant-options').querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('selected'));
       btn.classList.add('selected');
       updatePriceFromVariants();
+      swapVariantImage();
+    }
+
+    function swapVariantImage(){
+      // Find the first selected variant button that has a data-image
+      let imgPath = null;
+      document.querySelectorAll('#variants-section .variant-btn.selected').forEach(btn=>{
+        if(btn.dataset.image && !imgPath) imgPath = btn.dataset.image;
+      });
+      if(!imgPath) return; // no variant image — keep current main image
+      const mainImg = document.getElementById('main-img');
+      if(mainImg){
+        mainImg.style.opacity = '0';
+        mainImg.style.transition = 'opacity .18s ease';
+        setTimeout(()=>{
+          mainImg.src = '/' + imgPath;
+          mainImg.onload = () => { mainImg.style.opacity = '1'; };
+          mainImg.onerror = () => { mainImg.style.opacity = '1'; };
+        }, 120);
+      }
     }
 
     function updatePriceFromVariants(){

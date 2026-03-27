@@ -96,13 +96,12 @@
   <div id="footer-placeholder"></div>
   <script src="/js/products.js"></script>
   <script src="/js/layout.js"></script>
-  <script src="/js/spa.js"></script>
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
-    var allLoaded = [];
-    var activeCategory = 'all';
-    var urlParams = new URLSearchParams(window.location.search);
+    let allLoaded = [];
+    let activeCategory = 'all';
+    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('cat')) activeCategory = urlParams.get('cat');
 
     function toggleFilters() {
@@ -122,7 +121,7 @@
       badge.classList.toggle('show', active > 0);
     }
 
-    (async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       const sidebarCats = document.getElementById('sidebar-categories');
       allLoaded = await loadProducts();
       const counts = {};
@@ -158,7 +157,7 @@
       if (urlParams.get('cat')) updateFilterBadge();
 
       filterProducts();
-    })();
+    });
 
     function filterProducts() {
       let filtered = [...allLoaded];

@@ -460,7 +460,8 @@ ul{list-style:none}
 .mbb-tab.mbb-active .mbb-icon{transform:scale(1.15)}
 .mbb-label{font-size:.62rem;font-weight:600;letter-spacing:.01em}
 /* Fade in on load — on main, NOT body (body transform breaks position:fixed) */
-main{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+main{animation:pageIn .22s ease both}
 
 @media(max-width:767px){body{padding-bottom:88px}}
 @media(max-width:767px){.navbar{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}}

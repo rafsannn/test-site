@@ -226,7 +226,6 @@
 
   <script src="/js/products.js"></script>
   <script src="/js/layout.js"></script>
-  <script src="/js/spa.js"></script>
   <script src="/js/core.js"></script>
   <script>
     injectLayout('/');
@@ -272,10 +271,10 @@
       });
     });
 
-    (async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       renderCart();
       updateFreeDeliveryBar();
-    })();
+    });
 
     function updateDeliveryCharge() {
       const sel = document.getElementById('co-area');
