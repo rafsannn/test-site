@@ -66,6 +66,7 @@
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:#000}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#000;color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 main{background:var(--bg)}
+.product-detail,.shop-page,.cart-page,.products-section,.categories-strip,.fb-cta-section,.reviews-section{background:var(--bg)}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
 button{cursor:pointer;border:none;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -488,103 +489,3 @@ main{animation:pageIn .22s ease both}
 .free-delivery-bar.fd-complete .fd-fill{background:linear-gradient(90deg,var(--success),#34D399)}
 .free-delivery-bar.fd-complete .fd-text{color:var(--success)}
 
-/* ── Page-specific styles (extracted for SPA) ── */
-
-/* shop page */
-.filter-toggle-btn{display:none;align-items:center;gap:7px;padding:8px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);font-size:.85rem;font-weight:600;color:var(--dark);cursor:pointer;transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
-    .filter-toggle-btn:hover{border-color:var(--dark);color:var(--dark)}
-    .filter-toggle-btn .badge-count{background:var(--accent);color:#fff;font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:100px;display:none}
-    .filter-toggle-btn .badge-count.show{display:inline-block}
-    @media(max-width:899px){.filter-toggle-btn{display:flex}.shop-sidebar{display:none}.shop-sidebar.open{display:block}}
-    .filter-active-dot{width:7px;height:7px;background:var(--accent);border-radius:50%;display:none}
-    .filter-active-dot.show{display:inline-block}
-
-/* cart page */
-.whatsapp-field{background:linear-gradient(135deg,#e8fff0,#d4f5e2);border:1.5px solid #25d366;border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
-    .whatsapp-field label{display:flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;color:#128c4a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
-    .whatsapp-field input{width:100%;padding:11px 13px;border:1.5px solid #25d366;border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;font-family:'Plus Jakarta Sans',sans-serif}
-    .whatsapp-field input:focus{border-color:#128c4a;box-shadow:0 0 0 2px rgba(37,211,102,.12)}
-    .whatsapp-field .hint{font-size:.72rem;color:#128c4a;margin-top:6px;display:flex;align-items:center;gap:4px}
-    .area-select-wrap{background:var(--glass-bg-md);backdrop-filter:var(--glass-blur-sm);-webkit-backdrop-filter:var(--glass-blur-sm);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
-    .area-select-wrap label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
-    .area-select-wrap select{width:100%;padding:11px 13px;border:1px solid rgba(10,22,40,.2);border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;color:var(--dark);font-family:'Plus Jakarta Sans',sans-serif}
-    .delivery-price-row{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:var(--r-sm);padding:10px 13px;margin-top:8px}
-    .delivery-price-row span{font-size:.84rem;color:var(--dark-mid)}
-    .delivery-price-row strong{font-size:.95rem;color:var(--dark);font-weight:700}
-    .payment-options{margin-bottom:14px}
-    .payment-options label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
-    .payment-opt{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;margin-bottom:6px;transition:var(--t)}
-    .payment-opt:hover{border-color:var(--accent);background:var(--accent-light)}
-    .payment-opt input[type=radio]{accent-color:var(--dark);width:16px;height:16px;flex-shrink:0}
-    .payment-opt.selected{border-color:var(--accent);background:var(--accent-light)}
-    .payment-opt .pay-icon{font-size:1.3rem}
-    .payment-opt .pay-info{flex:1}
-    .payment-opt .pay-name{font-size:.88rem;font-weight:600;color:var(--dark)}
-    .payment-opt .pay-sub{font-size:.73rem;color:var(--gray);margin-top:1px}
-    .required-star{color:var(--danger)}
-    .field-label{font-size:.76rem;font-weight:700;color:var(--dark);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
-    .co-input{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:16px;outline:none;transition:var(--t);background:#fff;font-family:'Plus Jakarta Sans',sans-serif}
-    .co-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .co-textarea{width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:16px;outline:none;resize:vertical;min-height:80px;font-family:'Plus Jakarta Sans',sans-serif;background:#fff}
-    .co-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:480px){.form-row-2{grid-template-columns:1fr}}
-    .order-success{display:none;text-align:center;padding:40px 20px}
-    .order-success .icon{font-size:3.5rem;margin-bottom:16px}
-    .order-success h3{font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif}
-    .order-success p{color:var(--gray);margin-bottom:20px;font-size:.875rem}
-    .order-success .order-id{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 18px;display:inline-block;font-weight:700;color:var(--dark);font-size:1.05rem;margin-bottom:20px}
-
-/* product page */
-.out-of-stock-banner{background:#fff2f1;border:1px solid rgba(255,59,48,.2);border-radius:var(--r);padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:.875rem;font-weight:600;color:var(--danger)}
-    .stock-count-badge{display:inline-block;background:#fff8ec;color:#b45309;border:1px solid rgba(255,159,10,.3);border-radius:var(--r-pill);padding:2px 10px;font-size:.72rem;font-weight:600;margin-left:8px}
-    .reviews-section{margin-top:28px;border-top:1px solid var(--border);padding-top:24px}
-    .review-card{background:var(--glass-bg-md);backdrop-filter:var(--glass-blur-sm);-webkit-backdrop-filter:var(--glass-blur-sm);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;border:1px solid var(--border)}
-    .review-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-    .review-name{font-weight:700;font-size:.85rem;color:var(--text)}
-    .review-stars{color:var(--warning);font-size:.85rem}
-    .review-date{font-size:.7rem;color:var(--text-3);margin-left:auto}
-    .review-text{font-size:.86rem;color:var(--text-2);line-height:1.65}
-    .review-form{background:var(--glass-bg-md);backdrop-filter:var(--glass-blur-sm);-webkit-backdrop-filter:var(--glass-blur-sm);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-top:18px}
-    .review-form h4{font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--text)}
-    .review-form input,.review-form textarea{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:.875rem;margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:var(--t);background:var(--bg)}
-    .review-form input:focus,.review-form textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .review-form textarea{resize:vertical;min-height:80px}
-    .star-select{display:flex;gap:6px;margin-bottom:12px}
-    .star-select span{font-size:1.5rem;cursor:pointer;opacity:.3;transition:var(--t)}
-    .star-select span.on{opacity:1}
-    .variant-group{margin-bottom:14px}
-    .variant-label{font-size:.72rem;font-weight:700;color:var(--text-3);margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:.08em}
-    .variant-options{display:flex;gap:6px;flex-wrap:wrap}
-    .variant-btn{padding:7px 16px;border:1px solid var(--border);border-radius:var(--r-pill);font-size:.85rem;cursor:pointer;background:var(--glass-bg-md);color:var(--text);transition:var(--t);font-family:'Plus Jakarta Sans',sans-serif;backdrop-filter:var(--glass-blur-sm);-webkit-backdrop-filter:var(--glass-blur-sm)}
-    .variant-btn:hover{border-color:var(--accent);color:var(--accent)}
-    .variant-btn.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .trust-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-    .trust-badge{display:flex;align-items:center;gap:5px;padding:5px 12px;background:var(--glass-bg-md);backdrop-filter:var(--glass-blur-sm);-webkit-backdrop-filter:var(--glass-blur-sm);border:1px solid var(--border);border-radius:var(--r-pill);font-size:.72rem;color:var(--text-2);font-weight:500}
-    .dco-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-    .dco-overlay.open{display:flex}
-    .dco-box{background:var(--glass-bg-md);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);width:100%;max-width:520px;max-height:96vh;overflow-y:auto;border-radius:var(--r-xl) var(--r-xl) 0 0;-webkit-overflow-scrolling:touch;border-top:1px solid var(--glass-border);border-left:1px solid var(--glass-border);border-right:1px solid var(--glass-border)}
-    .dco-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--glass-bg-md);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);z-index:10}
-    .dco-header h3{font-size:.95rem;font-weight:700;color:var(--text);letter-spacing:-.02em}
-    .dco-close{width:30px;height:30px;background:rgba(0,0,0,.06);border:none;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .dco-body{padding:16px 20px}
-    .dco-product-row{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:var(--r);padding:12px;margin-bottom:16px;border:1px solid var(--border)}
-    .dco-product-row img{width:58px;height:58px;object-fit:cover;border-radius:var(--r-sm);flex-shrink:0}
-    .dco-product-name{font-size:.85rem;font-weight:600;color:var(--text)}
-    .dco-product-price{font-size:.95rem;font-weight:700;color:var(--accent);margin-top:3px}
-    .wa-field{background:linear-gradient(135deg,#e8fff0,#d4f5e2);border:1.5px solid #25d366;border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
-    .wa-field label{display:flex;align-items:center;gap:7px;font-size:.75rem;font-weight:700;color:#128c4a;margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
-    .wa-field input{width:100%;padding:10px 13px;border:1.5px solid #25d366;border-radius:var(--r-sm);font-size:16px;outline:none;background:#fff;font-family:'Plus Jakarta Sans',sans-serif}
-    .dco-field{margin-bottom:12px}
-    .dco-field label{display:block;font-size:.72rem;font-weight:700;color:var(--text-3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em}
-    .dco-field input,.dco-field select,.dco-field textarea{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:16px;outline:none;background:var(--bg);font-family:'Plus Jakarta Sans',sans-serif;transition:var(--t)}
-    .dco-field input:focus,.dco-field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
-    .dco-field textarea{resize:vertical;min-height:70px}
-    .dco-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-    @media(max-width:480px){.dco-2col{grid-template-columns:1fr}}
-    .dco-total{background:var(--accent-light);border:1px solid rgba(0,113,227,.15);border-radius:var(--r);padding:12px 14px;margin-bottom:16px;font-size:.875rem}
-    .dco-total-row{display:flex;justify-content:space-between;margin-bottom:4px;color:var(--text-2)}
-    .dco-total-row.grand{font-weight:700;font-size:1rem;color:var(--text);padding-top:8px;border-top:1px solid rgba(0,113,227,.15);margin-top:6px}
-    .dco-err{background:#fff2f1;border:1px solid rgba(255,59,48,.2);border-radius:var(--r-sm);padding:9px 12px;font-size:.82rem;color:var(--danger);margin-bottom:12px;display:none}
-    .dco-success{display:none;text-align:center;padding:32px 20px}
-    .dco-success .ico{font-size:3.5rem;margin-bottom:12px}
