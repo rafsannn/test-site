@@ -38,10 +38,14 @@ function normaliseProduct(p) {
     shortName:    p.shortName    || p.short_name   || p.name,
     categorySlug: p.categorySlug || p.category_slug || '',
     oldPrice:     p.oldPrice     != null ? p.oldPrice : (p.old_price != null ? p.old_price : null),
-    // specs may be a JSON string from Supabase
-    specs: typeof p.specs === 'string' ? JSON.parse(p.specs || '[]') : (p.specs || []),
-    // images may be a JSON string from Supabase
-    images: typeof p.images === 'string' ? JSON.parse(p.images || '[]') : (p.images || [p.image])
+    specs:    typeof p.specs    === 'string' ? JSON.parse(p.specs    || '[]') : (p.specs    || []),
+    images:   typeof p.images   === 'string' ? JSON.parse(p.images   || '[]') : (p.images   || [p.image]),
+    variants: typeof p.variants === 'string' ? JSON.parse(p.variants || '[]') : (p.variants || []),
+    reviews:  typeof p.reviews  === 'string' ? JSON.parse(p.reviews  || '[]') : (p.reviews  || []),
+    in_stock:    p.in_stock    !== false,
+    stock_count: parseInt(p.stock_count) || 0,
+    fb_link:     p.fb_link || '',
+    meta_desc:   p.meta_desc || ''
   };
 }
 

@@ -64,7 +64,7 @@
 /* ── RESET ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:#000}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
 /* Dark overscroll at bottom only - using footer color on html */
 main{background:var(--bg)}
 .product-detail,.shop-page,.cart-page,.products-section,.categories-strip,.fb-cta-section,.reviews-section{background:var(--bg)}
@@ -100,7 +100,7 @@ ul{list-style:none}
 .btn-full{width:100%}
 
 /* ── NAVBAR ── */
-.navbar{position:sticky;top:0;z-index:1000;background:rgba(0,0,0,.85);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid rgba(255,255,255,.08);transition:background .3s ease,backdrop-filter .3s ease,border-color .3s ease,box-shadow .3s ease}
+.navbar{position:sticky;top:0;z-index:1000;background:rgba(10,10,14,.95);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid rgba(255,255,255,.08);transition:background .3s ease,backdrop-filter .3s ease,border-color .3s ease,box-shadow .3s ease}
 .navbar.scrolled{background:rgba(10,10,14,.72);backdrop-filter:blur(48px) saturate(220%) brightness(0.85);-webkit-backdrop-filter:blur(48px) saturate(220%) brightness(0.85);border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(255,255,255,.06),0 4px 24px rgba(0,0,0,.3)}
 .navbar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:60px}
 @media(min-width:768px){.navbar-inner{height:64px;gap:20px}}
