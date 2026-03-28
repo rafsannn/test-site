@@ -64,7 +64,8 @@
 /* ── RESET ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:#000}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#000;color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+/* Dark overscroll at bottom only - using footer color on html */
 main{background:var(--bg)}
 .product-detail,.shop-page,.cart-page,.products-section,.categories-strip,.fb-cta-section,.reviews-section{background:var(--bg)}
 a{text-decoration:none;color:inherit}
