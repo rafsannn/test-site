@@ -81,7 +81,7 @@
               <img id="main-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Product" style="background:var(--bg)" onerror="this.src='/images/logo.png'">
             </div>
           </div>
-          <div class="product-detail-info">
+          <div class="product-detail-info" style="display:flex;flex-direction:column">
             <div class="product-badge-row" id="detail-badges"></div>
             <h1 class="product-detail-name" id="detail-name"></h1>
             <div class="product-detail-rating">
@@ -97,14 +97,14 @@
               ❌ Currently Out of Stock — Check back soon!
             </div>
 
-            <p class="product-detail-desc" id="detail-desc"></p>
-
-            <!-- Variants -->
-            <div id="variants-section" style="margin-bottom:18px;display:none">
+            <!-- Variants — above description on mobile -->
+            <div id="variants-section" style="margin-bottom:18px;display:none;order:0">
             </div>
 
+            <p class="product-detail-desc" id="detail-desc" style="order:1"></p>
+
             <!-- Trust badges -->
-            <div class="trust-badges">
+            <div class="trust-badges" style="order:2">
               <div class="trust-badge">✅ Quality Guaranteed</div>
               <div class="trust-badge">🚚 Nationwide Delivery</div>
               <div class="trust-badge">💵 Cash on Delivery</div>
@@ -112,7 +112,7 @@
             </div>
 
             <!-- Qty + Wishlist -->
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;order:3">
               <div class="qty-control">
                 <button class="qty-btn" id="qty-minus">−</button>
                 <div class="qty-val" id="detail-qty">1</div>
@@ -125,18 +125,18 @@
             </div>
 
             <!-- Order Now + Add to Cart -->
-            <div style="display:flex;gap:10px;margin-bottom:14px">
+            <div style="display:flex;gap:10px;margin-bottom:14px;order:4">
               <button class="btn btn-lg product-order-now-btn" id="order-now-btn" style="flex:1">⚡ Order Now</button>
               <button class="btn btn-lg product-add-cart-btn" id="add-to-cart-detail" style="flex:1">🛒 Add to Cart</button>
             </div>
 
             <!-- Order via Facebook (conditional) -->
-            <a id="order-fb-btn" href="#" target="_blank" rel="noopener" class="mobile-fb-btn" style="display:none;margin-bottom:14px;text-decoration:none;">
+            <a id="order-fb-btn" href="#" target="_blank" rel="noopener" class="mobile-fb-btn" style="display:none;margin-bottom:14px;text-decoration:none;order:5">
               <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
               Order via Facebook
             </a>
 
-            <div class="product-detail-meta" id="detail-specs"></div>
+            <div class="product-detail-meta" id="detail-specs" style="order:6"></div>
           </div>
         </div>
       </div>
